@@ -8,9 +8,21 @@ Window {
     title: qsTr("Emergent")
 
     signal keyPressed(int event_key)
+    signal keyReleased(int event_key)
 
-    Keys.onPressed: {
-        console.log("key_pressed")
-        keyPressed(event.key)
+    Item {
+        id: root
+        objectName: "root"
+        focus: true
+        Keys.onPressed: {
+            if(!event.isAutoRepeat){
+                keyPressed(event.key)
+            }
+        }
+        Keys.onReleased: {
+            if(!event.isAutoRepeat){
+                keyReleased(event.key)
+            }
+        }
     }
 }

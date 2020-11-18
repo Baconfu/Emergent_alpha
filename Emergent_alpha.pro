@@ -15,7 +15,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         engine.cpp \
-        main.cpp
+        entity.cpp \
+        interface.cpp \
+        main.cpp \
+        paintplayeravatar.cpp \
+        player.cpp \
+        world.cpp
 
 RESOURCES += qml.qrc
 
@@ -31,4 +36,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    engine.h
+    engine.h \
+    entity.h \
+    interface.h \
+    paintplayeravatar.h \
+    player.h \
+    world.h

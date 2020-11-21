@@ -16,6 +16,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         air.cpp \
         chunk.cpp \
+        constants.cpp \
         coordinate.cpp \
         engine.cpp \
         entity.cpp \
@@ -26,6 +27,7 @@ SOURCES += \
         paintterrain.cpp \
         player.cpp \
         terrain.cpp \
+        testassistant.cpp \
         unitspace.cpp \
         world.cpp
 
@@ -45,6 +47,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     air.h \
     chunk.h \
+    constants.h \
     coordinate.h \
     engine.h \
     entity.h \
@@ -54,8 +57,9 @@ HEADERS += \
     paintterrain.h \
     player.h \
     terrain.h \
+    testassistant.h \
     unitspace.h \
     world.h
 
 DISTFILES += \
-    Constants.java
+    Constants.json

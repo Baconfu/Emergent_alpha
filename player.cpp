@@ -51,6 +51,11 @@ void Player::stop(int d)
     }
 }
 
+QPoint Player::currentTile()
+{
+    return QPoint(position().x() / Constants::tile_width_pixels,position().y() / Constants::tile_width_pixels);
+}
+
 void Player::iterate()
 {
     transform(m_velocity.toPoint());
@@ -67,6 +72,5 @@ void Player::resetAnimCycle()
 }
 void Player::incrementAnimCycle()
 {
-    qDebug()<<m_obj->property("anim_cycle");
     m_obj->setProperty("anim_cycle",m_obj->property("anim_cycle").toInt() + 1);
 }

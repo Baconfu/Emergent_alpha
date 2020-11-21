@@ -19,6 +19,7 @@ public:
     void setVelocityY(int y){m_velocity.setY(y);}
     QVector2D getVelocity(){return m_velocity;}
 
+    virtual QPoint currentTile();
 
 
     QQuickItem * getObj(){return m_obj;}

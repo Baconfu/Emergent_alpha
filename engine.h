@@ -7,7 +7,9 @@
 #include <QQuickItem>
 #include <QTimer>
 
+#include <testassistant.h>
 #include <world.h>
+
 
 class Engine: public QObject
 {
@@ -17,13 +19,14 @@ public:
 
 
 
-
 private:
     QQuickWindow * m_window = nullptr;
     QQmlApplicationEngine * m_appEngine = nullptr;
     QQuickItem * root = nullptr;
 
     QTimer * timer = nullptr;
+
+    TestAssistant * tester = nullptr;
 
     QVector<int> pressed_keys;
     void newPressedKey(int key_event){if(!pressed_keys.contains(key_event)){pressed_keys.append(key_event);}}
@@ -41,5 +44,6 @@ public slots:
     void timeout();
 
 };
+
 
 #endif // ENGINE_H

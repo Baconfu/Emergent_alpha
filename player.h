@@ -4,7 +4,9 @@
 #include <QObject>
 #include <QQuickItem>
 
+#include <constants.h>
 #include <entity.h>
+
 
 class Player: public Entity
 {
@@ -20,6 +22,8 @@ public:
 
     void move(int d);
     void stop(int d);
+
+    QPoint currentTile();
 
 
     void iterate();

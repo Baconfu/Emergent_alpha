@@ -6,6 +6,7 @@
 #include <QVector>
 
 
+#include <chunk.h>
 #include <coordinate.h>
 #include <entity.h>
 #include <player.h>
@@ -27,17 +28,25 @@ public:
     void keyInputs(int event_key);
     void keyRelease(int event_key);
 
+    QVector<Chunk*> getEnvironment(){return environment;}
+
 private:
 
-
+    int screen_width_tiles = 640 / 30;
+    int screen_height_tiles = 480 / 26;
 
 
     QQmlApplicationEngine * m_appEngine = nullptr;
     QQuickWindow * m_window = nullptr;
     QQuickItem * root = nullptr;
 
+    QVector<Chunk*> environment;
+    QPoint getCurrentChunk(QPoint pos);
+    QPoint getPositionInChunk(QPoint pos);
+    Chunk * loadChunk(QPoint pos);
 
-    QVector<UnitSpace*> environment;
+    bool chunkAlreadyLoaded(QPoint pos);
+
     UnitSpace * loadUnitSpace(Coordinate c);
 
     QVector<Entity*> entities;

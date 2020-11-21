@@ -1,6 +1,7 @@
 #include "engine.h"
 #include <QDebug>
 
+
 Engine::Engine(QObject *parent, QQmlApplicationEngine *engine, QQuickWindow *window):
     QObject(parent)
 {
@@ -19,6 +20,8 @@ Engine::Engine(QObject *parent, QQmlApplicationEngine *engine, QQuickWindow *win
 
     connect(timer,SIGNAL(timeout()),this,SLOT(timeout()));
 
+    tester = new TestAssistant(world);
+
     timer->start();
 }
 
@@ -30,7 +33,7 @@ void Engine::loadWorld()
 
 void Engine::keyPressed(int event_key)
 {
-    qDebug()<<"Pressed:"<<event_key;
+    //qDebug()<<"Pressed:"<<event_key;
     newPressedKey(event_key);
 
     world->keyInputs(event_key);
@@ -38,7 +41,7 @@ void Engine::keyPressed(int event_key)
 
 void Engine::keyReleased(int event_key)
 {
-    qDebug()<<"Released:"<<event_key;
+    //qDebug()<<"Released:"<<event_key;
     removePressedKey(event_key);
 
     world->keyRelease(event_key);
@@ -52,5 +55,6 @@ void Engine::timeout()
 
     //Allocating player movement
     world->iterate();
+    //tester->testChunks();
 
 }

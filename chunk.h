@@ -1,13 +1,33 @@
 #ifndef CHUNK_H
 #define CHUNK_H
 
-#include <QFile>
+#include <QJsonDocument>
 #include <QJsonObject>
+#include <QFile>
+#include <QByteArray>
+#include <QJsonArray>
+#include <QPoint>
 
-class Chunk
+#include <file.h>
+#include <unitspace.h>
+
+
+class Chunk: public File
 {
+
 public:
-    Chunk();
+
+    Chunk(QPoint chunkPosition);
+
+    QPoint getPosition(){return m_pos;}
+
+
+private:
+    QPoint m_pos;
+
+
+
+
 };
 
 #endif // CHUNK_H

@@ -1,6 +1,8 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#include <QString>
+#include <QStringLiteral>
 
 class Constants
 {

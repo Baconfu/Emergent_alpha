@@ -26,6 +26,7 @@ private:
     QPoint m_pos;
 
 
+    QString path_temp = "C:\\Users\\lixia\\Documents\\qt_projects\\Emergent_alpha\\data\\chunks\\";
 
 
 };

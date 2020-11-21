@@ -15,9 +15,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         air.cpp \
+        chunk.cpp \
         coordinate.cpp \
         engine.cpp \
         entity.cpp \
+        file.cpp \
         interface.cpp \
         main.cpp \
         paintplayeravatar.cpp \
@@ -42,9 +44,11 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     air.h \
+    chunk.h \
     coordinate.h \
     engine.h \
     entity.h \
+    file.h \
     interface.h \
     paintplayeravatar.h \
     paintterrain.h \
@@ -52,3 +56,6 @@ HEADERS += \
     terrain.h \
     unitspace.h \
     world.h
+
+DISTFILES += \
+    Constants.java

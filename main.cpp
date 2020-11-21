@@ -1,9 +1,13 @@
+#include <QDebug>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
 
+#include <coordinate.h>
 #include <engine.h>
 #include <paintplayeravatar.h>
+#include <paintterrain.h>
+
 
 int main(int argc, char *argv[])
 {
@@ -11,8 +15,11 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
-    qmlRegisterType<PaintPlayerAvatar>("Paint",1,0,"PaintAvatar");
 
+    Coordinate c(1,1,2);
+    Coordinate b(2,4,5);
+    c+=b;
+    qDebug()<<c.x();
     QQmlApplicationEngine * engine = new QQmlApplicationEngine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(engine, &QQmlApplicationEngine::objectCreated,
@@ -20,7 +27,12 @@ int main(int argc, char *argv[])
         if (!obj && url == objUrl)
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
+
+    qmlRegisterType<PaintPlayerAvatar>("Paint",1,0,"PaintAvatar");
+    qmlRegisterType<PaintTerrain>("Paint",1,0,"PaintTerrain");
+
     engine->load(url);
+
 
 
 

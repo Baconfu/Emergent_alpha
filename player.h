@@ -9,26 +9,28 @@
 class Player: public Entity
 {
 public:
-    Player();
+    Player(QQuickItem * parent = nullptr, QQuickItem * obj = nullptr);
 
     enum direction{
-        left = 0,
-        up = 1,
-        right = 2,
-        down = 3
+        left = 65,
+        up = 87,
+        right = 68,
+        down = 83
     };
 
-    void setPosition(QPoint pos) override;
-
-    void move(direction d);
-    void stop(direction d);
+    void move(int d);
+    void stop(int d);
 
 
+    void iterate();
 
 
 private:
 
     float travel_speed = 1;
+
+    void resetAnimCycle();
+    void incrementAnimCycle();
 };
 
 #endif // PLAYER_H

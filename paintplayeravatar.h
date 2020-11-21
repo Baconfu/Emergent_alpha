@@ -5,20 +5,21 @@
 
 class PaintPlayerAvatar: public QQuickPaintedItem
 {
-    Q_PROPERTY(int m_anim_cycle READ anim_cycle WRITE setAnim_cycle NOTIFY anim_cycleChanged)
+    Q_OBJECT
+    Q_PROPERTY(int m_anim READ anim WRITE setAnim NOTIFY animChanged)
 public:
     PaintPlayerAvatar(QQuickItem * parent = nullptr);
     ~PaintPlayerAvatar();
 
     void paint(QPainter *painter);
 
-    int anim_cycle(){return m_anim_cycle;}
-    void setAnim_cycle(int n){m_anim_cycle = n;}
+    int anim(){return m_anim;}
+    void setAnim(int n){m_anim = n;}
 private:
-    int m_anim_cycle;
+    int m_anim = 0;
 
 signals:
-    void anim_cycleChanged();
+    void animChanged();
 
 };
 

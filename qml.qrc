@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>Player_Avatar.qml</file>
+        <file>playerAvatar.qml</file>
+        <file>terrain.qml</file>
     </qresource>
 </RCC>

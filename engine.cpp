@@ -24,7 +24,7 @@ Engine::Engine(QObject *parent, QQmlApplicationEngine *engine, QQuickWindow *win
 
 void Engine::loadWorld()
 {
-    world = new World(QPoint(0,0));
+    world = new World(m_appEngine, m_window, QPoint(0,0));
 }
 
 
@@ -51,6 +51,6 @@ void Engine::timeout()
 
 
     //Allocating player movement
-
+    world->iterate();
 
 }

@@ -1,4 +1,5 @@
 #include "paintplayeravatar.h"
+#include <math.h>
 #include <QPainter>
 #include <QImage>
 
@@ -16,6 +17,18 @@ PaintPlayerAvatar::~PaintPlayerAvatar()
 
 void PaintPlayerAvatar::paint(QPainter *painter)
 {
-    painter->drawRect(QRect(0,0,width(),height()-anim_cycle()));
+    QPen pen;
+    pen.setColor(Qt::black);
+    pen.setWidth(2);
+
+
+
+    painter->setPen(pen);
+    float diff = abs(10*sin(0.1*anim()));
+    float h = 40-10+diff;
+    QRect top = QRect(0,10-diff,width(),20 * sin(1.047));
+    QRect side = QRect(0,10-diff + 20 * sin(1.047),width(),h);
+    painter->fillRect(top,QColor::fromRgb(200,200,200));
+    painter->fillRect(side,QColor::fromRgb(70,70,70));
 
 }

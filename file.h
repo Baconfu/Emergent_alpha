@@ -15,6 +15,7 @@ public:
     File();
 
     QJsonObject load(QString path);
+    void write(QString path,QJsonObject obj);
 };
 
 #endif // FILE_H

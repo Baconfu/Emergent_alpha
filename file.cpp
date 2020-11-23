@@ -16,3 +16,13 @@ QJsonObject File::load(QString path)
 
     return loadData.object();
 }
+
+void File::write(QString path,QJsonObject obj)
+{
+
+    QFile file(path);
+    file.open(QIODevice::WriteOnly);
+    QJsonDocument saveDoc(obj);
+    file.write(saveDoc.toJson());
+}
+

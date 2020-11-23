@@ -3,8 +3,10 @@
 #include <constants.h>
 #include <testassistant.h>
 
+
 World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coordinates)
 {
+    gen = QRandomGenerator();
 
 
     //Pointers allows <World> to create and draw componenets.
@@ -15,9 +17,17 @@ World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coord
     root = window->findChild<QQuickItem*>("root");
 
     //load world from coordinates
-    loadUnitSpace(Coordinate(3,2,0));
-    loadUnitSpace(Coordinate(3,3,0));
 
+    //dev: generate 9 chunks
+    /*
+    for(int i=0; i<3; i++){
+        for(int j=0; j<3; j++){
+            environment.append(generateChunk(QPoint(i,j)));
+        }
+    }
+    for(int i=0; i<environment.length(); i++){
+        environment[i]->writeChunkToFile();
+    }*/
 
     //coordinates should refer to player position upon spawn
 
@@ -65,6 +75,27 @@ void World::keyRelease(int event_key)
     player->stop(event_key);
 }
 
+int World::index(int i, int j)
+{
+    return j*Constants::chunk_width_tiles*Constants::world_width_chunks + i;
+
+}
+
+Chunk *World::generateChunk(QPoint pos)
+{
+    Chunk * chunk = new Chunk(pos);
+    QVector<UnitSpace*> area;
+    for(int i=0; i<Constants::chunk_width_tiles * Constants::chunk_width_tiles; i++){
+        if(gen.generate()%100>80){
+            area.append(new Terrain());
+        }else{
+            area.append(new Air());
+        }
+    }
+    chunk->setChunkData(area);
+    return chunk;
+}
+
 QPoint World::getCurrentChunk(QPoint pos)
 {
     return (pos - getPositionInChunk(pos)) / Constants::chunk_width_tiles;
@@ -79,6 +110,22 @@ Chunk *World::loadChunk(QPoint pos)
 {
     Chunk * chunk = new Chunk(pos);
 
+    QVector<UnitSpace*> area = chunk->loadChunkFromFile();
+    int w = Constants::chunk_width_tiles;
+
+
+    for(int i=0; i<area.length(); i++){
+        UnitSpace * u = area[i];
+        QPoint pos = chunk->getPosition() * Constants::chunk_width_tiles + QPoint(i%w,i/w);
+        if(typeid (*u) == typeid (Air)){
+            loadUnitSpace(Coordinate(pos.x(),pos.y(),0),"air");
+        }else{
+            loadUnitSpace(Coordinate(pos.x(),pos.y(),0),"terrain");
+        }
+    }
+
+
+
     return chunk;
 }
 
@@ -91,9 +138,23 @@ bool World::chunkAlreadyLoaded(QPoint pos)
     return false;
 }
 
-UnitSpace * World::loadUnitSpace(Coordinate c)
+UnitSpace * World::loadUnitSpace(Coordinate c, QString type)
 {
-    Terrain * space = new Terrain(c);
+    UnitSpace * space = nullptr;
+    if(type == "terrain"){
+        space = new Terrain();
+        QQmlComponent component2(m_appEngine,QUrl("qrc:/terrain.qml"));
+        QQuickItem * obj2 = qobject_cast<QQuickItem*>(component2.create());
+        obj2->setParentItem(root);
+        obj2->setParent(m_appEngine);
+        space->assignObj(obj2);
+
+        space->setPosition(c);
+    }
+    if(type == "air"){
+        space = new Air();
+    }
+
 
     return space;
 }

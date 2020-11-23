@@ -3,6 +3,7 @@
 
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
+#include <QRandomGenerator>
 #include <QVector>
 
 
@@ -31,14 +32,18 @@ public:
     QVector<Chunk*> getEnvironment(){return environment;}
 
 private:
+    QRandomGenerator gen;
 
     int screen_width_tiles = 640 / 30;
     int screen_height_tiles = 480 / 26;
 
+    int index(int i,int j);
 
     QQmlApplicationEngine * m_appEngine = nullptr;
     QQuickWindow * m_window = nullptr;
     QQuickItem * root = nullptr;
+
+    Chunk * generateChunk(QPoint pos);
 
     QVector<Chunk*> environment;
     QPoint getCurrentChunk(QPoint pos);
@@ -47,7 +52,7 @@ private:
 
     bool chunkAlreadyLoaded(QPoint pos);
 
-    UnitSpace * loadUnitSpace(Coordinate c);
+    UnitSpace * loadUnitSpace(Coordinate c,QString type);
 
     QVector<Entity*> entities;
     void appendEntity(Entity * e){entities.append(e);}

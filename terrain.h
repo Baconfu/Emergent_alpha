@@ -8,9 +8,11 @@
 class Terrain: public UnitSpace
 {
 public:
-    Terrain(Coordinate pos);
+    Terrain();
 
     bool collision_player(){return true;}
+
+    QString type(){return QStringLiteral("terrain");}
 
 
 };

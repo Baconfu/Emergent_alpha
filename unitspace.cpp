@@ -1,22 +1,31 @@
 #include "unitspace.h"
 #include <math.h>
 
-UnitSpace::UnitSpace(Coordinate c)
+UnitSpace::UnitSpace(QVector3D position)
 {
-    pos = c;
+    //qDebug()<<"init_pos"<<position;
+    m_position = position;
 
 }
 
-void UnitSpace::setPosition(Coordinate c)
+void UnitSpace::setPosition(QVector3D position)
 {
-    m_obj->setX(c.x() * 30);
-    m_obj->setY(c.y() * 30 * sin(1.047));
+    //qDebug()<<"setpos"<<position;
+    m_position = position;
 }
 
 void UnitSpace::assignObj(QQuickItem *obj)
 {
     m_obj = obj;
-    m_obj->setX(pos.x() * 30);
-    m_obj->setY(pos.y() * 30 * sin(1.047));
+}
+
+void UnitSpace::updateDisplay()
+{
+    QVector3D adjust = QVector3D(m_position.x(),m_position.y(),m_position.z() + 1);
+    m_obj->setPosition(World::get2DProjection(adjust * Constants::tile_width_pixels));
+    m_obj->setWidth(World::get2DProjection(m_dimensions * Constants::tile_width_pixels).x());
+    QVector3D alt = QVector3D(m_dimensions.x(),m_dimensions.y(),m_dimensions.z() * -1.0);
+    m_obj->setHeight(World::get2DProjection(alt * Constants::tile_width_pixels).ry());
+    m_obj->setZ(float(m_position.y()) + float(m_position.z())/100.0);
 }
 

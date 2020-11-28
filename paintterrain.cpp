@@ -5,6 +5,7 @@
 #include <QColor>
 #include <QPainter>
 #include <QPen>
+#include <QString>
 
 
 PaintTerrain::PaintTerrain(QQuickItem *parent):
@@ -29,9 +30,17 @@ void PaintTerrain::paint(QPainter *painter)
     painter->setPen(pen);
     painter->setBrush(brush);
 
-    //painter->drawRect(QRect(0,30*sin(1.047),30,height()-30*sin(1.047)));
-    painter->fillRect(QRect(0,30*sin(1.047),30,height()-30*sin(1.047)),QColor::fromRgb(70,70,70));
+    QStringList s = QString::number(z()).split(".");
 
-    painter->fillRect(QRect(0,0,width(),30*sin(1.047)),QColor::fromRgb(200,200,200));
+    int level = 0;
+    if(s.length() > 1){
+        level = s[1].toInt();
+    }
+
+    //painter->drawRect(QRect(0,30*sin(1.047),30,height()-30*sin(1.047)));
+
+    painter->fillRect(QRect(0,Constants::tile_width_pixels*sin(1.047),Constants::tile_width_pixels,height()-Constants::tile_width_pixels*sin(1.047)),QColor::fromRgb(70 + level*40, 70 + level*40 , 70 + level*40));
+
+    painter->fillRect(QRect(0,0,width(),Constants::tile_width_pixels*sin(1.047)),QColor::fromRgb(160 + level*30 , 160 + level*30 , 160 + level*30));
 
 }

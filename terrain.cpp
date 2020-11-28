@@ -1,6 +1,7 @@
 #include "terrain.h"
 
-Terrain::Terrain()
+Terrain::Terrain(QVector3D position):
+    UnitSpace(position)
 {
 
 }

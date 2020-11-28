@@ -4,31 +4,47 @@
 #include <QString>
 #include <QStringLiteral>
 #include <QQuickItem>
+#include <QVector3D>
 
-
-#include <coordinate.h>
-
+#include <constants.h>
+#include <world.h>
 
 class UnitSpace
 {
 public:
-    UnitSpace(Coordinate c = Coordinate(0,0,0));
+    UnitSpace(QVector3D position);
 
-    virtual bool collision_player(){return false;}
+    virtual bool collision_player() = 0;
 
     virtual QString type(){return QString();}
 
-    int x(){return pos.x();}
-    int y(){return pos.y();}
-    int z(){return pos.z();}
+    float x(){return m_position.x();}
+    float y(){return m_position.y();}
+    float z(){return m_position.z();}
 
-    virtual void setPosition(Coordinate c);
+    void setX(float x){qDebug()<<"SETX"<<x;m_position.setX(x);}
+    void setY(float y){qDebug()<<"SETY"<<y;m_position.setY(y);}
+    void setZ(float z){qDebug()<<"SETZ"<<z;m_position.setZ(z);}
+
+    QVector3D dimensions(){return m_dimensions;}
+    float width(){return m_dimensions.x();}
+    float height(){return m_dimensions.y();}
+    float depth(){return m_dimensions.z();}
+
+    QVector3D position(){return m_position;}
+
+    void setPosition(QVector3D position);
 
     void assignObj(QQuickItem * obj);
     QQuickItem * getObj(){return m_obj;}
 
+    void updateDisplay();
+
 protected:
-    Coordinate pos;
+    QVector3D m_position;
+
+    QVector3D m_dimensions = QVector3D(1,1,1);
+
 
     QQuickItem * m_obj;
 

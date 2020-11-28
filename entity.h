@@ -4,35 +4,65 @@
 #include <QPoint>
 #include <QQuickItem>
 #include <QVector2D>
+#include <QVector3D>
 
-class Entity: public QQuickItem
+#include <world.h>
+
+
+class Entity
 {
-    Q_OBJECT
 public:
-    Entity(QQuickItem * parent = nullptr);
+    Entity(QVector3D position);
+
+    QVector3D position(){return m_position;}
+
+    void setPosition(QVector3D position);
+    void setX(float x){m_position.setX(x);}
+    void setY(float y){m_position.setY(y);}
+    void setZ(float z){m_position.setZ(z);}
+    float x(){return m_position.x();}
+    float y(){return m_position.y();}
+    float z(){return m_position.z();}
+
+    QVector3D dimensions(){return m_dimensions;}
+    void setDimensions(QVector3D dimensions){m_dimensions = dimensions;}
+    void setWidth(float width);
+    void setHeight(float height);
+    void setDepth(float depth);
+    float width(){return m_dimensions.x();}
+    float height(){return m_dimensions.y();}
+    float depth(){return m_dimensions.z();}
 
 
-    virtual void transform(QPoint vec);
+    virtual void transform(QVector3D vector);
 
-    void setVelocity(QVector2D vec){m_velocity = vec;}
+    void setVelocity(QVector3D vec){m_velocity = vec;}
     void setVelocityX(int x){m_velocity.setX(x);}
     void setVelocityY(int y){m_velocity.setY(y);}
-    QVector2D getVelocity(){return m_velocity;}
+    void setVelocityZ(int z){m_velocity.setZ(z);}
+    QVector3D getVelocity(){return m_velocity;}
 
-    virtual QPoint currentTile();
+    virtual QVector3D currentTile();
 
 
     QQuickItem * getObj(){return m_obj;}
-    void assignObj(QQuickItem * obj){m_obj = obj;}
+    void assignObj(QQuickItem * obj);
+
+    void updateDisplay();
 
 protected:
 
-    QVector2D m_velocity;
+    QVector3D m_position;
 
+    QVector3D m_dimensions;
 
+    QVector3D m_velocity;
 
     QQuickItem * m_obj = nullptr;
 
+
+private:
+    float m_depth = 0;
 
 };
 

@@ -1,9 +1,10 @@
 #include "player.h"
 
-Player::Player(QQuickItem * parent, QQuickItem * obj):
-    Entity(parent)
+Player::Player(QVector3D position,QQuickItem * obj):
+    Entity(position)
 {
     m_obj = obj;
+    m_dimensions = QVector3D(20,20,40);
 }
 
 
@@ -51,19 +52,21 @@ void Player::stop(int d)
     }
 }
 
-QPoint Player::currentTile()
+QVector3D Player::currentTile()
 {
-    return QPoint(position().x() / Constants::tile_width_pixels,position().y() / Constants::tile_width_pixels);
+    return QVector3D(m_position.x() / Constants::tile_width_pixels , m_position.y() / Constants::tile_width_pixels , m_position.z() / Constants::tile_width_pixels);
 }
 
 void Player::iterate()
 {
-    transform(m_velocity.toPoint());
+    transform(m_velocity);
     if(m_velocity.length() != 0){
         incrementAnimCycle();
     }else{
         resetAnimCycle();
     }
+    m_obj->setZ(currentTile().y());
+    updateDisplay();
 }
 
 void Player::resetAnimCycle()

@@ -1,6 +1,7 @@
 #include "air.h"
 
-Air::Air()
+Air::Air(QVector3D position):
+    UnitSpace(position)
 {
 
 }

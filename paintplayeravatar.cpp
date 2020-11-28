@@ -2,6 +2,7 @@
 #include <math.h>
 #include <QPainter>
 #include <QImage>
+#include <QRect>
 
 #include <constants.h>
 
@@ -20,7 +21,7 @@ PaintPlayerAvatar::~PaintPlayerAvatar()
 void PaintPlayerAvatar::paint(QPainter *painter)
 {
     QPen pen;
-    pen.setColor(Qt::black);
+    pen.setColor(Qt::red);
     pen.setWidth(2);
 
 
@@ -32,5 +33,7 @@ void PaintPlayerAvatar::paint(QPainter *painter)
     QRect side = QRect(0,10-diff + Constants::player_width_pixels * sin(1.047),width(),h);
     painter->fillRect(top,QColor::fromRgb(200,200,200));
     painter->fillRect(side,QColor::fromRgb(70,70,70));
+    QRect r = QRect(QPoint(0,height()-Constants::player_width_pixels * sin(1.047)),QPoint(width(),height()));
+    painter->drawRect(r);
 
 }

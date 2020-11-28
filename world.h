@@ -7,16 +7,17 @@
 #include <QVector>
 
 
-#include <chunk.h>
-#include <coordinate.h>
-#include <entity.h>
-#include <player.h>
-#include <terrain.h>
 #include <paintterrain.h>
-#include <unitspace.h>
+
 
 //Entity management, player management
 //World manages which entities are loaded, and manages player interaction with entities. Also manages visibility of entities.
+
+class Entity;
+class Player;
+class Chunk;
+class Terrain;
+class UnitSpace;
 
 class World
 {
@@ -31,11 +32,16 @@ public:
 
     QVector<Chunk*> getEnvironment(){return environment;}
 
+    static QPointF get2DProjection(QVector3D position);
+
 private:
+    int tally = 0;
     QRandomGenerator gen;
 
     int screen_width_tiles = 640 / 30;
     int screen_height_tiles = 480 / 26;
+
+
 
     int index(int i,int j);
 
@@ -43,22 +49,34 @@ private:
     QQuickWindow * m_window = nullptr;
     QQuickItem * root = nullptr;
 
+    void updateCamera();
+
     Chunk * generateChunk(QPoint pos);
 
     QVector<Chunk*> environment;
-    QPoint getCurrentChunk(QPoint pos);
-    QPoint getPositionInChunk(QPoint pos);
+    Chunk * getChunk(QPoint chunk_position);
+
+    QVector3D getTileFromPixel(QVector3D global_pixel_position);
+    QPoint getChunkFromTile(QVector3D global_tile_position);
+    QVector3D getTilePositionInChunk(QVector3D global_tile_position);
+
     Chunk * loadChunk(QPoint pos);
 
-    bool chunkAlreadyLoaded(QPoint pos);
+    QVector<QVector3D> tilesOccupied(Entity * entity);
 
-    UnitSpace * loadUnitSpace(Coordinate c,QString type);
+    bool chunkAlreadyLoaded(QPoint chunk_position);
+
+    UnitSpace * loadUnitSpace(UnitSpace * space,QVector3D global_space_coordinate,QString type);
 
     QVector<Entity*> entities;
     void appendEntity(Entity * e){entities.append(e);}
     void removeEntity(Entity * e){entities.removeOne(e);}
 
+    void resolveCollision(Entity * entity,UnitSpace * space);
+
     Player * player = nullptr;
+
+    QPoint player_current_chunk;
 
     int chunk_size = 100;
 

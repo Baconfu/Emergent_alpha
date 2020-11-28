@@ -12,8 +12,6 @@ QJsonObject File::load(QString path)
 
     QByteArray data = file.readAll();
     QJsonDocument loadData(QJsonDocument::fromJson(data));
-    qDebug()<<loadData;
-
     return loadData.object();
 }
 

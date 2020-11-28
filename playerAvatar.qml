@@ -5,6 +5,8 @@ import Paint 1.0
 PaintAvatar {
     x:0
     y:0
+
+
     width: 20
     height: 40
     m_anim: 0

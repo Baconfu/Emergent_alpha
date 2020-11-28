@@ -8,7 +8,7 @@
 class Air: public UnitSpace
 {
 public:
-    Air();
+    Air(QVector3D position);
 
     QString type(){return QStringLiteral("air");}
 

@@ -26,12 +26,14 @@ public:
     QPoint getPosition(){return m_pos;}
 
     QVector<UnitSpace*> loadChunkFromFile();
-    UnitSpace * loadSpace(QJsonObject j);
+    UnitSpace * loadSpace(QJsonObject j,QVector3D position);
 
     void writeChunkToFile();
     QJsonObject writeSpace(UnitSpace * s);
 
     void setChunkData(QVector<UnitSpace*> chunk_data);
+
+    UnitSpace * getSpace(QVector3D p);
 
 
 private:

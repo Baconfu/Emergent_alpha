@@ -17,12 +17,12 @@ SOURCES += \
         air.cpp \
         chunk.cpp \
         constants.cpp \
-        coordinate.cpp \
         engine.cpp \
         entity.cpp \
         file.cpp \
         interface.cpp \
         main.cpp \
+        paintgrid.cpp \
         paintplayeravatar.cpp \
         paintterrain.cpp \
         player.cpp \
@@ -48,11 +48,11 @@ HEADERS += \
     air.h \
     chunk.h \
     constants.h \
-    coordinate.h \
     engine.h \
     entity.h \
     file.h \
     interface.h \
+    paintgrid.h \
     paintplayeravatar.h \
     paintterrain.h \
     player.h \

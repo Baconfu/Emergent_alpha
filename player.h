@@ -11,7 +11,7 @@
 class Player: public Entity
 {
 public:
-    Player(QQuickItem * parent = nullptr, QQuickItem * obj = nullptr);
+    Player(QVector3D position,QQuickItem * obj = nullptr);
 
     enum direction{
         left = 65,
@@ -23,7 +23,7 @@ public:
     void move(int d);
     void stop(int d);
 
-    QPoint currentTile();
+    QVector3D currentTile();
 
 
     void iterate();

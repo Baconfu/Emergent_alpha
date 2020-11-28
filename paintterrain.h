@@ -3,6 +3,8 @@
 
 #include <QQuickPaintedItem>
 
+#include <constants.h>
+
 class PaintTerrain: public QQuickPaintedItem
 {
 public:

@@ -28,6 +28,7 @@ SOURCES += \
         paintuibase.cpp \
         player.cpp \
         terrain.cpp \
+        terraingeneration.cpp \
         testassistant.cpp \
         unitspace.cpp \
         world.cpp
@@ -59,6 +60,7 @@ HEADERS += \
     paintuibase.h \
     player.h \
     terrain.h \
+    terraingeneration.h \
     testassistant.h \
     unitspace.h \
     world.h

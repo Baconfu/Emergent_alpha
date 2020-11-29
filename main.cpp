@@ -8,6 +8,7 @@
 #include <paintplayeravatar.h>
 #include <paintterrain.h>
 #include <paintuibase.h>
+#include <terraingeneration.h>n
 
 
 int main(int argc, char *argv[])
@@ -29,6 +30,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<PaintPlayerAvatar>("Paint",1,0,"PaintAvatar");
     qmlRegisterType<PaintTerrain>("Paint",1,0,"PaintTerrain");
     qmlRegisterType<PaintUIBase>("Paint",1,0,"PaintUiBase");
+    qmlRegisterType<TerrainGeneration>("Paint",1,0,"TerrainGeneration");
 
     engine->load(url);
 

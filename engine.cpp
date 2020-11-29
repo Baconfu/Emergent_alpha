@@ -13,17 +13,28 @@ Engine::Engine(QObject *parent, QQmlApplicationEngine *engine, QQuickWindow *win
     connect(window,SIGNAL(keyPressed(int)),this,SLOT(keyPressed(int)));
     connect(window,SIGNAL(keyReleased(int)),this,SLOT(keyReleased(int)));
 
+
+
+
+
+
+
+    //DEV: no world loading
+    /*
     loadWorld();
+    tester = new TestAssistant(world);
 
     timer = new QTimer;
     timer->setInterval(18);
 
     connect(timer,SIGNAL(timeout()),this,SLOT(timeout()));
 
-    tester = new TestAssistant(world);
+
 
     timer->start();
+    */
 }
+
 
 void Engine::loadWorld()
 {
@@ -53,8 +64,10 @@ void Engine::timeout()
 
 
 
-    //Allocating player movement
+
+    //DEV: no world
+    /*
     world->iterate();
-    //tester->testChunks();
+    */
 
 }

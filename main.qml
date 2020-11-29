@@ -8,6 +8,9 @@ Window {
     visible: true
     width: 640
     height: 480
+
+
+
     title: qsTr("Emergent")
 
     signal keyPressed(int event_key)
@@ -16,6 +19,8 @@ Window {
     Item {
         id: winBase
         objectName: "winBase"
+
+
         Item {
             id: root
             objectName: "root"
@@ -34,6 +39,8 @@ Window {
             height: myWin.height
 
             PaintGrid {
+                id: devGrid
+                visible: false
                 x:0
                 y:0
                 width: 6000

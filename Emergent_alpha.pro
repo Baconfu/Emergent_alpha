@@ -31,7 +31,9 @@ SOURCES += \
         testassistant.cpp \
         unitspace.cpp \
         world.cpp \
-    traversible.cpp
+    traversible.cpp \
+    ladder.cpp \
+    sensor.cpp
 
 RESOURCES += qml.qrc
 
@@ -63,7 +65,9 @@ HEADERS += \
     testassistant.h \
     unitspace.h \
     world.h \
-    traversible.h
+    traversible.h \
+    ladder.h \
+    sensor.h
 
 DISTFILES += \
     Constants.json

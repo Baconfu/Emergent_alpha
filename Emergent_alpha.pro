@@ -16,25 +16,25 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         air.cpp \
         chunk.cpp \
-        collidable.cpp \
         constants.cpp \
+        decorative.cpp \
         engine.cpp \
         entity.cpp \
         file.cpp \
         interface.cpp \
+        ladder.cpp \
         main.cpp \
         paintgrid.cpp \
         paintplayeravatar.cpp \
         paintterrain.cpp \
         player.cpp \
+        sensor.cpp \
         terrain.cpp \
         testassistant.cpp \
+        traversible.cpp \
         unitspace.cpp \
         world.cpp \
-    traversible.cpp \
-    ladder.cpp \
-    sensor.cpp \
-    decorative.cpp
+    collidable.cpp
 
 RESOURCES += qml.qrc
 
@@ -52,24 +52,24 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     air.h \
     chunk.h \
-    collidable.h \
     constants.h \
+    decorative.h \
     engine.h \
     entity.h \
     file.h \
     interface.h \
+    ladder.h \
     paintgrid.h \
     paintplayeravatar.h \
     paintterrain.h \
     player.h \
+    sensor.h \
     terrain.h \
     testassistant.h \
+    traversible.h \
     unitspace.h \
     world.h \
-    traversible.h \
-    ladder.h \
-    sensor.h \
-    decorative.h
+    collidable.h
 
 DISTFILES += \
     Constants.json

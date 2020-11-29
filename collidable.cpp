@@ -1,6 +1,7 @@
 #include "collidable.h"
 
-Collidable::Collidable()
+Collidable::Collidable(QVector3D position):
+    Entity(position)
 {
 
 }

@@ -16,6 +16,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         air.cpp \
         chunk.cpp \
+        collidable.cpp \
         constants.cpp \
         engine.cpp \
         entity.cpp \
@@ -29,7 +30,8 @@ SOURCES += \
         terrain.cpp \
         testassistant.cpp \
         unitspace.cpp \
-        world.cpp
+        world.cpp \
+    traversible.cpp
 
 RESOURCES += qml.qrc
 
@@ -47,6 +49,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     air.h \
     chunk.h \
+    collidable.h \
     constants.h \
     engine.h \
     entity.h \
@@ -59,7 +62,8 @@ HEADERS += \
     terrain.h \
     testassistant.h \
     unitspace.h \
-    world.h
+    world.h \
+    traversible.h
 
 DISTFILES += \
     Constants.json

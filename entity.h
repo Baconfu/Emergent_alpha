@@ -34,7 +34,7 @@ public:
     float depth(){return m_dimensions.z();}
 
 
-    virtual void transform(QVector3D vector);
+    void transform(QVector3D vector);
 
     void setVelocity(QVector3D vec){m_velocity = vec;}
     void setVelocityX(int x){m_velocity.setX(x);}

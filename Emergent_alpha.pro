@@ -33,7 +33,8 @@ SOURCES += \
         world.cpp \
     traversible.cpp \
     ladder.cpp \
-    sensor.cpp
+    sensor.cpp \
+    decorative.cpp
 
 RESOURCES += qml.qrc
 
@@ -67,7 +68,8 @@ HEADERS += \
     world.h \
     traversible.h \
     ladder.h \
-    sensor.h
+    sensor.h \
+    decorative.h
 
 DISTFILES += \
     Constants.json

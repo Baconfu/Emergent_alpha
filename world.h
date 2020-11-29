@@ -14,6 +14,7 @@
 //World manages which entities are loaded, and manages player interaction with entities. Also manages visibility of entities.
 
 class Entity;
+class Interface;
 class Player;
 class Chunk;
 class Terrain;
@@ -41,6 +42,7 @@ private:
     int screen_width_tiles = 640 / 30;
     int screen_height_tiles = 480 / 26;
 
+    Interface * newWarning(QString text);
 
 
     int index(int i,int j);

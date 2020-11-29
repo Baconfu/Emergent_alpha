@@ -3,5 +3,6 @@
         <file>main.qml</file>
         <file>playerAvatar.qml</file>
         <file>terrain.qml</file>
+        <file>uiBase.qml</file>
     </qresource>
 </RCC>

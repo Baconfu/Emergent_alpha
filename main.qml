@@ -14,33 +14,46 @@ Window {
     signal keyReleased(int event_key)
 
     Item {
-        id: root
-        objectName: "root"
-        focus: true
+        id: winBase
+        objectName: "winBase"
+        Item {
+            id: root
+            objectName: "root"
+            focus: true
 
-        x:0
-        y:0
-        width: myWin.width
-        height: myWin.height
+            transform: Scale {
+                origin.x: myWin.width/2
+                origin.y: myWin.height/2
+                xScale:1
+                yScale:1.153
+            }
 
-        PaintGrid {
             x:0
             y:0
-            width: 6000
-            height: 6000
-        }
+            width: myWin.width
+            height: myWin.height
 
-        Keys.onPressed: {
-            if(!event.isAutoRepeat){
-                keyPressed(event.key)
+            PaintGrid {
+                x:0
+                y:0
+                width: 6000
+                height: 6000
             }
-        }
-        Keys.onReleased: {
-            if(!event.isAutoRepeat){
-                keyReleased(event.key)
+
+            Keys.onPressed: {
+                if(!event.isAutoRepeat){
+                    keyPressed(event.key)
+                }
+            }
+            Keys.onReleased: {
+                if(!event.isAutoRepeat){
+                    keyReleased(event.key)
+                }
             }
         }
     }
+
+
 
 
 }

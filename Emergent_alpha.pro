@@ -25,6 +25,7 @@ SOURCES += \
         paintgrid.cpp \
         paintplayeravatar.cpp \
         paintterrain.cpp \
+        paintuibase.cpp \
         player.cpp \
         terrain.cpp \
         testassistant.cpp \
@@ -55,6 +56,7 @@ HEADERS += \
     paintgrid.h \
     paintplayeravatar.h \
     paintterrain.h \
+    paintuibase.h \
     player.h \
     terrain.h \
     testassistant.h \

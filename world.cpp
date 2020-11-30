@@ -3,10 +3,12 @@
 
 #include <constants.h>
 #include <entity.h>
+#include <interface.h>
 #include <player.h>
 #include <terrain.h>
 #include <testassistant.h>
 #include <ladder.h>
+
 
 
 World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coordinates)
@@ -40,6 +42,10 @@ World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coord
 
     //Initialize player
     player = new Player(QVector3D(0,0,0));
+
+
+    Interface * popup = newWarning("Test wrning");
+    popup->setParentItem(m_appEngine->rootObjects()[0]->findChild<QQuickItem*>("winBase"));
 
     //Creating player avatar graphics
     QQmlComponent component(engine,QUrl("qrc:/playerAvatar.qml"));
@@ -151,6 +157,20 @@ QPointF World::get2DProjection(QVector3D position)
     p.setX(position.x());
     p.setY(position.y() * sin(1.047) - position.z() * cos(1.047));
     return p;
+}
+
+Interface *World::newWarning(QString text)
+{
+    Interface * warning = new Interface();
+    warning->setWidth(400);
+    warning->setHeight(300);
+    warning->setPosition(QPointF(640/2-400/2,480/2-300/2));
+
+    QQmlComponent component(m_appEngine,QUrl("qrc:/uiBase.qml"));
+    QQuickItem * obj = qobject_cast<QQuickItem*>(component.create());
+    obj->setParent(m_appEngine);
+    warning->assignBase(obj);
+    return warning;
 }
 
 int World::index(int i, int j)

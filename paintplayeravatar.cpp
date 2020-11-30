@@ -33,7 +33,7 @@ void PaintPlayerAvatar::paint(QPainter *painter)
     QRect side = QRect(0,10-diff + Constants::player_width_pixels * sin(1.047),width(),h);
     painter->fillRect(top,QColor::fromRgb(200,200,200));
     painter->fillRect(side,QColor::fromRgb(70,70,70));
-    QRect r = QRect(QPoint(0,height()-Constants::player_width_pixels * sin(1.047)),QPoint(width(),height()));
-    painter->drawRect(r);
+    //QRect r = QRect(QPoint(0,height()-Constants::player_width_pixels * sin(1.047)),QPoint(width(),height()));
+    //painter->drawRect(r);
 
 }

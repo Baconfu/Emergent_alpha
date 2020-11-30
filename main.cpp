@@ -7,6 +7,8 @@
 #include <paintgrid.h>
 #include <paintplayeravatar.h>
 #include <paintterrain.h>
+#include <paintuibase.h>
+#include <terraingeneration.h>n
 #include <paintladder.h>
 
 
@@ -28,6 +30,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<PaintGrid>("Paint",1,0,"PaintGrid");
     qmlRegisterType<PaintPlayerAvatar>("Paint",1,0,"PaintAvatar");
     qmlRegisterType<PaintTerrain>("Paint",1,0,"PaintTerrain");
+    qmlRegisterType<PaintUIBase>("Paint",1,0,"PaintUiBase");
+    qmlRegisterType<TerrainGeneration>("Paint",1,0,"TerrainGeneration");
     qmlRegisterType<PaintLadder>("Paint",1,0,"PaintLadder");
 
     engine->load(url);

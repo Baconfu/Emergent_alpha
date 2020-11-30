@@ -27,9 +27,12 @@ SOURCES += \
         paintgrid.cpp \
         paintplayeravatar.cpp \
         paintterrain.cpp \
+        paintuibase.cpp \
         player.cpp \
+        ridge.cpp \
         sensor.cpp \
         terrain.cpp \
+        terraingeneration.cpp \
         testassistant.cpp \
         traversible.cpp \
         unitspace.cpp \
@@ -63,9 +66,12 @@ HEADERS += \
     paintgrid.h \
     paintplayeravatar.h \
     paintterrain.h \
+    paintuibase.h \
     player.h \
+    ridge.h \
     sensor.h \
     terrain.h \
+    terraingeneration.h \
     testassistant.h \
     traversible.h \
     unitspace.h \

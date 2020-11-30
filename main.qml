@@ -6,8 +6,11 @@ import Paint 1.0
 Window {
     id: myWin
     visible: true
-    width: 640
-    height: 480
+    width: 600
+    height: 600
+
+
+
     title: qsTr("Emergent")
 
     signal keyPressed(int event_key)
@@ -15,37 +18,52 @@ Window {
 
 
     Item {
-        id: root
-        objectName: "root"
-        focus: true
-
-        transform: Scale{
-            yScale:1.153
+        id: winBase
+        objectName: "winBase"
+        anchors.fill:parent
+        TerrainGeneration{
+            anchors.fill: parent
         }
 
-        x:0
-        y:0
-        width: myWin.width
-        height: myWin.height
+        Item {
+            id: root
+            objectName: "root"
+            focus: true
+            transform: Scale {
+                origin.x: myWin.width/2
+                origin.y: myWin.height/2
+                xScale:1
+                yScale:1.153
+            }
 
-        PaintGrid {
             x:0
             y:0
-            width: 6000
-            height: 6000
-        }
+            width: myWin.width
+            height: myWin.height
 
-        Keys.onPressed: {
-            if(!event.isAutoRepeat){
-                keyPressed(event.key)
+            PaintGrid {
+                id: devGrid
+                visible: false
+                x:0
+                y:0
+                width: 6000
+                height: 6000
             }
-        }
-        Keys.onReleased: {
-            if(!event.isAutoRepeat){
-                keyReleased(event.key)
+
+            Keys.onPressed: {
+                if(!event.isAutoRepeat){
+                    keyPressed(event.key)
+                }
+            }
+            Keys.onReleased: {
+                if(!event.isAutoRepeat){
+                    keyReleased(event.key)
+                }
             }
         }
     }
+
+
 
 
 }

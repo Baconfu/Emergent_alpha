@@ -6,8 +6,8 @@ import Paint 1.0
 Window {
     id: myWin
     visible: true
-    width: 640
-    height: 480
+    width: 600
+    height: 600
 
 
 
@@ -19,7 +19,10 @@ Window {
     Item {
         id: winBase
         objectName: "winBase"
-
+        anchors.fill:parent
+        TerrainGeneration{
+            anchors.fill: parent
+        }
 
         Item {
             id: root

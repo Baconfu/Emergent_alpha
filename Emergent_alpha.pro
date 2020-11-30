@@ -27,6 +27,7 @@ SOURCES += \
         paintterrain.cpp \
         paintuibase.cpp \
         player.cpp \
+        ridge.cpp \
         terrain.cpp \
         terraingeneration.cpp \
         testassistant.cpp \
@@ -59,6 +60,7 @@ HEADERS += \
     paintterrain.h \
     paintuibase.h \
     player.h \
+    ridge.h \
     terrain.h \
     terraingeneration.h \
     testassistant.h \

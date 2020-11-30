@@ -1,8 +1,10 @@
 #ifndef TERRAINGENERATION_H
 #define TERRAINGENERATION_H
 
+#include <QImage>
 #include <QLine>
 #include <QPainter>
+#include <QPixmap>
 #include <QQuickPaintedItem>
 #include <QRandomGenerator>
 #include <QVector>
@@ -19,7 +21,11 @@ public:
 private:
     QRandomGenerator * gen = nullptr;
 
-    QVector<float> map;
+    QImage * map = nullptr;
+
+    QVector2D rotateVector(QVector2D vector,float angle);
+
+    float getVectorAngle(QVector2D vector);
 
 
 

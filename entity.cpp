@@ -28,6 +28,11 @@ void Entity::setDepth(float depth)
     m_dimensions.setZ(depth);
 }
 
+void Entity::setRotation(int rotation)
+{
+    m_rotation = rotation;
+}
+
 void Entity::transform(QVector3D vector)
 {
     setPosition(m_position + vector);
@@ -53,6 +58,11 @@ void Entity::updateDisplay()
 
     m_obj->setWidth(World::get2DProjection(m_dimensions).x());
 
-    QVector3D alt = QVector3D(m_dimensions.x(),m_dimensions.y(),m_dimensions.z() * -1);
+    QVector3D alt = QVector3D(m_dimensions.x(),m_dimensions.y(),m_dimensions.z()*-1);
     m_obj->setHeight(World::get2DProjection(alt).y());
+
+    m_obj->setZ(float(m_position.y()) / Constants::tile_width_pixels + float(m_position.z())/100.0/Constants::tile_width_pixels);
 }
+
+
+

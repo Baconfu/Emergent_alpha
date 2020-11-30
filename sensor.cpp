@@ -1,6 +1,7 @@
 #include "sensor.h"
 
-Sensor::Sensor()
+Sensor::Sensor(QVector3D position):
+    Collidable(position)
 {
 
 }

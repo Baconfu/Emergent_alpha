@@ -7,7 +7,7 @@
 class Sensor: public Collidable
 {
 public:
-    Sensor();
+    Sensor(QVector3D position);
     float reading() {return m_reading;}
 
 private:

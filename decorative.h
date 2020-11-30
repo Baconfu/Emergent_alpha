@@ -7,7 +7,7 @@
 class Decorative: public Entity
 {
 public:
-    Decorative();
+    Decorative(QVector3D position);
 };
 
 #endif // DECORATIVE_H

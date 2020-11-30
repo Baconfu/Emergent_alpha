@@ -18,6 +18,7 @@ class Player;
 class Chunk;
 class Terrain;
 class UnitSpace;
+class Ladder;
 
 class World
 {
@@ -33,6 +34,8 @@ public:
     QVector<Chunk*> getEnvironment(){return environment;}
 
     static QPointF get2DProjection(QVector3D position);
+
+    void createLadder(QVector3D position,int rotation);
 
 private:
     int tally = 0;

@@ -34,7 +34,8 @@ SOURCES += \
         traversible.cpp \
         unitspace.cpp \
         world.cpp \
-    collidable.cpp
+    collidable.cpp \
+    paintladder.cpp
 
 RESOURCES += qml.qrc
 
@@ -69,7 +70,8 @@ HEADERS += \
     traversible.h \
     unitspace.h \
     world.h \
-    collidable.h
+    collidable.h \
+    paintladder.h
 
 DISTFILES += \
     Constants.json

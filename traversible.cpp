@@ -1,6 +1,7 @@
 #include "traversible.h"
 
-Traversible::Traversible()
+Traversible::Traversible(QVector3D position):
+    Entity(position)
 {
 
 }

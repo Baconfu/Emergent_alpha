@@ -12,6 +12,7 @@ public:
 
 private:
     QPolygon hitbox;
+    int direction = 0;
 
 
 };

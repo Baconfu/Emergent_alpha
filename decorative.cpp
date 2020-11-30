@@ -1,6 +1,7 @@
 #include "decorative.h"
 
-Decorative::Decorative()
+Decorative::Decorative(QVector3D position):
+    Entity(position)
 {
 
 }

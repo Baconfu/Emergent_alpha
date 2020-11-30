@@ -1,5 +1,5 @@
-import QtQuick 2.12
-import QtQuick.Window 2.12
+import QtQuick 2.15
+import QtQuick.Window 2.15
 
 import Paint 1.0
 
@@ -16,7 +16,6 @@ Window {
     signal keyPressed(int event_key)
     signal keyReleased(int event_key)
 
-
     Item {
         id: winBase
         objectName: "winBase"
@@ -29,6 +28,7 @@ Window {
             id: root
             objectName: "root"
             focus: true
+
             transform: Scale {
                 origin.x: myWin.width/2
                 origin.y: myWin.height/2

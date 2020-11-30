@@ -65,21 +65,31 @@ void World::createLadder(QVector3D position,int rotation)
     QQmlComponent ladderComponent(m_appEngine,QUrl("qrc:/ladder.qml"));
     QQuickItem * ladderObj = qobject_cast<QQuickItem*>(ladderComponent.create());
 
+
     ladderObj->setParentItem(root);
     ladderObj->setParent(m_appEngine);
 
-    ladderObj->setPosition(QPointF(World::get2DProjection(position)));
-    qDebug()<<"Position of ladder sprite:"<<ladderObj->position();
-    ladderObj->setProperty("m_rotation",rotation);
-    ladderObj->setWidth(Constants::tile_width_pixels);
-    ladderObj->setHeight(pow(pow(Constants::tile_width_pixels,2)*2,0.5));
 
     Ladder* newLadder = new Ladder(position,rotation);
     newLadder->assignObj(ladderObj);
 
+    //ladderObj->setPosition(QPointF(World::get2DProjection(position)));
+    qDebug()<<"Position of ladder sprite:"<<ladderObj->position();
+    //ladderObj->setProperty("m_rotation",rotation);
+    //ladderObj->setWidth(Constants::tile_width_pixels);
+
+    newLadder->setDimensions(QVector3D(30,30,30));
+
+    newLadder->updateDisplay();
+
+
     if (rotation == 0){
         newLadder->createDetectionBoxPosition(QVector3D((position[0]+Constants::tile_width_pixels*(1-detectionBoxWidthProportion)/2),position[1],position[2]));
         newLadder->createDetectionBoxDimension(QVector3D(Constants::tile_width_pixels*detectionBoxWidthProportion, detectionBoxThickness, Constants::tile_width_pixels));
+        qDebug()<<"created hitbox at rotation 0";
+        qDebug()<<ladderObj->x()<<ladderObj->y()<<ladderObj->width()<<ladderObj->height();
+        qDebug()<<newLadder->position();
+
     }
     else if (rotation == 1) {
 
@@ -93,7 +103,7 @@ void World::createLadder(QVector3D position,int rotation)
     }
 
     appendEntity(newLadder);
-    newLadder->updateDisplay();
+    //newLadder->updateDisplay();
 
     qDebug()<<ladderObj<<ladderObj->position()<<","<<ladderObj->property("m_rotation");
 }

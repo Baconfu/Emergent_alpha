@@ -61,7 +61,7 @@ void Entity::updateDisplay()
     QVector3D alt = QVector3D(m_dimensions.x(),m_dimensions.y(),m_dimensions.z()*-1);
     m_obj->setHeight(World::get2DProjection(alt).y());
 
-    m_obj->setZ(float(m_position.y()) / Constants::tile_width_pixels + float(m_position.z())/100.0/Constants::tile_width_pixels);
+    m_obj->setZ(float(m_position.y()) / Constants::tile_width_pixels + float(m_position.z())/100.0/Constants::tile_width_pixels-0.5);
 }
 
 

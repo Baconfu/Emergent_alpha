@@ -18,6 +18,7 @@ PaintLadder::~PaintLadder()
 
 void PaintLadder::paint(QPainter *painter)
 {
+    qDebug()<<"initiated ladder drawing";
     //QRect r = QRect(QPoint(0,0),QPoint(100,100));
     //painter->fillRect(r,QColor(200,200,200));
 

@@ -43,8 +43,8 @@ public:
     void setVelocityZ(int z){m_velocity.setZ(z);}
     QVector3D getVelocity(){return m_velocity;}
 
-    QVector3D createDetectionBoxPosition (QVector3D newPosition) {m_detectionBoxPosition = newPosition;}
-    QVector3D createDetectionBoxDimension (QVector3D newDimension) {m_detectionBoxDimension = newDimension;}
+    void createDetectionBoxPosition (QVector3D newPosition) {m_detectionBoxPosition = newPosition;}
+    void createDetectionBoxDimension (QVector3D newDimension) {m_detectionBoxDimension = newDimension;}
 
     virtual QVector3D currentTile();
 

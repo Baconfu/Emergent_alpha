@@ -14,8 +14,7 @@ public:
 
 private:
     int m_span;
-    QVector3D m_detectionBoxPosition = QVector3D (0,0,0);
-    QVector3D m_detectionBoxDimension = QVector3D (0,0,0);
+
 
 };
 

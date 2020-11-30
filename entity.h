@@ -29,12 +29,13 @@ public:
     void setWidth(float width);
     void setHeight(float height);
     void setDepth(float depth);
+    void setRotation(int rotation);
     float width(){return m_dimensions.x();}
     float height(){return m_dimensions.y();}
     float depth(){return m_dimensions.z();}
+    int rotation(){return m_rotation;}
 
-
-    virtual void transform(QVector3D vector);
+    void transform(QVector3D vector);
 
     void setVelocity(QVector3D vec){m_velocity = vec;}
     void setVelocityX(int x){m_velocity.setX(x);}
@@ -63,6 +64,11 @@ protected:
 
 private:
     float m_depth = 0;
+
+    int m_rotation = 0;
+
+    QVector3D m_detectionBoxPosition = QVector3D (0,0,0);
+    QVector3D m_detectionBoxDimension = QVector3D (0,0,0);
 
 };
 

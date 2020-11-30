@@ -17,10 +17,12 @@ SOURCES += \
         air.cpp \
         chunk.cpp \
         constants.cpp \
+        decorative.cpp \
         engine.cpp \
         entity.cpp \
         file.cpp \
         interface.cpp \
+        ladder.cpp \
         main.cpp \
         paintgrid.cpp \
         paintplayeravatar.cpp \
@@ -28,11 +30,15 @@ SOURCES += \
         paintuibase.cpp \
         player.cpp \
         ridge.cpp \
+        sensor.cpp \
         terrain.cpp \
         terraingeneration.cpp \
         testassistant.cpp \
+        traversible.cpp \
         unitspace.cpp \
-        world.cpp
+        world.cpp \
+    collidable.cpp \
+    paintladder.cpp
 
 RESOURCES += qml.qrc
 
@@ -51,21 +57,27 @@ HEADERS += \
     air.h \
     chunk.h \
     constants.h \
+    decorative.h \
     engine.h \
     entity.h \
     file.h \
     interface.h \
+    ladder.h \
     paintgrid.h \
     paintplayeravatar.h \
     paintterrain.h \
     paintuibase.h \
     player.h \
     ridge.h \
+    sensor.h \
     terrain.h \
     terraingeneration.h \
     testassistant.h \
+    traversible.h \
     unitspace.h \
-    world.h
+    world.h \
+    collidable.h \
+    paintladder.h
 
 DISTFILES += \
     Constants.json

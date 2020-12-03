@@ -2,6 +2,10 @@
 #define TECTONICPLATE_H
 
 #include <math.h>
+#include <QImage>
+#include <QPainter>
+#include <QPainterPath>
+#include <QPixmap>
 #include <QPoint>
 #include <QPointF>
 #include <QRandomGenerator>
@@ -31,7 +35,8 @@ public:
     Hex * getHex(int index);
     void populateHexes();
 
-
+    QPixmap getMask();
+    QPainterPath getPath();
 
 
 private:

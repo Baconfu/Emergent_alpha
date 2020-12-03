@@ -60,6 +60,7 @@ private:
 
     QVector3D getTileFromPixel(QVector3D global_pixel_position);
     QPoint getChunkFromTile(QVector3D global_tile_position);
+    QPoint getChunkFromTile(QPoint global_tile_position);
     QVector3D getTilePositionInChunk(QVector3D global_tile_position);
 
     Chunk * loadChunk(QPoint pos);

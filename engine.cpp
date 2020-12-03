@@ -17,8 +17,9 @@ Engine::Engine(QObject *parent, QQmlApplicationEngine *engine, QQuickWindow *win
 
 
 
-
-
+    //DEV
+    generateWorld();
+    //DEV
 
     //DEV: no world loading
     /*
@@ -40,6 +41,11 @@ Engine::Engine(QObject *parent, QQmlApplicationEngine *engine, QQuickWindow *win
 void Engine::loadWorld()
 {
     world = new World(m_appEngine, m_window, QPoint(0,0));
+}
+
+void Engine::generateWorld()
+{
+    worldGen = new WorldGenerator();
 }
 
 

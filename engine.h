@@ -9,6 +9,7 @@
 
 #include <testassistant.h>
 #include <world.h>
+#include <worldgenerator.h>
 
 
 class Engine: public QObject
@@ -36,6 +37,9 @@ private:
     void loadWorld();
     World * world = nullptr;
 
+
+    void generateWorld();
+    WorldGenerator * worldGen = nullptr;
 
 public slots:
     void keyPressed(int event_key);

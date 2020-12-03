@@ -18,7 +18,11 @@ public:
     void paint(QPainter *painter);
 
 
+
+
 private:
+    int testSeed = 0;
+
     QRandomGenerator * gen = nullptr;
 
     QImage * map = nullptr;
@@ -26,7 +30,6 @@ private:
     QVector2D rotateVector(QVector2D vector,float angle);
 
     float getVectorAngle(QVector2D vector);
-
 
 
 public slots:

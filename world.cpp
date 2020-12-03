@@ -65,6 +65,7 @@ void World::iterate()
     player->iterate();
     updateCamera();
 
+
     QVector<QPoint> screen_bounds;
     int screen_x = root->property("x").toInt();
     int screen_y = root->property("y").toInt();
@@ -179,6 +180,12 @@ QPoint World::getChunkFromTile(QVector3D pos)
 {
     QVector3D out = (pos - getTilePositionInChunk(pos)) / Constants::chunk_width_tiles;
     return QPoint(out.x(),out.y());
+}
+
+QPoint World::getChunkFromTile(QPoint pos)
+{
+    QPoint out = pos / Constants::chunk_width_tiles;
+    return out;
 }
 
 QVector3D World::getTilePositionInChunk(QVector3D pos)

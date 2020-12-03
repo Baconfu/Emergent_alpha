@@ -22,6 +22,14 @@ Window {
         anchors.fill:parent
         TerrainGeneration{
             anchors.fill: parent
+            id: terrainTest
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                terrainTest.update();
+            }
         }
 
         Item {
@@ -49,6 +57,7 @@ Window {
                 width: 6000
                 height: 6000
             }
+
 
             Keys.onPressed: {
                 if(!event.isAutoRepeat){

@@ -20,6 +20,7 @@ SOURCES += \
         engine.cpp \
         entity.cpp \
         file.cpp \
+        hex.cpp \
         interface.cpp \
         main.cpp \
         paintgrid.cpp \
@@ -28,11 +29,13 @@ SOURCES += \
         paintuibase.cpp \
         player.cpp \
         ridge.cpp \
+        tectonicplate.cpp \
         terrain.cpp \
         terraingeneration.cpp \
         testassistant.cpp \
         unitspace.cpp \
-        world.cpp
+        world.cpp \
+        worldgenerator.cpp
 
 RESOURCES += qml.qrc
 
@@ -54,6 +57,7 @@ HEADERS += \
     engine.h \
     entity.h \
     file.h \
+    hex.h \
     interface.h \
     paintgrid.h \
     paintplayeravatar.h \
@@ -61,11 +65,13 @@ HEADERS += \
     paintuibase.h \
     player.h \
     ridge.h \
+    tectonicplate.h \
     terrain.h \
     terraingeneration.h \
     testassistant.h \
     unitspace.h \
-    world.h
+    world.h \
+    worldgenerator.h
 
 DISTFILES += \
     Constants.json

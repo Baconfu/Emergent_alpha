@@ -8,7 +8,7 @@
 #include <paintplayeravatar.h>
 #include <paintterrain.h>
 #include <paintuibase.h>
-#include <terraingeneration.h>n
+#include <terraingeneration.h>
 
 
 int main(int argc, char *argv[])

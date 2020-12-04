@@ -26,6 +26,7 @@ World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coord
 
     //dev: generate 9 chunks
 
+
     /*
     for(int i=0; i<3; i++){
         for(int j=0; j<3; j++){
@@ -211,17 +212,40 @@ Chunk *World::generateChunk(QPoint pos)
 {
     Chunk * chunk = new Chunk(pos);
     QVector<UnitSpace*> area;
-    for(int i=0; i<Constants::chunk_width_tiles * Constants::chunk_width_tiles; i++){
-        int y = (i - i%Constants::chunk_width_tiles)/Constants::chunk_width_tiles;
-        int x = i%Constants::chunk_width_tiles;
-        if(gen.generate()%100>80){
+    for(int l=0; l<5; l++){
+        int z = l;
+        for(int i=0; i<Constants::chunk_width_tiles * Constants::chunk_width_tiles; i++){
+            int y = (i - i%Constants::chunk_width_tiles)/Constants::chunk_width_tiles;
+            int x = i%Constants::chunk_width_tiles;
+            if(z > 0){
+                UnitSpace * below = area[(z-1)*Constants::chunk_layer_count_tiles
+                        + y*Constants::chunk_width_tiles
+                        + x];
+                if(typeid (*below) == typeid (Terrain)){
+                    if(gen.generate()%100>80){
+                        area.append(new Terrain(QVector3D(x,y,z)));
+                    }else{
+                        area.append(new Air(QVector3D(x,y,z)));
+                    }
+                }else{
+                    area.append(new Air(QVector3D(x,y,z)));
+                }
+            }
+            if(z == 0){
+                if(gen.generate()%100>80){
 
-            area.append(new Terrain(QVector3D(x,y,0)));
-        }else{
-            area.append(new Air(QVector3D(x,y,0)));
+                    area.append(new Terrain(QVector3D(x,y,0)));
+                }else{
+                    area.append(new Air(QVector3D(x,y,0)));
+                }
+            }
+
+
         }
     }
+
     chunk->setChunkData(area);
+    qDebug()<<area.length();
     return chunk;
 }
 
@@ -265,26 +289,31 @@ Chunk *World::loadChunk(QPoint pos)
     QVector<UnitSpace*> area = chunk->loadChunkFromFile();
     int w = Constants::chunk_width_tiles;
 
+    int count = 0;
+    int total = 0;
 
     for(int i=0; i<area.length(); i++){
         UnitSpace * u = area[i];
+        //qDebug()<<u->position();
         QVector3D pos = QVector3D(chunk->getPosition().x(),chunk->getPosition().y(),0) * Constants::chunk_width_tiles + u->position();
+        //qDebug()<<"FINAL POS:"<<pos;
+        total+=1;
         if(typeid (*u) == typeid (Air)){
             loadUnitSpace(u,pos,"air");
         }else{
             loadUnitSpace(u,pos,"terrain");
+            count+=1;
 
+            /*
             if(gen.generate()%10 > 6){
                 loadUnitSpace(u,pos+QVector3D(0,0,1),"terrain");
                 if(gen.generate()%10 > 6){
                     loadUnitSpace(u,pos+QVector3D(0,0,2),"terrain");
                 }
-            }
+            }*/
 
         }
     }
-
-
 
     return chunk;
 }

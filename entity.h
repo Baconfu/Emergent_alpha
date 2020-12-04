@@ -50,8 +50,9 @@ public:
     void setDetectionBoxDimension(QVector3D newDimension) {m_detectionBoxDimension = newDimension;}
     QVector3D getDetectionBoxPosition(){return m_detectionBoxPosition;}
     QVector3D getDetectionBoxDimension(){return m_detectionBoxDimension;}
+    QVector3D getDetectionBoxDimensionGlobalPosition() {return m_detectionBoxPosition + m_detectionBoxDimension;}
 
-    virtual bool detectionBoxPlayerDetection();
+
 
     static QVector3D getGlobalPositionFromLocalPosition(QVector3D box_position, QVector3D local_position);
 
@@ -70,6 +71,15 @@ public:
     QVector<QVector3D> getTilesOccupied() {return m_tiles_occupied;}
 
     virtual void iterate();
+    virtual void interact(Entity*) = 0;
+
+    void enableDetection() {m_detection_enabled = true;}
+    void disableDetection() {m_detection_enabled = false;}
+    bool getDetectionState() {return m_detection_enabled;}
+
+    QVector<Entity*> getProximalEntities() {return m_proximal_entities;}
+    //virtual void updateProximalEntities();
+
     virtual void updateDisplay();
 
 protected:
@@ -90,6 +100,9 @@ private:
     float m_depth = 0;
 
     QVector<QVector3D> m_tiles_occupied = QVector<QVector3D>();
+    QVector<Entity*> m_proximal_entities = QVector<Entity*>();
+
+    bool m_detection_enabled = true;
 
     int m_rotation = 0;
 

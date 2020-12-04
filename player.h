@@ -18,7 +18,8 @@ public:
         left = 65,
         up = 87,
         right = 68,
-        down = 83
+        down = 83,
+        climbing_up_downwards = 83,
     };
 
     void move(int d);
@@ -28,6 +29,7 @@ public:
 
 
     void iterate();
+    void interact(Entity*);
 
     void updateDisplay();
 

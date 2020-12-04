@@ -4,6 +4,7 @@
 #include <constants.h>
 #include <ladder.h>
 #include <player.h>
+#include <chunk.h>
 
 Entity::Entity(QVector3D position, World * worldptr)
 {
@@ -51,10 +52,9 @@ void Entity::transform(QVector3D vector)
     updateDisplay();
 }
 
-bool Entity::detectionBoxPlayerDetection()
-{
 
-}
+
+
 
 QVector3D Entity::getGlobalPositionFromLocalPosition(QVector3D box_position, QVector3D local_position)
 {
@@ -87,10 +87,22 @@ void Entity::iterate()
     }
 }
 
+/*void Entity::updateProximalEntities()
+{
+    for (int i = 0; i<m_tiles_occupied.length(); i++){
+        for (int j = 0; j<Chunk::getSpacePtrFromLocalTilePosition(m_tiles_occupied[i])->getEntitiesOnTile().length(); j++){
+            m_proximal_entities.append(Chunk::getSpacePtrFromLocalTilePosition(World::getLocalTilePositionFromGlobalPosition(m_tiles_occupied[i]))->getEntitiesOnTile()[j]);
+
+        }
+    }
+}*/
+
 
 void Entity::updateDisplay()
 {
+
     QVector3D adjust = QVector3D(m_position.x(),m_position.y(),m_position.z() + m_dimensions.z());
+    qDebug()<<"checkpoint1";
     m_obj->setPosition(World::get2DProjection(adjust));
 
     m_obj->setWidth(World::get2DProjection(m_dimensions).x());

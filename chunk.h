@@ -33,7 +33,7 @@ public:
 
     void setChunkData(QVector<UnitSpace*> chunk_data);
 
-    UnitSpace * getSpacePtrFromLocalPosition(QVector3D p);
+    UnitSpace * getSpacePtrFromLocalTilePosition(QVector3D p);
 
 
 private:
@@ -41,7 +41,7 @@ private:
 
     QVector<UnitSpace*> spaces;
 
-    QString path_temp = "C:\\Users\\lixia\\Documents\\qt_projects\\Emergent_alpha\\data\\chunks\\";
+    QString path_temp = "D:\\Qt\\build-Emergent_alpha-Desktop_Qt_5_12_0_MinGW_64_bit-Debug\\data\\chunks";
 
     QJsonObject m_obj;
 

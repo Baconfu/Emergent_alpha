@@ -1,5 +1,7 @@
 #include "player.h"
 
+#include <ladder.h>
+
 Player::Player(QVector3D position,QQuickItem * obj,World * worldptr):
     Entity(position,worldptr)
 {
@@ -22,7 +24,10 @@ void Player::move(int d)
         break;
     case down:
         setVelocityY(travel_speed);
+        break;
     }
+    //case climbing_up;
+
 
 }
 
@@ -62,13 +67,43 @@ void Player::iterate()
     transform(m_velocity);
     if(m_velocity.length() != 0){
         incrementAnimCycle();
+        //updateProximalEntities();
+        //qDebug()<<getProximalEntities();
     }else{
         resetAnimCycle();
     }
 
+    qDebug()<<getPosition();
     m_obj->setZ(currentTilePosition().y());
 
+    setDetectionBoxPosition(m_position);
     updateDisplay();
+
+}
+
+void Player::interact(Entity* e)
+{
+    if(typeid (*e) == typeid (Ladder)){
+        disableDetection();
+        qDebug()<<"detection disabled";
+        qDebug()<<getDetectionState();
+
+        QVector3D original_position = m_position;
+        qDebug()<<original_position;
+
+
+
+        if (m_position.z()<original_position.z()+Constants::tile_width_pixels){
+            setVelocity(QVector3D (0,0,1));
+            qDebug()<<"rising started";
+        }
+        if (m_position.z()>original_position.z()+Constants::tile_width_pixels){
+            setVelocity(QVector3D (0,0,0));
+            qDebug()<<"rising finished!";
+        }
+        //enableDetection();
+
+    }
 }
 
 void Player::updateDisplay()

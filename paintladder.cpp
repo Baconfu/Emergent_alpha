@@ -23,7 +23,7 @@ void PaintLadder::paint(QPainter *painter)
     //painter->fillRect(r,QColor(200,200,200));
 
     int stepCount = 3;
-    int stepHeight = 2;
+    float stepHeight = 2.5;
     QColor ladderColor = QColor(0,100,250);
 
     //qDebug()<<"ladder being painted's rotation"<<m_painted_rotation;

@@ -16,7 +16,7 @@ Engine::Engine(QObject *parent, QQmlApplicationEngine *engine, QQuickWindow *win
     loadWorld();
 
     timer = new QTimer;
-    timer->setInterval(18);
+    timer->setInterval(Constants::tick_duration);
 
     connect(timer,SIGNAL(timeout()),this,SLOT(timeout()));
 

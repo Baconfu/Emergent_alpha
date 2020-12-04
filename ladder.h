@@ -12,6 +12,8 @@ public:
 
     Entity* getPtr() {return this;}
 
+    void interact(Entity*);
+
 
 private:
     int m_span;

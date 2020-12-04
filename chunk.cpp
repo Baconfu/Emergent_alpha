@@ -69,7 +69,7 @@ void Chunk::setChunkData(QVector<UnitSpace*> chunk_data)
     spaces = chunk_data;
 }
 
-UnitSpace *Chunk::getSpacePtrFromLocalPosition(QVector3D p)
+UnitSpace *Chunk::getSpacePtrFromLocalTilePosition(QVector3D p)
 {
     return spaces[Constants::chunk_layer_count_tiles * p.z() + Constants::chunk_width_tiles * p.y() + p.x()];
 }

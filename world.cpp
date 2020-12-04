@@ -41,14 +41,12 @@ World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coord
     //coordinates should refer to player position upon spawn
 
     //Initialize player
-    environment.append(loadChunk(QPoint(0,0)));
+    chunk_ptr_list.append(loadChunk(QPoint(0,0)));
 
     QVector3D initialPlayerPosition = QVector3D(0,0,0);
     QVector3D initialPlayerDimension = QVector3D(Constants::player_width_pixels,Constants::player_width_pixels,Constants::player_height_pixels);
     player = new Player(initialPlayerPosition,nullptr,this);
-    player->setDimension(initialPlayerDimension);
-    player->setDetectionBoxPosition(initialPlayerPosition);
-    player->setDetectionBoxDimension(initialPlayerDimension);
+
 
     //Creating player avatar graphics
     QQmlComponent component(engine,QUrl("qrc:/playerAvatar.qml"));
@@ -57,6 +55,13 @@ World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coord
     obj->setParentItem(root);
     obj->setParent(engine);
     player->assignObj(obj);
+
+
+    player->setDimension(initialPlayerDimension);
+    player->setDetectionBoxPosition(initialPlayerPosition);
+    player->setDetectionBoxDimension(initialPlayerDimension);
+
+    qDebug()<<player->getDetectionBoxPosition()<<player->getDetectionBoxDimensionGlobalPosition();
 
     player->updateDisplay();
     player->setCurrentTile(getTileFromPixel(initialPlayerPosition));
@@ -68,7 +73,10 @@ World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coord
     //qDebug()<<"player initialised";
 
     createEntity(QVector3D (30,60,0),QVector3D (30,30,30),EntityManager::ladder,0);
+    createEntity(QVector3D (30,60,30),QVector3D (30,30,30),EntityManager::ladder,0);
     createEntity(QVector3D (30,120,0),QVector3D (30,30,30),EntityManager::ladder,2);
+
+    qDebug()<<entityList[0]->getDetectionBoxPosition()<<entityList[0]->getDetectionBoxDimensionGlobalPosition();
 
     /*qDebug()<<"unit position entities:"<<getChunkPtrFromChunkPosition(
                   getChunkPositionFromTilePosition(QVector3D(1,2,0)))
@@ -91,6 +99,9 @@ void World::createEntity(QVector3D position,QVector3D dimension,int type, int ro
     created_entity->setRotation(rotation);
     //qDebug()<<created_entity->getRotation();
     created_entity->updateTilesOccupied();
+    //created_entity->updateProximalEntities();
+    qDebug()<<created_entity->getPosition()<<created_entity->getDimension();
+
 
     appendEntity(created_entity);
 
@@ -104,7 +115,6 @@ void World::createEntity(QVector3D position,QVector3D dimension,int type, int ro
     created_entity_obj->setParent(m_appEngine);
 
     created_entity_obj->setProperty("m_painted_rotation",rotation);
-
     created_entity->updateDisplay();
 
     //qDebug()<<created_entity->getPosition()<<created_entity->getDetectionBoxPosition()<<created_entity->getObj()->z();
@@ -116,20 +126,46 @@ UnitSpace *World::getTileFromPixel(QVector3D pixel_position)
 {
     QVector3D tile_position = getTilePositionFromPixel(pixel_position);
     Chunk * chunk = getChunkPtrFromChunkPosition(getChunkPositionFromTilePosition(tile_position));
-    UnitSpace * space = chunk->getSpacePtrFromLocalPosition(getTilePositionInChunk(tile_position));
+    UnitSpace * space = chunk->getSpacePtrFromLocalTilePosition(getLocalTilePositionFromGlobalPosition(tile_position));
     return space;
 }
 
-void World::registerEntityToTile(QVector3D position, Entity *e)
+void World::registerEntityToTile(QVector3D position, Entity* e)
 {
-
     e->getCurrentTile()->removeEntity(e);
     UnitSpace * space = getTileFromPixel(position);
+    QVector<Entity*> proximal_entities = space->getEntitiesOnTile();
+    for(int i=0; i<proximal_entities.length(); i++){
+        if(e->getDetectionState()==true &&
+            proximal_entities[i]->getDetectionState()==true &&
+            detectionBoxOverlapCheck(e,proximal_entities[i])==true){
+                e->interact(proximal_entities[i]);
+                proximal_entities[i]->interact(e);
+            }
+        }
+
     space->assignEntity(e);
     e->setCurrentTile(space);
     //qDebug()<<space->position();
     //qDebug()<<space->getEntitiesOnThisUnitSpace();
 
+}
+
+bool World::detectionBoxOverlapCheck(Entity *entity_1, Entity *entity_2)
+{
+    if (entity_2->getDetectionBoxPosition().x()>entity_1->getDetectionBoxDimensionGlobalPosition().x() ||
+        entity_1->getDetectionBoxPosition().x()>entity_2->getDetectionBoxDimensionGlobalPosition().x()){
+        return false;
+    }
+    if (entity_2->getDetectionBoxPosition().y()>entity_1->getDetectionBoxDimensionGlobalPosition().y() ||
+        entity_1->getDetectionBoxPosition().y()>entity_2->getDetectionBoxDimensionGlobalPosition().y()){
+        return false;
+    }
+    if (entity_2->getDetectionBoxPosition().z()>entity_1->getDetectionBoxDimensionGlobalPosition().z() ||
+        entity_1->getDetectionBoxPosition().z()>entity_2->getDetectionBoxDimensionGlobalPosition().z()){
+        return false;
+    }
+    return true;
 }
 
 
@@ -139,6 +175,9 @@ void World::iterate()
     for (int j = 0 ; j<entityList.length() ; j++){
         entityList[j]->iterate();
     }
+
+    //qDebug()<<Entity::detectionBoxOverlapCheck(player,entityList[0]);
+
     player->iterate();
     //qDebug()<<"player's graphic z value"<<player->getObj()->z();
     updateCamera();
@@ -153,7 +192,7 @@ void World::iterate()
 
     for(int i=0; i<screen_bounds.length(); i++){
         if(!chunkAlreadyLoaded(screen_bounds[i])){
-            environment.append(loadChunk(screen_bounds[i]));
+            chunk_ptr_list.append(loadChunk(screen_bounds[i]));
         }
     }
 
@@ -162,9 +201,7 @@ void World::iterate()
 
     for(int i=0; i<tiles_occupied_by_player.length(); i++){
         Chunk * chunk = getChunkPtrFromChunkPosition(getChunkPositionFromTilePosition(tiles_occupied_by_player[i]));
-        UnitSpace * space = chunk->getSpacePtrFromLocalPosition(getTilePositionInChunk(tiles_occupied_by_player[i]));
-
-        qDebug()<<"checkpoint"<<chunk<<space<<tiles_occupied_by_player;
+        UnitSpace * space = chunk->getSpacePtrFromLocalTilePosition(getLocalTilePositionFromGlobalPosition(tiles_occupied_by_player[i]));
 
         if(space->collision_player()){
             //qDebug()<<space->position();
@@ -190,8 +227,11 @@ void World::keyRelease(int event_key)
 QPointF World::get2DProjection(QVector3D position)
 {
     QPointF p;
+
     p.setX(position.x());
+
     p.setY(position.y() * sin(1.047) - position.z() * cos(1.047));
+
     return p;
 }
 
@@ -249,12 +289,12 @@ Chunk *World::generateChunk(QPoint pos)
     return chunk;
 }
 
-Chunk *World::getChunkPtrFromChunkPosition(QPoint chunk_position)
+Chunk* World::getChunkPtrFromChunkPosition(QPoint chunk_position)
 {
-    for(int i=0; i<environment.length(); i++){
+    for(int i=0; i<chunk_ptr_list.length(); i++){
         //environment[i]->getPosition()<<chunk_position;
-        if(environment[i]->getPosition() == chunk_position){
-            return environment[i];
+        if(chunk_ptr_list[i]->getPosition() == chunk_position){
+            return chunk_ptr_list[i];
         }
     }
     return nullptr;
@@ -270,12 +310,12 @@ QVector3D World::getTilePositionFromPixel(QVector3D global_pixel_position)
 QPoint World::getChunkPositionFromTilePosition(QVector3D pos)
 {
 
-    QVector3D out = (pos - getTilePositionInChunk(pos)) / Constants::chunk_width_tiles;
+    QVector3D out = (pos - getLocalTilePositionFromGlobalPosition(pos)) / Constants::chunk_width_tiles;
     //qDebug()<<out<<getTilePositionInChunk(pos)<<pos;
     return QPoint(out.x(),out.y());
 }
 
-QVector3D World::getTilePositionInChunk(QVector3D pos)
+QVector3D World::getLocalTilePositionFromGlobalPosition(QVector3D pos)
 {
     return QVector3D(int(pos.x()) % Constants::chunk_width_tiles,
                      int(pos.y()) % Constants::chunk_width_tiles,
@@ -365,8 +405,8 @@ QVector<QVector3D> World::getTilesOccupied(Entity* entity)
 
 bool World::chunkAlreadyLoaded(QPoint pos)
 {
-    for(int i=0; i<environment.length(); i++){
-        if(environment[i]->getPosition() == pos)
+    for(int i=0; i<chunk_ptr_list.length(); i++){
+        if(chunk_ptr_list[i]->getPosition() == pos)
             return true;
     }
     return false;
@@ -392,6 +432,8 @@ UnitSpace * World::loadUnitSpace(UnitSpace * space, QVector3D c, QString type)
 
     return space;
 }
+
+
 
 void World::resolveCollision(Entity *entity, UnitSpace *space)
 {

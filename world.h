@@ -33,19 +33,23 @@ public:
     void keyInputs(int event_key);
     void keyRelease(int event_key);
 
-    QVector<Chunk*> getEnvironment(){return environment;}
+    QVector<Chunk*> getEnvironment(){return chunk_ptr_list;}
 
     static QPointF get2DProjection(QVector3D position);
 
-
+    Player* getPlayerPtr() {return player;}
 
     void createEntity(QVector3D position, QVector3D dimension, int type, int rotation);
 
     UnitSpace * getTileFromPixel(QVector3D tile_position);
     static QVector3D getTilePositionFromPixel(QVector3D global_pixel_position);
     static QVector<QVector3D> getTilesOccupied(Entity * entity);
+    static QPoint getChunkPositionFromTilePosition(QVector3D global_tile_position);
+    static QVector3D getLocalTilePositionFromGlobalPosition(QVector3D global_tile_position);
 
     void registerEntityToTile(QVector3D position, Entity * e);
+
+    static bool detectionBoxOverlapCheck(Entity* entity_1, Entity* entity_2);
 
 private:
     int tally = 0;
@@ -66,12 +70,10 @@ private:
 
     Chunk * generateChunk(QPoint pos);
 
-    QVector<Chunk*> environment;
+    QVector<Chunk*> chunk_ptr_list;
     Chunk * getChunkPtrFromChunkPosition(QPoint chunk_position);
 
 
-    QPoint getChunkPositionFromTilePosition(QVector3D global_tile_position);
-    QVector3D getTilePositionInChunk(QVector3D global_tile_position);
 
     Chunk * loadChunk(QPoint pos);
 

@@ -20,9 +20,9 @@ void TerrainGeneration::paint(QPainter *painter)
 
     map->fill(QColor(120,120,120));
 
-    QImage outline = QImage(600,600,QImage::Format_ARGB32);
+    QImage * outline = new QImage(600,600,QImage::Format_ARGB32);
 
-    QPainter paintOutline(&outline);
+    QPainter paintOutline(outline);
 
     WorldGenerator * generator = new WorldGenerator(gen);
     QVector<QPoint> plates;
@@ -50,10 +50,24 @@ void TerrainGeneration::paint(QPainter *painter)
 
 
     QRect frame(0,0,width(),height());
-    painter->drawImage(frame,outline);
+
+    //painter->drawImage(frame,*outline);
+
+    QBrush brush;
+    brush.setColor("green");
+    painter->setBrush(QColor(255,0,0));
+
+    QVector<TectonicPlate*> allPlates = generator->getAllPlates();
+
+    //qDebug()<<allPlates[13]->getPath();
 
 
-
+    for(int i=0; i<allPlates.length(); i++){
+        painter->setBrush(QColor(gen->generate()%255,gen->generate()%255,gen->generate()%255));
+        painter->drawPath(allPlates[i]->getPath());
+    }
+    //painter->drawPath(allPlates[12]->getPath());
+    delete(generator);
 
     testSeed+=1;
     delete(map);

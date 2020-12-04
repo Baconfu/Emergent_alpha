@@ -16,6 +16,9 @@ public:
     void createPath();
     QVector<QPointF> getPath(){return path;}
 
+    Hex * getOrigin(){return m_origin;}
+    Hex * getDestination(){return m_destination;}
+
 private:
     QRandomGenerator * gen = nullptr;
 

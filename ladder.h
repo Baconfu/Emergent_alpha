@@ -2,13 +2,15 @@
 #define LADDER_H
 
 #include <entity.h>
-
+#include <world.h>
 
 class Ladder: public Entity
 {
 public:
-    Ladder(QVector3D position, int rotation);
-    int span() {return m_span;}
+    Ladder(World * worldptr, QVector3D position, int rotation);
+    int getSpan() {return m_span;}
+
+    Entity* getPtr() {return this;}
 
 
 private:

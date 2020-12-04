@@ -7,17 +7,14 @@ PaintLadder {
     y:0
     z:0
     width:30
-    height:14
-    m_rotation: 0
+    height:30
+    m_painted_rotation: 0
 
-    onM_rotationChanged: {
+    onRotationChanged: {
         update()
+        console.log("rotation changed")
     }
 
-    Component.onCompleted: {
-        update()
-        console.log("complete")
-    }
 
 
 }

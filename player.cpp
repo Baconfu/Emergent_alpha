@@ -1,7 +1,7 @@
 #include "player.h"
 
-Player::Player(QVector3D position,QQuickItem * obj):
-    Entity(position)
+Player::Player(QVector3D position,QQuickItem * obj,World * worldptr):
+    Entity(position,worldptr)
 {
     m_obj = obj;
     m_dimensions = QVector3D(20,20,40);
@@ -52,7 +52,7 @@ void Player::stop(int d)
     }
 }
 
-QVector3D Player::currentTile()
+QVector3D Player::currentTilePosition()
 {
     return QVector3D(m_position.x() / Constants::tile_width_pixels , m_position.y() / Constants::tile_width_pixels , m_position.z() / Constants::tile_width_pixels);
 }
@@ -65,8 +65,23 @@ void Player::iterate()
     }else{
         resetAnimCycle();
     }
-    m_obj->setZ(currentTile().y());
+
+    m_obj->setZ(currentTilePosition().y());
+
     updateDisplay();
+}
+
+void Player::updateDisplay()
+{
+    QVector3D adjust = QVector3D(m_position.x(),m_position.y(),m_position.z() + m_dimensions.z());
+    m_obj->setPosition(World::get2DProjection(adjust));
+
+    m_obj->setWidth(World::get2DProjection(m_dimensions).x());
+
+    QVector3D alt = QVector3D(m_dimensions.x(),m_dimensions.y(),m_dimensions.z()*-1);
+    m_obj->setHeight(World::get2DProjection(alt).y());
+
+    m_obj->setZ(float(getCenter().y()) / Constants::tile_width_pixels + float(getCenter().z())/100.0/Constants::tile_width_pixels-0.5);
 }
 
 void Player::resetAnimCycle()

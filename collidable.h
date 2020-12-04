@@ -7,7 +7,7 @@
 class Collidable : public Entity
 {
 public:
-    Collidable(QVector3D position);
+    Collidable(QVector3D getPosition);
 
 
 private:

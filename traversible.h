@@ -7,7 +7,7 @@
 class Traversible: public Entity
 {
 public:
-    Traversible(QVector3D position);
+    Traversible(QVector3D getPosition);
 };
 
 #endif // TRAVERSIBLE_H

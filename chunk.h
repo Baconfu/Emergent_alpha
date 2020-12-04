@@ -33,7 +33,7 @@ public:
 
     void setChunkData(QVector<UnitSpace*> chunk_data);
 
-    UnitSpace * getSpace(QVector3D p);
+    UnitSpace * getSpacePtrFromLocalPosition(QVector3D p);
 
 
 private:

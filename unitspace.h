@@ -31,6 +31,10 @@ public:
     float height(){return m_dimensions.y();}
     float depth(){return m_dimensions.z();}
 
+    void assignEntity(Entity* e){m_entities_on_tile.append(e);}
+    void removeEntity(Entity * e){m_entities_on_tile.removeOne(e);}
+    QVector<Entity*> getEntitiesOnTile(){return m_entities_on_tile;}
+
     QVector3D position(){return m_position;}
 
     void setPosition(QVector3D position);
@@ -45,9 +49,12 @@ protected:
 
     QVector3D m_dimensions = QVector3D(1,1,1);
 
+    QVector<Entity*> m_entities_on_tile;
 
     QQuickItem * m_obj;
 
+private:
+    QVector<Entity*> entityOnUnitspace;
 };
 
 #endif // UNITSPACE_H

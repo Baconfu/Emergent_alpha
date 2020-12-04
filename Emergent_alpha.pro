@@ -35,7 +35,8 @@ SOURCES += \
         unitspace.cpp \
         world.cpp \
     collidable.cpp \
-    paintladder.cpp
+    paintladder.cpp \
+    entitymanager.cpp
 
 RESOURCES += qml.qrc
 
@@ -71,7 +72,8 @@ HEADERS += \
     unitspace.h \
     world.h \
     collidable.h \
-    paintladder.h
+    paintladder.h \
+    entitymanager.h
 
 DISTFILES += \
     Constants.json

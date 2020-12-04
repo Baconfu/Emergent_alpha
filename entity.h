@@ -7,16 +7,19 @@
 #include <QVector3D>
 
 #include <world.h>
+#include <unitspace.h>
 
 
 class Entity
 {
 public:
-    Entity(QVector3D position);
+    Entity(QVector3D getPosition,World * worldPtr);
 
-    QVector3D position(){return m_position;}
+    QVector3D getPosition(){return m_position;}
 
-    void setPosition(QVector3D position);
+    QVector3D getCenter(){return m_position + m_dimensions/2;}
+
+    void setPosition(QVector3D getPosition);
     void setX(float x){m_position.setX(x);}
     void setY(float y){m_position.setY(y);}
     void setZ(float z){m_position.setZ(z);}
@@ -24,16 +27,16 @@ public:
     float y(){return m_position.y();}
     float z(){return m_position.z();}
 
-    QVector3D dimensions(){return m_dimensions;}
-    void setDimensions(QVector3D dimensions){m_dimensions = dimensions;}
-    void setWidth(float width);
-    void setHeight(float height);
-    void setDepth(float depth);
-    void setRotation(int rotation);
-    float width(){return m_dimensions.x();}
-    float height(){return m_dimensions.y();}
-    float depth(){return m_dimensions.z();}
-    int rotation(){return m_rotation;}
+    QVector3D getDimension(){return m_dimensions;}
+    void setDimension(QVector3D dimensions){m_dimensions = dimensions;}
+    void setWidth(float getWidth);
+    void setHeight(float getHeight);
+    void setDepth(float getDepth);
+    void setRotation(int getRotation);
+    float getWidth(){return m_dimensions.x();}
+    float getHeight(){return m_dimensions.y();}
+    float getDepth(){return m_dimensions.z();}
+    int getRotation(){return m_rotation;}
 
     void transform(QVector3D vector);
 
@@ -43,18 +46,36 @@ public:
     void setVelocityZ(int z){m_velocity.setZ(z);}
     QVector3D getVelocity(){return m_velocity;}
 
-    void createDetectionBoxPosition (QVector3D newPosition) {m_detectionBoxPosition = newPosition;}
-    void createDetectionBoxDimension (QVector3D newDimension) {m_detectionBoxDimension = newDimension;}
+    void setDetectionBoxPosition(QVector3D newPosition) {m_detectionBoxPosition = newPosition;}
+    void setDetectionBoxDimension(QVector3D newDimension) {m_detectionBoxDimension = newDimension;}
+    QVector3D getDetectionBoxPosition(){return m_detectionBoxPosition;}
+    QVector3D getDetectionBoxDimension(){return m_detectionBoxDimension;}
 
-    virtual QVector3D currentTile();
+    virtual bool detectionBoxPlayerDetection();
+
+    static QVector3D getGlobalPositionFromLocalPosition(QVector3D box_position, QVector3D local_position);
+
+    virtual QVector3D currentTilePosition();
+    UnitSpace * getCurrentTile(){return current_space;}
+    void setCurrentTile(UnitSpace * space){current_space = space;}
+
+    virtual Entity* getSpecificPtr() {return nullptr;}
+    Entity * getEntityPtr(){return this;}
 
 
     QQuickItem * getObj(){return m_obj;}
     void assignObj(QQuickItem * obj);
 
-    void updateDisplay();
+    void updateTilesOccupied() {m_tiles_occupied = World::getTilesOccupied(this);}
+    QVector<QVector3D> getTilesOccupied() {return m_tiles_occupied;}
+
+    virtual void iterate();
+    virtual void updateDisplay();
 
 protected:
+    World * m_worldptr = nullptr;
+
+    UnitSpace * current_space = nullptr;
 
     QVector3D m_position;
 
@@ -67,6 +88,8 @@ protected:
 
 private:
     float m_depth = 0;
+
+    QVector<QVector3D> m_tiles_occupied = QVector<QVector3D>();
 
     int m_rotation = 0;
 

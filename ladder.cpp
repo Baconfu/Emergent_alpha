@@ -1,10 +1,9 @@
 #include "ladder.h"
 #include "entity.h"
 
-Ladder::Ladder(QVector3D position, int rotation):
-    Entity(position)
+Ladder::Ladder(World * worldptr, QVector3D position, int rotation):
+    Entity(position,worldptr)
 {
-    setRotation(rotation);
-    setPosition(position);
+
 }
 

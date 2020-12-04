@@ -6,12 +6,13 @@
 
 #include <constants.h>
 #include <entity.h>
+#include <world.h>
 
 
 class Player: public Entity
 {
 public:
-    Player(QVector3D position,QQuickItem * obj = nullptr);
+    Player(QVector3D getPosition,QQuickItem * obj = nullptr,World * worldptr = nullptr);
 
     enum direction{
         left = 65,
@@ -23,13 +24,16 @@ public:
     void move(int d);
     void stop(int d);
 
-    QVector3D currentTile();
+    QVector3D currentTilePosition();
 
 
     void iterate();
 
+    void updateDisplay();
 
 private:
+
+
 
     float travel_speed = 1;
 

@@ -20,9 +20,9 @@ public:
     QVector3D getCenter(){return m_position + m_dimensions/2;}
 
     void setPosition(QVector3D getPosition);
-    void setX(float x){m_position.setX(x);}
-    void setY(float y){m_position.setY(y);}
-    void setZ(float z){m_position.setZ(z);}
+    void setPositionX(float x){m_position.setX(x);}
+    void setPositionY(float y){m_position.setY(y);}
+    void setPositionZ(float z){m_position.setZ(z);}
     float x(){return m_position.x();}
     float y(){return m_position.y();}
     float z(){return m_position.z();}
@@ -37,6 +37,12 @@ public:
     float getHeight(){return m_dimensions.y();}
     float getDepth(){return m_dimensions.z();}
     int getRotation(){return m_rotation;}
+    QPoint getCardinalRotation() {
+        if (m_rotation == 0) {return QPoint(0,-1);}
+        if (m_rotation == 1) {return QPoint(1,0);}
+        if (m_rotation == 2) {return QPoint(0,1);}
+        if (m_rotation == 3) {return QPoint(-1,0);}
+    }
 
     void transform(QVector3D vector);
 
@@ -53,11 +59,17 @@ public:
     QVector3D getDetectionBoxDimension(){return m_detectionBoxDimension;}
     QVector3D getDetectionBoxDimensionGlobalPosition() {return m_detectionBoxPosition + m_detectionBoxDimension;}
 
+    void setCollisionBoxPosition(QVector3D newPosition) {m_collisionBoxPosition = newPosition;}
+    void setCollisionBoxDimension(QVector3D newDimension) {m_collisionBoxDimension = newDimension;}
+    QVector3D getCollisionBoxPosition(){return m_collisionBoxPosition;}
+    QVector3D getCollisionBoxDimension(){return m_collisionBoxDimension;}
+    QVector3D getCollisionBoxDimensionGlobalPosition() {return m_collisionBoxPosition + m_collisionBoxDimension;}
+
 
 
     static QVector3D getGlobalPositionFromLocalPosition(QVector3D box_position, QVector3D local_position);
 
-    virtual QVector3D currentTilePosition();
+    virtual QVector3D getCurrentTilePosition();
     UnitSpace * getCurrentTile(){return current_space;}
     void setCurrentTile(UnitSpace * space){current_space = space;}
 
@@ -117,6 +129,9 @@ private:
 
     QVector3D m_detectionBoxPosition = QVector3D (0,0,0);
     QVector3D m_detectionBoxDimension = QVector3D (0,0,0);
+
+    QVector3D m_collisionBoxPosition = QVector3D (0,0,0);
+    QVector3D m_collisionBoxDimension = QVector3D (0,0,0);
 
 };
 

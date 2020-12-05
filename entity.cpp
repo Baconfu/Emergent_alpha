@@ -47,7 +47,7 @@ void Entity::transform(QVector3D vector)
     setDetectionBoxPosition(m_detectionBoxPosition + vector);
     //___________________________________________
 
-    m_obj->setZ(currentTilePosition().y());
+    m_obj->setZ(getCurrentTilePosition().y());
 
     updateTilesOccupied();
 
@@ -63,7 +63,7 @@ QVector3D Entity::getGlobalPositionFromLocalPosition(QVector3D box_position, QVe
     return box_position + local_position;
 }
 
-QVector3D Entity::currentTilePosition()
+QVector3D Entity::getCurrentTilePosition()
 {
     return QVector3D(m_position.x() / Constants::tile_width_pixels , m_position.y() / Constants::tile_width_pixels , m_position.z() / Constants::tile_width_pixels);
 }

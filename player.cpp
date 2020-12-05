@@ -9,6 +9,7 @@ Player::Player(QVector3D position,QQuickItem * obj,World * worldptr):
 {
     m_obj = obj;
     m_dimensions = QVector3D(20,20,40);
+    setDetectionBoxDimension(QVector3D(m_dimensions.x(),m_dimensions.y(),m_dimensions.z()+1));
 }
 
 
@@ -95,7 +96,7 @@ void Player::stop(int d)
     }
 }
 
-QVector3D Player::currentTilePosition()
+QVector3D Player::getCurrentTilePosition()
 {
     return QVector3D(m_position.x() / Constants::tile_width_pixels , m_position.y() / Constants::tile_width_pixels , m_position.z() / Constants::tile_width_pixels);
 }
@@ -103,10 +104,12 @@ QVector3D Player::currentTilePosition()
 void Player::iterate()
 {
     transform(m_velocity);
-
+    updatePlayerRotation();
+    updateStates();
+    resolveStates();
 
     qDebug()<<"player velocity"<<m_velocity;
-    qDebug()<<"player rotation"<<getRotation();
+    qDebug()<<"player rotation"<<player_cardinal_rotation;
 
     if(m_velocity.length() != 0){
         incrementAnimCycle();
@@ -116,20 +119,24 @@ void Player::iterate()
         resetAnimCycle();
     }
 
-    //qDebug()<<getPosition();
-    m_obj->setZ(currentTilePosition().y());
 
-    setDetectionBoxPosition(m_position);
+
+    qDebug()<<"player position"<<getPosition();
+    qDebug()<<"player detection state"<<getDetectionState();
+    m_obj->setZ(getCurrentTilePosition().y());
+
+    setDetectionBoxPosition(QVector3D(m_position.x(),m_position.y(),m_position.z()-1));
+
     updateDisplay();
 
 }
 
 void Player::onDetectingEntity(Entity* e)
 {
-
     qDebug()<<"detected"<<e;
     if(typeid (*e) == typeid (Ladder)){
-        if(getRotation() == e->getRotation()){
+        if(this->getCardinalRotation().x() == e->getCardinalRotation().x() ||
+           this->getCardinalRotation().y() == e->getCardinalRotation().y()){
             resetVelocity();
             qDebug()<<"interacted with ladder"<<e;
             setVelocityZ(1);
@@ -137,23 +144,32 @@ void Player::onDetectingEntity(Entity* e)
             setClimbingState(true);
             setClimbingDirection(e->getRotation());
         }
-
     }
 }
 
 void Player::onDepartingEntity(Entity* e){
 
-    if(typeid (*e) == typeid (Ladder) && getClimbingState()==true){
+    if(typeid (*e) == typeid (Ladder)){
+
         enableDetection();
 
-        setVelocityZ(0);
-        if (climbing_direction == 0) {setVelocityY(-1);}
+            if (getClimbingState() == true){
 
-        if (climbing_direction == 2) {setVelocityY(1);}
+            setVelocityZ(0);
+            if (climbing_direction == 0) {
+                qDebug()<<"triggered nudge";
+                if (getCardinalRotation().y()==-1 || getRotation()==0) {setVelocityY(-1*travel_speed);}
 
-        setClimbingState(false);
+                if (getCardinalRotation().x()==1 || getRotation()==2) {setVelocityX(travel_speed);}
 
-        qDebug()<<"left the ladder";
+            }
+
+            if (climbing_direction == 2) {setVelocityY(1);}
+
+            setClimbingState(false);
+
+            qDebug()<<"left the ladder";
+        }
     }
 }
 
@@ -168,6 +184,11 @@ void Player::updateDisplay()
     m_obj->setHeight(World::get2DProjection(alt).y());
 
     m_obj->setZ(float(getCenter().y()) / Constants::tile_width_pixels + float(getCenter().z())/100.0/Constants::tile_width_pixels-0.5);
+}
+
+void Player::updatePlayerRotation()
+{
+    player_cardinal_rotation = QPoint(getVelocity().x()/travel_speed,getVelocity().y()/travel_speed);
 }
 
 void Player::resetAnimCycle()

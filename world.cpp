@@ -172,9 +172,13 @@ void World::registerEntityToTile(QVector3D position, Entity* e)
 {
     QVector<UnitSpace*> previous_spaces = getTilePtrFromPixel(e->m_previous_position, e->getDimension());
     QVector<UnitSpace*> new_spaces = getTilePtrFromPixel(position, e->getDimension());
+
     QVector<Entity*> previous_proximal_entities = QVector<Entity*> ();
-    QVector<Entity*> new_proximal_entities = QVector<Entity*> ();
+    QVector<Entity*> now_proximal_entities = QVector<Entity*> ();
     QVector<Entity*> departed_entities = QVector<Entity*> ();
+    QVector<Entity*> added_entities = QVector<Entity*> ();
+
+    //Departed entities are calculated based on detection box, not tiles.
 
     for (int i=0; i<previous_spaces.length(); i++){
         previous_spaces[i]->removeEntity(e);
@@ -186,21 +190,37 @@ void World::registerEntityToTile(QVector3D position, Entity* e)
     for (int i=0; i<new_spaces.length(); i++){
         for (int j=0; j<new_spaces[i]->getEntitiesOnTile().length(); j++){
             if (new_spaces[i]->getEntitiesOnTile()[j] == e) {continue;}
-            new_proximal_entities.append(new_spaces[i]->getEntitiesOnTile()[j]);
+            now_proximal_entities.append(new_spaces[i]->getEntitiesOnTile()[j]);
         }
         new_spaces[i]->assignEntity(e);
     }
 
-    if (new_proximal_entities.length() == 0) {departed_entities = previous_proximal_entities; goto a; }
+    if (now_proximal_entities.length() == 0) {departed_entities = previous_proximal_entities; goto a; }
     if (previous_proximal_entities.length() == 0) {departed_entities = QVector<Entity*> (); goto a; }
 
+
+    //calculating which entities have 'departed': i.e. appeared in previous tiles but not now tiles
     for (int i=0; i<previous_proximal_entities.length(); i++){
         bool included = false;
-        for (int j=0; j<new_proximal_entities.length(); j++){
-            if (previous_proximal_entities[i] == new_proximal_entities[j]) {included = true; break;};
+        for (int j=0; j<now_proximal_entities.length(); j++){
+            if (previous_proximal_entities[i] == now_proximal_entities[j]) {included = true; break;};
         }
         if (included == false) {departed_entities.append(previous_proximal_entities[i]);}
     }
+
+    /*for (int i=0; i<now_proximal_entities.length(); i++){
+        bool included = false;
+        for (int j=0; j<previous_proximal_entities.length(); j++){
+            if (now_proximal_entities[i] == previous_proximal_entities[j]) {included = true; break;};
+        }
+        if (included == false) {added_entities.append(now_proximal_entities[i]);}
+    }*/
+
+    for (int i=0; i<now_proximal_entities.length(); i++){
+        if (World::detectionBoxOverlapCheck(e,now_proximal_entities[i]) == true) {continue;}
+        departed_entities.append(now_proximal_entities[i]);
+    }
+
 
 a:
     departed_entities.removeAll(getPlayerPtr());
@@ -212,16 +232,16 @@ a:
     e->clearProximalEntities();
     e->removeAllFromProximalEntities(getPlayerPtr());
 
-    for (int i=0; i<new_proximal_entities.length(); i++){
-        e->addProximalEntities(new_proximal_entities[i]);
+    for (int i=0; i<now_proximal_entities.length(); i++){
+        e->addProximalEntities(now_proximal_entities[i]);
     }
 
-    for(int i=0; i<new_proximal_entities.length(); i++){
+    for(int i=0; i<now_proximal_entities.length(); i++){
         if(e->getDetectionState()==true &&
-            new_proximal_entities[i]->getDetectionState()==true &&
-            detectionBoxOverlapCheck(e,new_proximal_entities[i])==true){
-                e->onDetectingEntity(new_proximal_entities[i]);
-                new_proximal_entities[i]->onDetectingEntity(e);
+            now_proximal_entities[i]->getDetectionState()==true &&
+            detectionBoxOverlapCheck(e,now_proximal_entities[i])==true){
+                e->onDetectingEntity(now_proximal_entities[i]);
+                now_proximal_entities[i]->onDetectingEntity(e);
                 qDebug()<<"collision triggered";
             }
     }
@@ -546,21 +566,21 @@ void World::resolveCollision(Entity *entity, UnitSpace *space)
     if(entity->y() + entity->getHeight() - 1 > space->y() * Constants::tile_width_pixels && entity->y() + 1 < Constants::tile_width_pixels * (space->y() + space->height())){
         float rightBound = Constants::tile_width_pixels * (space->position().x() + space->width());
         if(entity->x() < rightBound && entity->x() > rightBound - abs(entity->getVelocity().x()) - 1){
-            entity->setX(Constants::tile_width_pixels * (space->position().x() + space->width()));
+            entity->setPositionX(Constants::tile_width_pixels * (space->position().x() + space->width()));
         }
         float leftBound = Constants::tile_width_pixels * space->position().x();
         if(entity->x() + entity->getWidth() > leftBound && entity->x() + entity->getWidth() < leftBound + abs(entity->getVelocity().x()) + 1){
-            entity->setX(Constants::tile_width_pixels * (space->position().x()) - entity->getWidth());
+            entity->setPositionX(Constants::tile_width_pixels * (space->position().x()) - entity->getWidth());
         }
     }
     if(entity->x() + entity->getWidth() - 1 > space->x() * Constants::tile_width_pixels && entity->x() + 1 < Constants::tile_width_pixels * (space->x() + space->width())){
         float botBound = Constants::tile_width_pixels * (space->position().y() + space->height());
         if(entity->y() < botBound && entity->y() > botBound - abs(entity->getVelocity().y()) - 1){
-            entity->setY(Constants::tile_width_pixels * (space->position().y() + space->height()));
+            entity->setPositionY(Constants::tile_width_pixels * (space->position().y() + space->height()));
         }
         float topBound = Constants::tile_width_pixels * space->position().y();
         if(entity->y() + entity->getHeight() > topBound && entity->y() + entity->getHeight() < topBound + abs(entity->getVelocity().y()) + 1){
-            entity->setY(Constants::tile_width_pixels * (space->position().y()) - entity->getHeight());
+            entity->setPositionY(Constants::tile_width_pixels * (space->position().y()) - entity->getHeight());
         }
     }
 

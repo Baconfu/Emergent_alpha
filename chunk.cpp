@@ -21,7 +21,7 @@ QVector<UnitSpace*> Chunk::loadChunkFromFile()
         spaces.append(loadSpace(field[i].toObject(),QVector3D(i % Constants::chunk_width_tiles,int((i % Constants::chunk_layer_count_tiles) / Constants::chunk_width_tiles),int(i/Constants::chunk_layer_count_tiles))));
     }
 
-    qDebug()<<spaces.length();
+    //qDebug()<<spaces.length();
     return spaces;
 }
 

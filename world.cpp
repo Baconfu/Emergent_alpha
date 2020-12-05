@@ -174,9 +174,10 @@ void World::registerEntityToTile(QVector3D position, Entity* e)
     QVector<UnitSpace*> new_spaces = getTilePtrFromPixel(position, e->getDimension());
 
     QVector<Entity*> previous_proximal_entities = QVector<Entity*> ();
+    QVector<Entity*> previous_proximal_entities_detection = QVector<Entity*> ();
     QVector<Entity*> now_proximal_entities = QVector<Entity*> ();
+
     QVector<Entity*> departed_entities = QVector<Entity*> ();
-    QVector<Entity*> added_entities = QVector<Entity*> ();
 
     //Departed entities are calculated based on detection box, not tiles.
 
@@ -198,6 +199,7 @@ void World::registerEntityToTile(QVector3D position, Entity* e)
     if (now_proximal_entities.length() == 0) {departed_entities = previous_proximal_entities; goto a; }
     if (previous_proximal_entities.length() == 0) {departed_entities = QVector<Entity*> (); goto a; }
 
+    //this part only runs if there is stuff in BOTH previous and now tiles
 
     //calculating which entities have 'departed': i.e. appeared in previous tiles but not now tiles
     for (int i=0; i<previous_proximal_entities.length(); i++){
@@ -208,17 +210,21 @@ void World::registerEntityToTile(QVector3D position, Entity* e)
         if (included == false) {departed_entities.append(previous_proximal_entities[i]);}
     }
 
-    /*for (int i=0; i<now_proximal_entities.length(); i++){
-        bool included = false;
-        for (int j=0; j<previous_proximal_entities.length(); j++){
-            if (now_proximal_entities[i] == previous_proximal_entities[j]) {included = true; break;};
+    for (int i=0; i<previous_proximal_entities.length(); i++){
+        if (World::detectionBoxOverlapCheck(e,previous_proximal_entities[i]) == true) {
+            previous_proximal_entities_detection.append(previous_proximal_entities[i]);
         }
-        if (included == false) {added_entities.append(now_proximal_entities[i]);}
-    }*/
+    }
 
     for (int i=0; i<now_proximal_entities.length(); i++){
-        if (World::detectionBoxOverlapCheck(e,now_proximal_entities[i]) == true) {continue;}
-        departed_entities.append(now_proximal_entities[i]);
+        if (World::detectionBoxOverlapCheck(e,now_proximal_entities[i]) == true) {
+            previous_proximal_entities_detection.removeOne(now_proximal_entities[i]);
+        }
+
+    }
+
+    for (int i=0; i<previous_proximal_entities_detection.length(); i++){
+        departed_entities.append(previous_proximal_entities_detection[i]);
     }
 
 
@@ -226,7 +232,7 @@ a:
     departed_entities.removeAll(getPlayerPtr());
     e->updateTilesOccupied();
 
-    //removeDuplicateEntityFromVector(new_proximal_entities);
+    removeDuplicateEntityFromVector(now_proximal_entities);
 
 
     e->clearProximalEntities();
@@ -236,13 +242,14 @@ a:
         e->addProximalEntities(now_proximal_entities[i]);
     }
 
+    //executing detection and departure functions for all changed entities
+
     for(int i=0; i<now_proximal_entities.length(); i++){
         if(e->getDetectionState()==true &&
             now_proximal_entities[i]->getDetectionState()==true &&
             detectionBoxOverlapCheck(e,now_proximal_entities[i])==true){
                 e->onDetectingEntity(now_proximal_entities[i]);
                 now_proximal_entities[i]->onDetectingEntity(e);
-                qDebug()<<"collision triggered";
             }
     }
 
@@ -270,27 +277,9 @@ void World::removeDuplicateEntityFromVector(QVector<Entity*> v)
 {
     for (int i=0; i<v.length(); i++){
         Entity* e = v[i];
-        v.removeAll(v[i]);
+        v.removeAll(e);
         v.insert(i,e);
     }
-
-
-
-    /*QVector<int> redundant_index;
-
-    for (int i=0; i<v.length(); i++){
-        for (int j=i+1; j<v.length(); j++){
-            if (v[i] == v[j]){
-                redundant_index.append(i);
-            }
-        }
-    }
-
-    std::sort (redundant_index.begin(), redundant_index.end());
-    std::reverse (redundant_index.begin(), redundant_index.end());
-    for (int i=0; i<redundant_index.length(); i++){
-        v.remove(redundant_index[i]);
-    }*/
 }
 
 bool World::detectionBoxOverlapCheck(Entity *entity_1, Entity *entity_2)

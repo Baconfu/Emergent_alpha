@@ -103,7 +103,10 @@ QVector3D Player::currentTilePosition()
 void Player::iterate()
 {
     transform(m_velocity);
-    qDebug()<<m_velocity;
+
+
+    qDebug()<<"player velocity"<<m_velocity;
+    qDebug()<<"player rotation"<<getRotation();
 
     if(m_velocity.length() != 0){
         incrementAnimCycle();
@@ -124,6 +127,7 @@ void Player::iterate()
 void Player::onDetectingEntity(Entity* e)
 {
 
+    qDebug()<<"detected"<<e;
     if(typeid (*e) == typeid (Ladder)){
         if(getRotation() == e->getRotation()){
             resetVelocity();
@@ -140,6 +144,8 @@ void Player::onDetectingEntity(Entity* e)
 void Player::onDepartingEntity(Entity* e){
 
     if(typeid (*e) == typeid (Ladder) && getClimbingState()==true){
+        enableDetection();
+
         setVelocityZ(0);
         if (climbing_direction == 0) {setVelocityY(-1);}
 

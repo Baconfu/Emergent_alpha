@@ -61,7 +61,7 @@ World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coord
     player->setDetectionBoxPosition(initialPlayerPosition);
     player->setDetectionBoxDimension(initialPlayerDimension);
 
-    qDebug()<<player->getDetectionBoxPosition()<<player->getDetectionBoxDimensionGlobalPosition();
+    //qDebug()<<player->getDetectionBoxPosition()<<player->getDetectionBoxDimensionGlobalPosition();
 
     player->updateDisplay();
     player->setCurrentTile(getTilePtrFromPixel(initialPlayerPosition));
@@ -76,8 +76,8 @@ World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coord
     createEntity(QVector3D (30,60,30),QVector3D (30,30,30),EntityManager::ladder,0);
     createEntity(QVector3D (30,120,0),QVector3D (30,30,30),EntityManager::ladder,2);
 
-    qDebug()<<"tiles occupied by ladder"<<entityList[0]->getTilesOccupied();
-    qDebug()<<"entities registered to (1,2,0)"<<getTilePtrFromTilePosition(QVector3D(1,2,0))->getEntitiesOnTile();
+    //qDebug()<<"tiles occupied by ladder"<<entityList[0]->getTilesOccupied();
+    //qDebug()<<"entities registered to (1,2,0)"<<getTilePtrFromTilePosition(QVector3D(1,2,0))->getEntitiesOnTile();
 
     /*qDebug()<<"unit position entities:"<<getChunkPtrFromChunkPosition(
                   getChunkPositionFromTilePosition(QVector3D(1,2,0)))
@@ -191,12 +191,8 @@ void World::registerEntityToTile(QVector3D position, Entity* e)
         new_spaces[i]->assignEntity(e);
     }
 
-    //QVector<Entity*> intersection = QVector<Entity*> ();
-    //std::set_intersection(previous_proximal_entities.begin(),previous_proximal_entities.end(),new_proximal_entities.begin(),new_proximal_entities.end(),intersection);
-    //std::set_difference(previous_proximal_entities.begin(),previous_proximal_entities.end(),new_proximal_entities.begin(),new_proximal_entities.end(),departed_entities);
-
-    if (new_proximal_entities.length() == 0) {departed_entities = previous_proximal_entities; qDebug()<<"no new entities"; goto a; }
-    if (previous_proximal_entities.length() == 0) {departed_entities = QVector<Entity*> (); qDebug()<<"previous no entities"; goto a; }
+    if (new_proximal_entities.length() == 0) {departed_entities = previous_proximal_entities; goto a; }
+    if (previous_proximal_entities.length() == 0) {departed_entities = QVector<Entity*> (); goto a; }
 
     for (int i=0; i<previous_proximal_entities.length(); i++){
         bool included = false;
@@ -210,13 +206,7 @@ a:
     departed_entities.removeAll(getPlayerPtr());
     e->updateTilesOccupied();
 
-
-    //qDebug()<<"old spaces:"<<previous_spaces;
-    //qDebug()<<"new spaces:"<<new_spaces;
-    //qDebug()<<e->m_previous_position<<e->getDimension();
     //removeDuplicateEntityFromVector(new_proximal_entities);
-
-
 
 
     e->clearProximalEntities();
@@ -242,8 +232,7 @@ a:
         e->onDepartingEntity(departed_entities[i]);
         }
     }
-    //qDebug()<<space->position();
-    //qDebug()<<space->getEntitiesOnThisUnitSpace();
+
     qDebug()<<"departed entities:"<<departed_entities;
 
 }

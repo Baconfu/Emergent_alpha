@@ -41,10 +41,6 @@ public:
         if (state == climbing) {
             if (desired == false){
                 setVelocityZ(0);
-                if (desired != is_climbing){
-                    if (getClimbingDirection() == 0) {setVelocityY(1);}
-                    if (getClimbingDirection() == 2) {setVelocityY(-1);}
-                }
             }
             is_climbing = desired;
         }
@@ -63,9 +59,14 @@ public:
     void resolveStates() {
         if(is_below_zero == true){
             setState(climbing,false);
+                if (getClimbingDirection() == 0) {setVelocityY(1);}
+                if (getClimbingDirection() == 2) {setVelocityY(-1);}
             setPositionZ(0);
             qDebug()<<"below zero is true";
             setState(below_zero,false);
+        }
+        if(is_climbing == true){
+
         }
     }
 

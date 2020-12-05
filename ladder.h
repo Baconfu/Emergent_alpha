@@ -12,7 +12,8 @@ public:
 
     Entity* getPtr() {return this;}
 
-    void interact(Entity*);
+    void onDetectingEntity(Entity*);
+    void onDepartingEntity(Entity*);
 
 
 private:

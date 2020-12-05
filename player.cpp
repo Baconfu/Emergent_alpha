@@ -1,6 +1,8 @@
 #include "player.h"
 
 #include <ladder.h>
+#include <QTimer>
+#include <math.h>
 
 Player::Player(QVector3D position,QQuickItem * obj,World * worldptr):
     Entity(position,worldptr)
@@ -15,18 +17,35 @@ void Player::move(int d)
     switch(d){
     case left:
         setVelocityX(-1*travel_speed);
+        setRotation(3);
         break;
     case right:
         setVelocityX(travel_speed);
+        setRotation(1);
         break;
     case up:
-        setVelocityY(-1*travel_speed);
+        if(is_climbing == false){
+            setVelocityY(-1*travel_speed);
+            setRotation(0);
+        }
+        if(is_climbing == true) {
+            if(climbing_direction == 0) {setVelocityZ(travel_speed);}
+
+            if(climbing_direction == 2) {setVelocityZ(-1*travel_speed);}
+        }
         break;
     case down:
-        setVelocityY(travel_speed);
+        if(is_climbing == false){
+            setVelocityY(travel_speed);
+            setRotation(2);
+        }
+        if(is_climbing == true) {
+            if(climbing_direction == 0) {setVelocityZ(-1*travel_speed);}
+
+            if(climbing_direction == 2) {setVelocityZ(travel_speed);}
+        }
         break;
     }
-    //case climbing_up;
 
 
 }
@@ -45,15 +64,34 @@ void Player::stop(int d)
         }
         break;
     case up:
-        if(m_velocity.y() == -travel_speed){
-            setVelocityY(0);
+        if(is_climbing == false){
+            if(m_velocity.y() == -travel_speed){
+                setVelocityY(0);
+                break;
+            }
+        }
+        if(is_climbing == true) {
+            if(m_velocity.z() == abs(travel_speed)){
+                setVelocityZ(0);
+                break;
+            }
         }
         break;
     case down:
-        if(m_velocity.y() == travel_speed){
-            setVelocityY(0);
+        if(is_climbing == false){
+            if(m_velocity.y() == travel_speed){
+                setVelocityY(0);
+                break;
+            }
+        }
+        if(is_climbing == true) {
+            if(m_velocity.z() == abs(travel_speed)){
+                setVelocityZ(0);
+                break;
+            }
         }
         break;
+
     }
 }
 
@@ -65,6 +103,8 @@ QVector3D Player::currentTilePosition()
 void Player::iterate()
 {
     transform(m_velocity);
+    qDebug()<<m_velocity;
+
     if(m_velocity.length() != 0){
         incrementAnimCycle();
         //updateProximalEntities();
@@ -73,7 +113,7 @@ void Player::iterate()
         resetAnimCycle();
     }
 
-    qDebug()<<getPosition();
+    //qDebug()<<getPosition();
     m_obj->setZ(currentTilePosition().y());
 
     setDetectionBoxPosition(m_position);
@@ -81,28 +121,33 @@ void Player::iterate()
 
 }
 
-void Player::interact(Entity* e)
+void Player::onDetectingEntity(Entity* e)
 {
+
     if(typeid (*e) == typeid (Ladder)){
-        disableDetection();
-        qDebug()<<"detection disabled";
-        qDebug()<<getDetectionState();
-
-        QVector3D original_position = m_position;
-        qDebug()<<original_position;
-
-
-
-        if (m_position.z()<original_position.z()+Constants::tile_width_pixels){
-            setVelocity(QVector3D (0,0,1));
-            qDebug()<<"rising started";
+        if(getRotation() == e->getRotation()){
+            resetVelocity();
+            qDebug()<<"interacted with ladder"<<e;
+            setVelocityZ(1);
+            disableDetection();
+            setClimbingState(true);
+            setClimbingDirection(e->getRotation());
         }
-        if (m_position.z()>original_position.z()+Constants::tile_width_pixels){
-            setVelocity(QVector3D (0,0,0));
-            qDebug()<<"rising finished!";
-        }
-        //enableDetection();
 
+    }
+}
+
+void Player::onDepartingEntity(Entity* e){
+
+    if(typeid (*e) == typeid (Ladder) && getClimbingState()==true){
+        setVelocityZ(0);
+        if (climbing_direction == 0) {setVelocityY(-1);}
+
+        if (climbing_direction == 2) {setVelocityY(1);}
+
+        setClimbingState(false);
+
+        qDebug()<<"left the ladder";
     }
 }
 

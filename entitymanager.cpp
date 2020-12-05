@@ -32,7 +32,7 @@ Entity* EntityManager::differentiateToLadder(QVector3D position, QVector3D dimen
     Ladder* newLadder = new Ladder(myWorld,position,rotation);
 
     newLadder->setRotation(rotation);
-    //PaintLadder.setRotation(rotation);
+    newLadder->setDimension(dimension);
 
     double detectionBoxWidthProportion = 0.9;
     double detectionBoxHeightProportion = 0.1;
@@ -56,7 +56,7 @@ Entity* EntityManager::differentiateToLadder(QVector3D position, QVector3D dimen
 
     }
     else if (rotation == 2) {
-        qDebug()<<"created detection box in rotation 2";
+        qDebug()<<"ladder detection box 2 created";
         newLadder->setDetectionBoxPosition(QVector3D((
                                                 position[0]+(Constants::tile_width_pixels*(1-detectionBoxWidthProportion)/2)),
                                                 position[1]+(Constants::tile_width_pixels-Constants::tile_width_pixels*detectionBoxHeightProportion),

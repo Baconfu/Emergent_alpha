@@ -36,7 +36,7 @@ void Engine::keyPressed(int event_key)
     //qDebug()<<"Pressed:"<<event_key;
     newPressedKey(event_key);
 
-    world->keyInputs(event_key);
+    world->keyPressed(event_key);
 }
 
 void Engine::keyReleased(int event_key)

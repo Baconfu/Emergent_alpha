@@ -64,7 +64,7 @@ World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coord
     qDebug()<<player->getDetectionBoxPosition()<<player->getDetectionBoxDimensionGlobalPosition();
 
     player->updateDisplay();
-    player->setCurrentTile(getTileFromPixel(initialPlayerPosition));
+    player->setCurrentTile(getTilePtrFromPixel(initialPlayerPosition));
 
 
 
@@ -76,7 +76,8 @@ World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coord
     createEntity(QVector3D (30,60,30),QVector3D (30,30,30),EntityManager::ladder,0);
     createEntity(QVector3D (30,120,0),QVector3D (30,30,30),EntityManager::ladder,2);
 
-    qDebug()<<entityList[0]->getDetectionBoxPosition()<<entityList[0]->getDetectionBoxDimensionGlobalPosition();
+    qDebug()<<"tiles occupied by ladder"<<entityList[0]->getTilesOccupied();
+    qDebug()<<"entities registered to (1,2,0)"<<getTilePtrFromTilePosition(QVector3D(1,2,0))->getEntitiesOnTile();
 
     /*qDebug()<<"unit position entities:"<<getChunkPtrFromChunkPosition(
                   getChunkPositionFromTilePosition(QVector3D(1,2,0)))
@@ -92,7 +93,7 @@ void World::createEntity(QVector3D position,QVector3D dimension,int type, int ro
 
     EntityManager* differentiator = new EntityManager(this);
     Entity* created_entity = differentiator->differentiate(position, dimension, type, rotation);
-    created_entity->setCurrentTile(getTileFromPixel(position));
+    created_entity->setCurrentTile(getTilePtrFromPixel(position));
 
     created_entity->setPosition(position);
     created_entity->setDimension(dimension);
@@ -122,7 +123,7 @@ void World::createEntity(QVector3D position,QVector3D dimension,int type, int ro
 
 }
 
-UnitSpace *World::getTileFromPixel(QVector3D pixel_position)
+UnitSpace* World::getTilePtrFromPixel(QVector3D pixel_position)
 {
     QVector3D tile_position = getTilePositionFromPixel(pixel_position);
     Chunk * chunk = getChunkPtrFromChunkPosition(getChunkPositionFromTilePosition(tile_position));
@@ -130,25 +131,157 @@ UnitSpace *World::getTileFromPixel(QVector3D pixel_position)
     return space;
 }
 
-void World::registerEntityToTile(QVector3D position, Entity* e)
+QVector<UnitSpace *> World::getTilePtrFromPixel(QVector3D pixel_position, QVector3D dimension)
 {
-    e->getCurrentTile()->removeEntity(e);
-    UnitSpace * space = getTileFromPixel(position);
-    QVector<Entity*> proximal_entities = space->getEntitiesOnTile();
-    for(int i=0; i<proximal_entities.length(); i++){
-        if(e->getDetectionState()==true &&
-            proximal_entities[i]->getDetectionState()==true &&
-            detectionBoxOverlapCheck(e,proximal_entities[i])==true){
-                e->interact(proximal_entities[i]);
-                proximal_entities[i]->interact(e);
+    QVector<QVector3D> out_position_form;
+    float offset = 0.1;
+
+    QVector3D entity_position = pixel_position;
+    QVector3D entity_dimension = dimension-QVector3D(offset,offset,offset);
+
+
+    QVector3D up_left_bottom_tile = getTilePositionFromPixel(entity_position);
+    QVector3D down_right_top_tile = getTilePositionFromPixel(entity_position + entity_dimension);
+
+
+    for (int i = up_left_bottom_tile[0] ; i<(down_right_top_tile[0]+1) ; i++){
+        for (int j = up_left_bottom_tile[1] ; j<(down_right_top_tile[1]+1) ; j++){
+            for (int k = up_left_bottom_tile[2] ; k<(down_right_top_tile[2]+1) ; k++){
+                    out_position_form.append(QVector3D(i,j,k));
             }
         }
+    }
 
-    space->assignEntity(e);
-    e->setCurrentTile(space);
+    QVector<UnitSpace*> out = QVector<UnitSpace*> ();
+    for (int i=0; i<out_position_form.length(); i++){
+        out.append(getTilePtrFromTilePosition(out_position_form[i]));
+    }
+
+    return out;
+
+}
+
+UnitSpace *World::getTilePtrFromTilePosition(QVector3D tile_position)
+{
+    Chunk * chunk = getChunkPtrFromChunkPosition(getChunkPositionFromTilePosition(tile_position));
+    UnitSpace * space = chunk->getSpacePtrFromLocalTilePosition(getLocalTilePositionFromGlobalPosition(tile_position));
+    return space;
+}
+
+void World::registerEntityToTile(QVector3D position, Entity* e)
+{
+    QVector<UnitSpace*> previous_spaces = getTilePtrFromPixel(e->m_previous_position, e->getDimension());
+    QVector<UnitSpace*> new_spaces = getTilePtrFromPixel(position, e->getDimension());
+    QVector<Entity*> previous_proximal_entities = QVector<Entity*> ();
+    QVector<Entity*> new_proximal_entities = QVector<Entity*> ();
+    QVector<Entity*> departed_entities = QVector<Entity*> ();
+
+    for (int i=0; i<previous_spaces.length(); i++){
+        previous_spaces[i]->removeEntity(e);
+        for (int j=0; j<previous_spaces[i]->getEntitiesOnTile().length(); j++){
+            previous_proximal_entities.append(previous_spaces[i]->getEntitiesOnTile()[j]);
+        }
+    }
+
+    for (int i=0; i<new_spaces.length(); i++){
+        for (int j=0; j<new_spaces[i]->getEntitiesOnTile().length(); j++){
+            if (new_spaces[i]->getEntitiesOnTile()[j] == e) {continue;}
+            new_proximal_entities.append(new_spaces[i]->getEntitiesOnTile()[j]);
+        }
+        new_spaces[i]->assignEntity(e);
+    }
+
+    //QVector<Entity*> intersection = QVector<Entity*> ();
+    //std::set_intersection(previous_proximal_entities.begin(),previous_proximal_entities.end(),new_proximal_entities.begin(),new_proximal_entities.end(),intersection);
+    //std::set_difference(previous_proximal_entities.begin(),previous_proximal_entities.end(),new_proximal_entities.begin(),new_proximal_entities.end(),departed_entities);
+
+    if (new_proximal_entities.length() == 0) {departed_entities = previous_proximal_entities; qDebug()<<"no new entities"; goto a; }
+    if (previous_proximal_entities.length() == 0) {departed_entities = QVector<Entity*> (); qDebug()<<"previous no entities"; goto a; }
+
+    for (int i=0; i<previous_proximal_entities.length(); i++){
+        bool included = false;
+        for (int j=0; j<new_proximal_entities.length(); j++){
+            if (previous_proximal_entities[i] == new_proximal_entities[j]) {included = true; break;};
+        }
+        if (included == false) {departed_entities.append(previous_proximal_entities[i]);}
+    }
+
+a:
+    departed_entities.removeAll(getPlayerPtr());
+    e->updateTilesOccupied();
+
+
+    //qDebug()<<"old spaces:"<<previous_spaces;
+    //qDebug()<<"new spaces:"<<new_spaces;
+    //qDebug()<<e->m_previous_position<<e->getDimension();
+    //removeDuplicateEntityFromVector(new_proximal_entities);
+
+
+
+
+    e->clearProximalEntities();
+    e->removeAllFromProximalEntities(getPlayerPtr());
+
+    for (int i=0; i<new_proximal_entities.length(); i++){
+        e->addProximalEntities(new_proximal_entities[i]);
+    }
+
+    for(int i=0; i<new_proximal_entities.length(); i++){
+        if(e->getDetectionState()==true &&
+            new_proximal_entities[i]->getDetectionState()==true &&
+            detectionBoxOverlapCheck(e,new_proximal_entities[i])==true){
+                e->onDetectingEntity(new_proximal_entities[i]);
+                new_proximal_entities[i]->onDetectingEntity(e);
+                qDebug()<<"collision triggered";
+            }
+    }
+
+    for (int i=0; i<departed_entities.length(); i++){
+        if (true){
+        departed_entities[i]->onDepartingEntity(e);
+        e->onDepartingEntity(departed_entities[i]);
+        }
+    }
     //qDebug()<<space->position();
     //qDebug()<<space->getEntitiesOnThisUnitSpace();
+    qDebug()<<"departed entities:"<<departed_entities;
 
+}
+
+QVector<UnitSpace*> World::getTilesOccupiedPtr(Entity *e)
+{
+    QVector<UnitSpace*> out;
+    for (int i=0; i<e->getTilesOccupied().length(); i++){
+        out.append(getTilePtrFromTilePosition(e->getTilesOccupied()[i]));
+    }
+    return out;
+}
+
+void World::removeDuplicateEntityFromVector(QVector<Entity*> v)
+{
+    for (int i=0; i<v.length(); i++){
+        Entity* e = v[i];
+        v.removeAll(v[i]);
+        v.insert(i,e);
+    }
+
+
+
+    /*QVector<int> redundant_index;
+
+    for (int i=0; i<v.length(); i++){
+        for (int j=i+1; j<v.length(); j++){
+            if (v[i] == v[j]){
+                redundant_index.append(i);
+            }
+        }
+    }
+
+    std::sort (redundant_index.begin(), redundant_index.end());
+    std::reverse (redundant_index.begin(), redundant_index.end());
+    for (int i=0; i<redundant_index.length(); i++){
+        v.remove(redundant_index[i]);
+    }*/
 }
 
 bool World::detectionBoxOverlapCheck(Entity *entity_1, Entity *entity_2)
@@ -176,10 +309,12 @@ void World::iterate()
         entityList[j]->iterate();
     }
 
-    //qDebug()<<Entity::detectionBoxOverlapCheck(player,entityList[0]);
+    //qDebug()<<World::detectionBoxOverlapCheck(player,entityList[0]);
 
     player->iterate();
+
     //qDebug()<<"player's graphic z value"<<player->getObj()->z();
+    qDebug()<<"proximal entities player:"<<player->getProximalEntities();
     updateCamera();
 
     QVector<QPoint> screen_bounds;
@@ -197,7 +332,7 @@ void World::iterate()
     }
 
 
-    QVector<QVector3D> tiles_occupied_by_player = getTilesOccupied(player);
+    QVector<QVector3D> tiles_occupied_by_player = getTilesOccupiedPosition(player);
 
     for(int i=0; i<tiles_occupied_by_player.length(); i++){
         Chunk * chunk = getChunkPtrFromChunkPosition(getChunkPositionFromTilePosition(tiles_occupied_by_player[i]));
@@ -214,7 +349,7 @@ void World::iterate()
 
 }
 
-void World::keyInputs(int event_key)
+void World::keyPressed(int event_key)
 {
     player->move(event_key);
 }
@@ -358,23 +493,17 @@ Chunk *World::loadChunk(QPoint pos)
     return chunk;
 }
 
-QVector<QVector3D> World::getTilesOccupied(Entity* entity)
+QVector<QVector3D> World::getTilesOccupiedPosition(Entity* entity)
 {
     QVector<QVector3D> out;
-    float offset = 0.01;
-    //int width = entity->getWidth();
-    //int height = entity->getHeight();
+    float offset = 0.1;
 
     QVector3D entity_position = entity->getPosition();
     QVector3D entity_dimension = entity->getDimension()-QVector3D(offset,offset,offset);
 
 
-    //out.append(getTilePositionFromPixel(entity->getPosition()));
-    //QVector3D tile = getTilePositionFromPixel(entity->getPosition()+QVector3D(width,0,0));
-
     QVector3D up_left_bottom_tile = getTilePositionFromPixel(entity_position);
     QVector3D down_right_top_tile = getTilePositionFromPixel(entity_position + entity_dimension);
-
 
 
     for (int i = up_left_bottom_tile[0] ; i<(down_right_top_tile[0]+1) ; i++){
@@ -387,19 +516,6 @@ QVector<QVector3D> World::getTilesOccupied(Entity* entity)
 
     return out;
 
-    /*if(!out.contains(tile)){
-        out.append(tile);
-    }
-    tile = getTilePositionFromPixel(entity->getPosition()+QVector3D(0,height,0));
-    if(!out.contains(tile)){
-        out.append(tile);
-    }
-    tile = getTilePositionFromPixel(entity->getPosition()+QVector3D(width,height,0));
-    if(!out.contains(tile)){
-        out.append(tile);
-    }
-    //qDebug()<<out<<y+height;
-    */
 
 }
 

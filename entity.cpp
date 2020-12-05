@@ -9,11 +9,13 @@
 Entity::Entity(QVector3D position, World * worldptr)
 {
     m_position = position;
+    m_previous_position = position;
     m_worldptr = worldptr;
 }
 
 void Entity::setPosition(QVector3D position)
 {
+    m_previous_position = m_position;
     m_position = position;
     m_worldptr->registerEntityToTile(position,this);
 

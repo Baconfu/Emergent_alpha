@@ -16,6 +16,10 @@ TectonicPlate::TectonicPlate(QPointF pos, QPoint hexPos, QRandomGenerator * gene
         edges.append(nullptr);
         border.append(nullptr);
     }
+
+    float angle = (gen->generate()%int(2 * 3.1415 * 1000)) / 1000;
+
+    drift_direction = QVector2D(cos(angle),sin(angle));
 }
 
 void TectonicPlate::setNeighbours(QVector<TectonicPlate *> adjacent)

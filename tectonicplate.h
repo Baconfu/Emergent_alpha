@@ -10,6 +10,7 @@
 #include <QPointF>
 #include <QRandomGenerator>
 #include <QVector>
+#include <QVector2D>
 
 #include <constants.h>
 
@@ -43,11 +44,10 @@ private:
     QRandomGenerator * gen = nullptr;
     float hex_radius = Constants::hex_radius_units;
 
-
-
-
     QPointF position;
     QPoint hexPosition;
+
+    QVector2D drift_direction;
 
 
 

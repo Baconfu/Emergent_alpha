@@ -43,7 +43,6 @@ void TerrainGeneration::paint(QPainter *painter)
         for(int j=0; j<ridge.length()-1; j++){
 
             paintOutline.drawLine((ridge[j]/10)+QPointF(300,300),(ridge[j+1]/10)+QPointF(300,300));
-
         }
     }
 
@@ -53,9 +52,7 @@ void TerrainGeneration::paint(QPainter *painter)
 
     //painter->drawImage(frame,*outline);
 
-    QBrush brush;
-    brush.setColor("green");
-    painter->setBrush(QColor(255,0,0));
+
 
     QVector<TectonicPlate*> allPlates = generator->getAllPlates();
 
@@ -63,9 +60,14 @@ void TerrainGeneration::paint(QPainter *painter)
 
 
     for(int i=0; i<allPlates.length(); i++){
-        painter->setBrush(QColor(gen->generate()%255,gen->generate()%255,gen->generate()%255));
+        int gray = gen->generate()%10 + 124;
+        painter->setBrush(QColor(gray,gray,gray));
+        painter->setPen(Qt::NoPen);
         painter->drawPath(allPlates[i]->getPath());
     }
+
+
+
     //painter->drawPath(allPlates[12]->getPath());
     delete(generator);
 

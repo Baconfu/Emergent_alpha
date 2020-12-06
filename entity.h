@@ -6,9 +6,10 @@
 #include <QVector2D>
 #include <QVector3D>
 
-#include <world.h>
+
 #include <unitspace.h>
 
+class World;
 
 class Entity
 {
@@ -17,7 +18,7 @@ public:
 
     QVector3D getPosition(){return m_position;}
 
-    QVector3D getCenter(){return m_position + m_dimensions/2;}
+    QVector3D getCenter(){return m_position + m_dimension/2;}
 
     void setPosition(QVector3D getPosition);
     void setPositionX(float x){m_position.setX(x);}
@@ -27,15 +28,16 @@ public:
     float y(){return m_position.y();}
     float z(){return m_position.z();}
 
-    QVector3D getDimension(){return m_dimensions;}
-    void setDimension(QVector3D dimensions){m_dimensions = dimensions;}
-    void setWidth(float getWidth);
-    void setHeight(float getHeight);
-    void setDepth(float getDepth);
+    QVector3D getDimension(){return m_dimension;}
+    void setDimension(QVector3D dimensions){m_dimension = dimensions;}
+    void setDimensionX(float getDimensionX);
+    void setDimensionY(float getDimensionY);
+    void setDimensionZ(float getDimensionZ);
+    float getDimensionX(){return m_dimension.x();}
+    float getDimensionY(){return m_dimension.y();}
+    float getDimensionZ(){return m_dimension.z();}
+
     void setRotation(int getRotation);
-    float getWidth(){return m_dimensions.x();}
-    float getHeight(){return m_dimensions.y();}
-    float getDepth(){return m_dimensions.z();}
     int getRotation(){return m_rotation;}
     QPoint getCardinalRotation() {
         if (m_rotation == 0) {return QPoint(0,-1);}
@@ -47,11 +49,17 @@ public:
     void transform(QVector3D vector);
 
     void setVelocity(QVector3D vec){m_velocity = vec;}
-    void setVelocityX(int x){m_velocity.setX(x);}
-    void setVelocityY(int y){m_velocity.setY(y);}
-    void setVelocityZ(int z){m_velocity.setZ(z);}
+    void setVelocityX(float x){m_velocity.setX(x);}
+    void setVelocityY(float y){m_velocity.setY(y);}
+    void setVelocityZ(float z){m_velocity.setZ(z);}
     QVector3D getVelocity(){return m_velocity;}
     void resetVelocity() {m_velocity = QVector3D (0,0,0);}
+
+    void setAcceleration(QVector3D acc){m_acceleration = acc;}
+    void setAccelerationX(float x){m_acceleration.setX(x);}
+    void setAccelerationY(float y){m_acceleration.setY(y);}
+    void setAccelerationZ(float z){m_acceleration.setZ(z);}
+    QVector3D getAcceleration(){return m_acceleration;}
 
     void setDetectionBoxPosition(QVector3D newPosition) {m_detectionBoxPosition = newPosition;}
     void setDetectionBoxDimension(QVector3D newDimension) {m_detectionBoxDimension = newDimension;}
@@ -64,8 +72,6 @@ public:
     QVector3D getCollisionBoxPosition(){return m_collisionBoxPosition;}
     QVector3D getCollisionBoxDimension(){return m_collisionBoxDimension;}
     QVector3D getCollisionBoxDimensionGlobalPosition() {return m_collisionBoxPosition + m_collisionBoxDimension;}
-
-
 
     static QVector3D getGlobalPositionFromLocalPosition(QVector3D box_position, QVector3D local_position);
 
@@ -90,9 +96,27 @@ public:
     virtual void onDetectingEntity(Entity*) = 0;
     virtual void onDepartingEntity(Entity*) = 0;
 
-    void enableDetection() {m_detection_enabled = true;}
-    void disableDetection() {m_detection_enabled = false;}
-    bool getDetectionState() {return m_detection_enabled;}
+    enum state{
+        in_air = 0,
+        below_zero = 1,
+        detection = 2,
+        collision = 3,
+        climbing = 20,
+
+        count
+    };
+
+    bool getContext(int state) {return m_context_list[state];}
+    virtual void setContext(int state, bool desired) {m_context_list.replace(state,desired);}
+    virtual void updateContext();
+    virtual void resolveContext();
+
+    bool getDetectionState() {return getContext(detection);}
+    void initialiseContextList() {
+        for (int i=0; i<contextListLength; i++){
+            m_context_list.append(false);
+        }
+    }
 
     QVector<Entity*> getProximalEntities() {return m_proximal_entities;}
     void addProximalEntities(Entity* e) {m_proximal_entities.append(e);}
@@ -109,9 +133,13 @@ protected:
 
     QVector3D m_position;
 
-    QVector3D m_dimensions;
+    QVector3D m_dimension;
 
     QVector3D m_velocity;
+
+    QVector3D m_acceleration;
+
+    float m_mass;
 
     QQuickItem * m_obj = nullptr;
 
@@ -123,7 +151,10 @@ private:
 
     QVector<Entity*> m_proximal_entities = QVector<Entity*>();
 
-    bool m_detection_enabled = true;
+
+
+    QVector<bool> m_context_list;
+    int contextListLength = static_cast<int>(Entity::count);
 
     int m_rotation = 0;
 

@@ -11,6 +11,7 @@ Entity::Entity(QVector3D position, World * worldptr)
     m_position = position;
     m_previous_position = position;
     m_worldptr = worldptr;
+    initialiseContextList();
 }
 
 void Entity::setPosition(QVector3D position)
@@ -21,19 +22,19 @@ void Entity::setPosition(QVector3D position)
 
 }
 
-void Entity::setWidth(float width)
+void Entity::setDimensionX(float width)
 {
-    m_dimensions.setX(width);
+    m_dimension.setX(width);
 }
 
-void Entity::setHeight(float height)
+void Entity::setDimensionY(float height)
 {
-    m_dimensions.setY(height);
+    m_dimension.setY(height);
 }
 
-void Entity::setDepth(float depth)
+void Entity::setDimensionZ(float depth)
 {
-    m_dimensions.setZ(depth);
+    m_dimension.setZ(depth);
 }
 
 void Entity::setRotation(int rotation)
@@ -89,6 +90,16 @@ void Entity::iterate()
     }
 }
 
+void Entity::updateContext()
+{
+
+}
+
+void Entity::resolveContext()
+{
+
+}
+
 /*void Entity::updateProximalEntities()
 {
     for (int i = 0; i<m_tiles_occupied.length(); i++){
@@ -103,13 +114,13 @@ void Entity::iterate()
 void Entity::updateDisplay()
 {
 
-    QVector3D adjust = QVector3D(m_position.x(),m_position.y(),m_position.z() + m_dimensions.z());
+    QVector3D adjust = QVector3D(m_position.x(),m_position.y(),m_position.z() + m_dimension.z());
     qDebug()<<"checkpoint1";
     m_obj->setPosition(World::get2DProjection(adjust));
 
-    m_obj->setWidth(World::get2DProjection(m_dimensions).x());
+    m_obj->setWidth(World::get2DProjection(m_dimension).x());
 
-    QVector3D alt = QVector3D(m_dimensions.x(),m_dimensions.y(),m_dimensions.z()*-1);
+    QVector3D alt = QVector3D(m_dimension.x(),m_dimension.y(),m_dimension.z()*-1);
     m_obj->setHeight(World::get2DProjection(alt).y());
 
     m_obj->setZ(float(m_detectionBoxPosition.y()) / Constants::tile_width_pixels + float(m_detectionBoxPosition.z()/100.0/Constants::tile_width_pixels-0.5));

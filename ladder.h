@@ -14,6 +14,8 @@ public:
 
     void onDetectingEntity(Entity*);
     void onDepartingEntity(Entity*);
+    void updateContext();
+    void resolveContext();
 
 
 private:

@@ -13,6 +13,7 @@
 
 World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coordinates)
 {
+
     gen = QRandomGenerator();
 
     //Pointers allows <World> to create and draw componenets.
@@ -210,6 +211,7 @@ void World::registerEntityToTile(QVector3D position, Entity* e)
         if (included == false) {departed_entities.append(previous_proximal_entities[i]);}
     }
 
+    //calculating which entities are overlapping with the player's detection box previously, but not now
     for (int i=0; i<previous_proximal_entities.length(); i++){
         if (World::detectionBoxOverlapCheck(e,previous_proximal_entities[i]) == true) {
             previous_proximal_entities_detection.append(previous_proximal_entities[i]);
@@ -245,8 +247,8 @@ a:
     //executing detection and departure functions for all changed entities
 
     for(int i=0; i<now_proximal_entities.length(); i++){
-        if(e->getDetectionState()==true &&
-            now_proximal_entities[i]->getDetectionState()==true &&
+        if(e->getContext(Entity::detection)==true &&
+            now_proximal_entities[i]->getContext(Entity::detection)==true &&
             detectionBoxOverlapCheck(e,now_proximal_entities[i])==true){
                 e->onDetectingEntity(now_proximal_entities[i]);
                 now_proximal_entities[i]->onDetectingEntity(e);
@@ -552,24 +554,24 @@ UnitSpace * World::loadUnitSpace(UnitSpace * space, QVector3D c, QString type)
 void World::resolveCollision(Entity *entity, UnitSpace *space)
 {
 
-    if(entity->y() + entity->getHeight() - 1 > space->y() * Constants::tile_width_pixels && entity->y() + 1 < Constants::tile_width_pixels * (space->y() + space->height())){
+    if(entity->y() + entity->getDimensionY() - 1 > space->y() * Constants::tile_width_pixels && entity->y() + 1 < Constants::tile_width_pixels * (space->y() + space->height())){
         float rightBound = Constants::tile_width_pixels * (space->position().x() + space->width());
         if(entity->x() < rightBound && entity->x() > rightBound - abs(entity->getVelocity().x()) - 1){
             entity->setPositionX(Constants::tile_width_pixels * (space->position().x() + space->width()));
         }
         float leftBound = Constants::tile_width_pixels * space->position().x();
-        if(entity->x() + entity->getWidth() > leftBound && entity->x() + entity->getWidth() < leftBound + abs(entity->getVelocity().x()) + 1){
-            entity->setPositionX(Constants::tile_width_pixels * (space->position().x()) - entity->getWidth());
+        if(entity->x() + entity->getDimensionX() > leftBound && entity->x() + entity->getDimensionX() < leftBound + abs(entity->getVelocity().x()) + 1){
+            entity->setPositionX(Constants::tile_width_pixels * (space->position().x()) - entity->getDimensionX());
         }
     }
-    if(entity->x() + entity->getWidth() - 1 > space->x() * Constants::tile_width_pixels && entity->x() + 1 < Constants::tile_width_pixels * (space->x() + space->width())){
+    if(entity->x() + entity->getDimensionX() - 1 > space->x() * Constants::tile_width_pixels && entity->x() + 1 < Constants::tile_width_pixels * (space->x() + space->width())){
         float botBound = Constants::tile_width_pixels * (space->position().y() + space->height());
         if(entity->y() < botBound && entity->y() > botBound - abs(entity->getVelocity().y()) - 1){
             entity->setPositionY(Constants::tile_width_pixels * (space->position().y() + space->height()));
         }
         float topBound = Constants::tile_width_pixels * space->position().y();
-        if(entity->y() + entity->getHeight() > topBound && entity->y() + entity->getHeight() < topBound + abs(entity->getVelocity().y()) + 1){
-            entity->setPositionY(Constants::tile_width_pixels * (space->position().y()) - entity->getHeight());
+        if(entity->y() + entity->getDimensionY() > topBound && entity->y() + entity->getDimensionY() < topBound + abs(entity->getVelocity().y()) + 1){
+            entity->setPositionY(Constants::tile_width_pixels * (space->position().y()) - entity->getDimensionY());
         }
     }
 

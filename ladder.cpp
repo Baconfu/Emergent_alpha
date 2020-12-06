@@ -6,7 +6,7 @@
 Ladder::Ladder(World * worldptr, QVector3D position, int rotation):
     Entity(position,worldptr)
 {
-    enableDetection();
+    setContext(detection,true);
 }
 
 void Ladder::onDetectingEntity(Entity *)
@@ -15,6 +15,16 @@ void Ladder::onDetectingEntity(Entity *)
 }
 
 void Ladder::onDepartingEntity(Entity *)
+{
+
+}
+
+void Ladder::updateContext()
+{
+
+}
+
+void Ladder::resolveContext()
 {
 
 }

@@ -131,6 +131,13 @@ void Player::iterate()
 
 }
 
+void Player::interactWith(Entity * e2)
+{
+    if(typeid (*e2) == typeid (Ladder)){
+        setState(is_climbing,true);
+    }
+}
+
 void Player::onDetectingEntity(Entity* e)
 {
     qDebug()<<"detected"<<e;

@@ -87,6 +87,9 @@ public:
 
 
     virtual void iterate();
+    virtual void interactWith(Entity*) = 0;
+
+
     virtual void onDetectingEntity(Entity*) = 0;
     virtual void onDepartingEntity(Entity*) = 0;
 

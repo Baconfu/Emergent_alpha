@@ -74,6 +74,9 @@ public:
 
 
     void iterate();
+    void interactWith(Entity *);
+
+
     void onDetectingEntity(Entity*);
     void onDepartingEntity(Entity*);
 

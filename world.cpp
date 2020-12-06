@@ -170,8 +170,16 @@ UnitSpace *World::getTilePtrFromTilePosition(QVector3D tile_position)
 
 void World::registerEntityToTile(QVector3D position, Entity* e)
 {
+    QVector<UnitSpace*> new_spaces = getTilePtrFromPixel(position,e->getDimension());
+    QVector<Entity*> interacted_already = QVector();
+    for(int i=0; i<new_spaces.length(); i++){
+
+    }
+
+
+    //Chuna
     QVector<UnitSpace*> previous_spaces = getTilePtrFromPixel(e->m_previous_position, e->getDimension());
-    QVector<UnitSpace*> new_spaces = getTilePtrFromPixel(position, e->getDimension());
+    //QVector<UnitSpace*> new_spaces = getTilePtrFromPixel(position, e->getDimension());
 
     QVector<Entity*> previous_proximal_entities = QVector<Entity*> ();
     QVector<Entity*> now_proximal_entities = QVector<Entity*> ();
@@ -201,11 +209,9 @@ void World::registerEntityToTile(QVector3D position, Entity* e)
 
     //calculating which entities have 'departed': i.e. appeared in previous tiles but not now tiles
     for (int i=0; i<previous_proximal_entities.length(); i++){
-        bool included = false;
-        for (int j=0; j<now_proximal_entities.length(); j++){
-            if (previous_proximal_entities[i] == now_proximal_entities[j]) {included = true; break;};
+        if(!now_proximal_entities.contains(previous_proximal_entities[i])){
+            departed_entities.append(previous_proximal_entities[i]);
         }
-        if (included == false) {departed_entities.append(previous_proximal_entities[i]);}
     }
 
     /*for (int i=0; i<now_proximal_entities.length(); i++){
@@ -223,6 +229,8 @@ void World::registerEntityToTile(QVector3D position, Entity* e)
 
 
 a:
+
+
     departed_entities.removeAll(getPlayerPtr());
     e->updateTilesOccupied();
 
@@ -232,6 +240,8 @@ a:
     e->clearProximalEntities();
     e->removeAllFromProximalEntities(getPlayerPtr());
 
+
+    //Issue: assigning proximal entites to entity but not used
     for (int i=0; i<now_proximal_entities.length(); i++){
         e->addProximalEntities(now_proximal_entities[i]);
     }
@@ -260,8 +270,9 @@ a:
 QVector<UnitSpace*> World::getTilesOccupiedPtr(Entity *e)
 {
     QVector<UnitSpace*> out;
-    for (int i=0; i<e->getTilesOccupied().length(); i++){
-        out.append(getTilePtrFromTilePosition(e->getTilesOccupied()[i]));
+    QVector<QVector3D> occupied = e->getTilesOccupied();
+    for (int i=0; i<occupied.length(); i++){
+        out.append(getTilePtrFromTilePosition(occupied[i]));
     }
     return out;
 }

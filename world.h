@@ -41,12 +41,12 @@ public:
 
     void createEntity(QVector3D position, QVector3D dimension, int type, int rotation);
 
-    UnitSpace* getTilePtrFromPixel(QVector3D pixel_position);
-    QVector<UnitSpace*> getTilePtrFromPixel(QVector3D pixel_position, QVector3D dimension);
+    UnitSpace* getTilePtrListFromPixel(QVector3D pixel_position);
+    QVector<UnitSpace*> getTilePtrListFromPixel(QVector3D pixel_position, QVector3D dimension);
     UnitSpace* getTilePtrFromTilePosition(QVector3D tile_position);
 
     static QVector3D getTilePositionFromPixel(QVector3D global_pixel_position);
-    static QVector<QVector3D> getTilesOccupiedPosition(Entity * entity);
+    static QVector<QVector3D> getTilesOccupiedTilePosition(Entity * entity);
     static QPoint getChunkPositionFromTilePosition(QVector3D global_tile_position);
     static QVector3D getLocalTilePositionFromGlobalPosition(QVector3D global_tile_position);
 
@@ -96,7 +96,7 @@ private:
     void resolveCollision(Entity * entity,UnitSpace * space);
     void resolveCollision(Entity * entity1, Entity * entity2);
 
-    Player * player = nullptr;
+    Player* player = nullptr;
 
     QPoint player_current_chunk;
 
@@ -112,6 +112,7 @@ public:
         }
 
         entityIDDictionary[200] = "ladder";
+        entityIDDictionary[999] = "player";
     }
 
 

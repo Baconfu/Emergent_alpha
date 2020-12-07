@@ -3,7 +3,7 @@
 
 EntityManager::EntityManager(World * worldptr)
 {
-    myWorld = worldptr;
+    m_worldptr = worldptr;
 }
 
 Entity* EntityManager::differentiate(QVector3D position, QVector3D dimension, int type, int rotation)
@@ -16,6 +16,11 @@ Entity* EntityManager::differentiate(QVector3D position, QVector3D dimension, in
 
         //IDString = "ladder";
     }
+
+    if (type == player) {
+        return differentiateToPlayer(position);
+    }
+
     else{return nullptr;}
 
     /*QQmlComponent ladderComponent(m_appEngine,QUrl("qrc:/"+IDString+".qml"));
@@ -29,7 +34,7 @@ Entity* EntityManager::differentiate(QVector3D position, QVector3D dimension, in
 
 Entity* EntityManager::differentiateToLadder(QVector3D position, QVector3D dimension, int rotation){
 
-    Ladder* newLadder = new Ladder(myWorld,position,rotation);
+    Ladder* newLadder = new Ladder(m_worldptr,position,rotation);
 
     newLadder->setRotation(rotation);
     newLadder->setDimension(dimension);
@@ -71,4 +76,21 @@ Entity* EntityManager::differentiateToLadder(QVector3D position, QVector3D dimen
     }
 
     return newLadder->getEntityPtr();
+}
+
+Entity *EntityManager::differentiateToPlayer(QVector3D position)
+{
+    QVector3D initialPlayerPosition = QVector3D(0,0,30);
+    QVector3D initialPlayerDimension = QVector3D(Constants::player_width_pixels,Constants::player_width_pixels,Constants::player_height_pixels);
+    Player* player = new Player(position,nullptr,m_worldptr);
+
+
+    player->setDimension(initialPlayerDimension);
+    player->setDetectionBoxPosition(initialPlayerPosition);
+    player->setDetectionBoxDimension(initialPlayerDimension);
+
+    //qDebug()<<player->getDetectionBoxPosition()<<player->getDetectionBoxDimensionGlobalPosition();
+
+    player->setCurrentTile(m_worldptr->getTilePtrListFromPixel(initialPlayerPosition));
+    return player->getEntityPtr();
 }

@@ -16,7 +16,7 @@ class Entity
 public:
     Entity(QVector3D getPosition,World * worldPtr);
 
-    QVector3D getPosition(){return m_position;}
+
 
     QVector3D getCenter(){return m_position + m_dimension/2;}
 
@@ -24,6 +24,10 @@ public:
     void setPositionX(float x){m_position.setX(x);}
     void setPositionY(float y){m_position.setY(y);}
     void setPositionZ(float z){m_position.setZ(z);}
+    QVector3D getPosition(){return m_position;}
+    float getPositionX() {return m_position.x();}
+    float getPositionY() {return m_position.y();}
+    float getPositionZ() {return m_position.z();}
     float x(){return m_position.x();}
     float y(){return m_position.y();}
     float z(){return m_position.z();}
@@ -80,14 +84,16 @@ public:
     void setCurrentTile(UnitSpace * space){current_space = space;}
 
     virtual Entity* getSpecificPtr() {return nullptr;}
-    Entity * getEntityPtr(){return this;}
+    virtual Entity * getEntityPtr(){return this;}
 
 
     QQuickItem * getObj(){return m_obj;}
     void assignObj(QQuickItem * obj);
 
-    void updateTilesOccupied() {m_tiles_occupied = World::getTilesOccupiedPosition(this);}
-    QVector<QVector3D> getTilesOccupied() {return m_tiles_occupied;}
+    void updateSpacesOccupied() {m_spaces_occupied.clear(); m_spaces_occupied = World::getTilesOccupiedTilePosition(this);}
+    QVector<QVector3D> getSpacesOccupied() {return m_spaces_occupied;}
+    void updateSpacesSupporting() {m_spaces_supporting.clear(); m_spaces_supporting = getSpacesSupporting();}
+    QVector<UnitSpace*> getSpacesSupporting();
 
     QVector3D m_previous_position;
 
@@ -98,9 +104,10 @@ public:
 
     enum state{
         in_air = 0,
-        below_zero = 1,
-        detection = 2,
-        collision = 3,
+
+        supported = 2,
+        detection = 3,
+        collision = 4,
         climbing = 20,
 
         count
@@ -108,10 +115,24 @@ public:
 
     bool getContext(int state) {return m_context_list[state];}
     virtual void setContext(int state, bool desired) {m_context_list.replace(state,desired);}
-    virtual void updateContext();
-    virtual void resolveContext();
+    virtual void updateContext(){
+        if (int(m_position.z()) % Constants::tile_width_pixels > Constants::tile_width_pixels - 5 ||
+                getSpacesSupporting().length() == 0){
+            setContext(in_air,true);
+        }
+        if (getSpacesSupporting().length() != 0){
+            setContext(in_air,false);
+            setContext(supported,true);
+        }
+    }
+    virtual void resolveContext(){
+        if (getContext(in_air) == true || getContext(supported) == false){
+            setAccelerationZ(- float(Constants::gravity_per_second) / (1000/float(Constants::tick_duration)));
+            qDebug()<<"acceleration setted"<<float(Constants::gravity_per_second) / (1000/float(Constants::tick_duration));
+        }
+        if (getContext(supported) == true) {setAcceleration(QVector3D(0,0,0));}
+    }
 
-    bool getDetectionState() {return getContext(detection);}
     void initialiseContextList() {
         for (int i=0; i<contextListLength; i++){
             m_context_list.append(false);
@@ -147,11 +168,10 @@ protected:
 private:
     float m_depth = 0;
 
-    QVector<QVector3D> m_tiles_occupied = QVector<QVector3D>();
+    QVector<QVector3D> m_spaces_occupied = QVector<QVector3D>();
+    QVector<UnitSpace*> m_spaces_supporting = QVector<UnitSpace*>();
 
     QVector<Entity*> m_proximal_entities = QVector<Entity*>();
-
-
 
     QVector<bool> m_context_list;
     int contextListLength = static_cast<int>(Entity::count);

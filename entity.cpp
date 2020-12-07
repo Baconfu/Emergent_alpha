@@ -19,6 +19,7 @@ void Entity::setPosition(QVector3D position)
     m_previous_position = m_position;
     m_position = position;
     m_worldptr->registerEntityToTile(position,this);
+    updateSpacesSupporting();
 
 }
 
@@ -50,7 +51,7 @@ void Entity::transform(QVector3D vector)
 
     m_obj->setZ(getCurrentTilePosition().y());
 
-    updateTilesOccupied();
+    updateSpacesOccupied();
 
     updateDisplay();
 }
@@ -76,11 +77,38 @@ void Entity::assignObj(QQuickItem *obj)
     m_obj = obj;
 }
 
+QVector<UnitSpace*> Entity::getSpacesSupporting()
+{
+    QVector<UnitSpace*> out = QVector<UnitSpace*>();
+    if (int(getPositionZ()) % 30 >= 1) {return out;}
+
+    QVector3D bottom_up_left_corner = m_position + QVector3D(0,0,-1);
+    QVector3D bottom_down_right_corner = m_position + QVector3D(m_dimension.x(),m_dimension.y(),-1);
+
+    QVector<UnitSpace*> spaces_below = m_worldptr->getTilePtrListFromPixel(bottom_up_left_corner,bottom_down_right_corner);
+    for (int i=0; i<spaces_below.length(); i++){
+        if (typeid(*spaces_below[i]) == typeid(Terrain)){
+            out.append(spaces_below[i]);
+        }
+    }
+    return out;
+}
+
 void Entity::iterate()
 {
-    if (m_velocity.length() > 0.01) {
+    updateContext();
+    resolveContext();
 
+    if (m_acceleration.length() > 0.01){
+        setVelocity(getVelocity()+getAcceleration());
+    }
+
+
+
+    if (m_velocity.length() > 0.01) {
         transform(m_velocity);
+
+        //the following lines are moved into 'transform'.
 
         /*m_obj->setZ(currentTilePosition().y());
 
@@ -88,15 +116,7 @@ void Entity::iterate()
 
         updateDisplay();*/
     }
-}
 
-void Entity::updateContext()
-{
-
-}
-
-void Entity::resolveContext()
-{
 
 }
 

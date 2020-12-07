@@ -7,6 +7,7 @@
 
 #include <entity.h>
 #include <ladder.h>
+#include <player.h>
 #include <world.h>
 
 class EntityManager
@@ -27,14 +28,16 @@ public:
     enum entityID {
         air = 0,
         ladder = 200,
+        player = 999,
     };
 
     Entity* differentiateToLadder(QVector3D position, QVector3D dimension, int rotation);
+    Entity* differentiateToPlayer(QVector3D position);
 
 private:
     QQmlApplicationEngine * m_appEngine = nullptr;
 
-    World * myWorld = nullptr;
+    World * m_worldptr = nullptr;
 
 };
 

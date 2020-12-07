@@ -21,6 +21,7 @@ PaintTerrain::~PaintTerrain()
 
 void PaintTerrain::paint(QPainter *painter)
 {
+
     QPen pen;
     pen.setWidth(2);
     QBrush brush;

@@ -110,8 +110,8 @@ void Player::iterate()
     updateContext();
     resolveContext();
 
-    qDebug()<<"player velocity"<<m_velocity;
-    qDebug()<<"player rotation"<<player_cardinal_rotation;
+    //qDebug()<<"player velocity"<<m_velocity;
+    //qDebug()<<"player rotation"<<player_cardinal_rotation;
 
     if(m_velocity.length() != 0){
         incrementAnimCycle();
@@ -121,9 +121,9 @@ void Player::iterate()
 
 
 
-    qDebug()<<"player position"<<getPosition();
-    qDebug()<<"player detection state"<<getContext(detection);
-    qDebug()<<"player climbing state"<<getContext(climbing);
+    //qDebug()<<"player position"<<getPosition();
+    //qDebug()<<"player detection state"<<getContext(detection);
+    //qDebug()<<"player climbing state"<<getContext(climbing);
 
     m_obj->setZ(getCurrentTilePosition().y());
 
@@ -135,12 +135,12 @@ void Player::iterate()
 
 void Player::onDetectingEntity(Entity* e)
 {
-    qDebug()<<"detected"<<e;
+    //qDebug()<<"detected"<<e;
     if(typeid (*e) == typeid (Ladder)){
         if(this->getCardinalRotation().x() == e->getCardinalRotation().x() ||
            this->getCardinalRotation().y() == e->getCardinalRotation().y()){
             resetVelocity();
-            qDebug()<<"interacted with ladder"<<e;
+            //qDebug()<<"interacted with ladder"<<e;
             setVelocityZ(1);
             setContext(detection,false);
             setContext(climbing,true);
@@ -170,7 +170,7 @@ void Player::onDepartingEntity(Entity* e){
 
             setContext(climbing,false);
 
-            qDebug()<<"left the ladder";
+            //qDebug()<<"left the ladder";
         }
     }
 }
@@ -185,7 +185,7 @@ void Player::updateDisplay()
     QVector3D alt = QVector3D(m_dimension.x(),m_dimension.y(),m_dimension.z()*-1);
     m_obj->setHeight(World::get2DProjection(alt).y());
 
-    m_obj->setZ(float(getCenter().y()) / Constants::tile_width_pixels + float(getCenter().z())/100.0/Constants::tile_width_pixels-0.5);
+    m_obj->setZ(float((getPosition()+getDimension()).y()) / Constants::tile_width_pixels + float((getPosition()+getDimension()).z())/100.0/Constants::tile_width_pixels-0.5);
 }
 
 void Player::updatePlayerRotation()

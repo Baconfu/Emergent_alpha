@@ -115,7 +115,7 @@ void Entity::updateDisplay()
 {
 
     QVector3D adjust = QVector3D(m_position.x(),m_position.y(),m_position.z() + m_dimension.z());
-    qDebug()<<"checkpoint1";
+    //qDebug()<<"checkpoint1";
     m_obj->setPosition(World::get2DProjection(adjust));
 
     m_obj->setWidth(World::get2DProjection(m_dimension).x());

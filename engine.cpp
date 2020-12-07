@@ -1,6 +1,7 @@
 #include "engine.h"
 #include <QDebug>
 
+#include <QElapsedTimer>
 
 Engine::Engine(QObject *parent, QQmlApplicationEngine *engine, QQuickWindow *window):
     QObject(parent)
@@ -16,7 +17,7 @@ Engine::Engine(QObject *parent, QQmlApplicationEngine *engine, QQuickWindow *win
     loadWorld();
 
     timer = new QTimer;
-    timer->setInterval(Constants::tick_duration);
+    timer->setInterval(18);
 
     connect(timer,SIGNAL(timeout()),this,SLOT(timeout()));
 
@@ -33,7 +34,7 @@ void Engine::loadWorld()
 
 void Engine::keyPressed(int event_key)
 {
-    //qDebug()<<"Pressed:"<<event_key;
+    ////qDebug()<<"Pressed:"<<event_key;
     newPressedKey(event_key);
 
     world->keyPressed(event_key);
@@ -41,7 +42,7 @@ void Engine::keyPressed(int event_key)
 
 void Engine::keyReleased(int event_key)
 {
-    //qDebug()<<"Released:"<<event_key;
+    ////qDebug()<<"Released:"<<event_key;
     removePressedKey(event_key);
 
     world->keyRelease(event_key);
@@ -52,9 +53,11 @@ void Engine::timeout()
     //Drives game loop
 
 
-
+    QElapsedTimer time;
+    time.start();
     //Allocating player movement
     world->iterate();
+    qDebug()<<time.nsecsElapsed();
     //tester->testChunks();
 
 }

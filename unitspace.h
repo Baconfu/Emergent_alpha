@@ -22,9 +22,18 @@ public:
     float y(){return m_position.y();}
     float z(){return m_position.z();}
 
-    void setX(float x){qDebug()<<"SETX"<<x;m_position.setX(x);}
-    void setY(float y){qDebug()<<"SETY"<<y;m_position.setY(y);}
-    void setZ(float z){qDebug()<<"SETZ"<<z;m_position.setZ(z);}
+    void setX(float x){
+        //qDebug()<<"SETX"<<x;
+        m_position.setX(x);
+    }
+    void setY(float y){
+        //qDebug()<<"SETY"<<y;
+        m_position.setY(y);
+    }
+    void setZ(float z){
+        //qDebug()<<"SETZ"<<z;
+        m_position.setZ(z);
+    }
 
     QVector3D dimensions(){return m_dimensions;}
     float width(){return m_dimensions.x();}

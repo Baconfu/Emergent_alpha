@@ -11,7 +11,7 @@ Entity* EntityManager::differentiate(QVector3D position, QVector3D dimension, in
 
 
     if (type == ladder) {
-        //qDebug()<<"rotation value in differentiate function"<<rotation;
+        ////qDebug()<<"rotation value in differentiate function"<<rotation;
         return differentiateToLadder(position, dimension, rotation);
 
         //IDString = "ladder";
@@ -37,11 +37,11 @@ Entity* EntityManager::differentiateToLadder(QVector3D position, QVector3D dimen
     double detectionBoxWidthProportion = 0.9;
     double detectionBoxHeightProportion = 0.1;
 
-    qDebug()<<"ladder rotation in differentiateToLadder"<<newLadder->getRotation();
+    //qDebug()<<"ladder rotation in differentiateToLadder"<<newLadder->getRotation();
 
     if (rotation == 0){
 
-        qDebug()<<"ladder detection box 0 created";
+        //qDebug()<<"ladder detection box 0 created";
         newLadder->setDetectionBoxPosition(QVector3D(
                                                (position[0]+Constants::tile_width_pixels*(1-detectionBoxWidthProportion)/2),
                                                 position[1],
@@ -56,7 +56,7 @@ Entity* EntityManager::differentiateToLadder(QVector3D position, QVector3D dimen
 
     }
     else if (rotation == 2) {
-        qDebug()<<"ladder detection box 2 created";
+        //qDebug()<<"ladder detection box 2 created";
         newLadder->setDetectionBoxPosition(QVector3D((
                                                 position[0]+(Constants::tile_width_pixels*(1-detectionBoxWidthProportion)/2)),
                                                 position[1]+(Constants::tile_width_pixels-Constants::tile_width_pixels*detectionBoxHeightProportion),

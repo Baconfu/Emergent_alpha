@@ -1,5 +1,6 @@
 #include "world.h"
 
+#include <QElapsedTimer>
 
 #include <constants.h>
 #include <entity.h>
@@ -44,7 +45,7 @@ World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coord
     //Initialize player
     chunk_ptr_list.append(loadChunk(QPoint(0,0)));
 
-    QVector3D initialPlayerPosition = QVector3D(0,0,0);
+    QVector3D initialPlayerPosition = QVector3D(0,0,31);
     QVector3D initialPlayerDimension = QVector3D(Constants::player_width_pixels,Constants::player_width_pixels,Constants::player_height_pixels);
     player = new Player(initialPlayerPosition,nullptr,this);
 
@@ -102,7 +103,7 @@ void World::createEntity(QVector3D position,QVector3D dimension,int type, int ro
     //qDebug()<<created_entity->getRotation();
     created_entity->updateTilesOccupied();
     //created_entity->updateProximalEntities();
-    qDebug()<<created_entity->getPosition()<<created_entity->getDimension();
+    //qDebug()<<created_entity->getPosition()<<created_entity->getDimension();
 
 
     appendEntity(created_entity);
@@ -171,6 +172,7 @@ UnitSpace *World::getTilePtrFromTilePosition(QVector3D tile_position)
 
 void World::registerEntityToTile(QVector3D position, Entity* e)
 {
+
     QVector<UnitSpace*> previous_spaces = getTilePtrFromPixel(e->m_previous_position, e->getDimension());
     QVector<UnitSpace*> new_spaces = getTilePtrFromPixel(position, e->getDimension());
 
@@ -262,7 +264,8 @@ a:
         }
     }
 
-    qDebug()<<"departed entities:"<<departed_entities;
+    //qDebug()<<"departed entities:"<<departed_entities;
+
 
 }
 
@@ -305,6 +308,7 @@ bool World::detectionBoxOverlapCheck(Entity *entity_1, Entity *entity_2)
 
 void World::iterate()
 {
+
     for (int j = 0 ; j<entityList.length() ; j++){
         entityList[j]->iterate();
     }
@@ -314,7 +318,7 @@ void World::iterate()
     player->iterate();
 
     //qDebug()<<"player's graphic z value"<<player->getObj()->z();
-    qDebug()<<"proximal entities player:"<<player->getProximalEntities();
+    //qDebug()<<"proximal entities player:"<<player->getProximalEntities();
     updateCamera();
 
     QVector<QPoint> screen_bounds;
@@ -345,7 +349,6 @@ void World::iterate()
         }
 
     }
-
 
 }
 
@@ -420,7 +423,7 @@ Chunk *World::generateChunk(QPoint pos)
     }
 
     chunk->setChunkData(area);
-    qDebug()<<area.length();
+    //qDebug()<<area.length();
     return chunk;
 }
 

@@ -7,13 +7,13 @@
 
 #include <entity.h>
 #include <ladder.h>
-#include <world.h>
+#include <player.h>
 
 class EntityManager
 {
 public:
-    EntityManager(World * worldptr);
-    Entity* differentiate(QVector3D position, QVector3D dimension, int type, int rotation);
+    EntityManager();
+    Entity* differentiate(QVector3D position, int type, int rotation);
 
     /*initial idea of item id:
      * 1xx: building
@@ -27,14 +27,14 @@ public:
     enum entityID {
         air = 0,
         ladder = 200,
+        player = 999,
     };
 
-    Entity* differentiateToLadder(QVector3D position, QVector3D dimension, int rotation);
+    Entity* differentiateToLadder(QVector3D position, int rotation);
+    Entity* differentiateToPlayer(QVector3D position);
 
 private:
     QQmlApplicationEngine * m_appEngine = nullptr;
-
-    World * myWorld = nullptr;
 
 };
 

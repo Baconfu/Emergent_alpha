@@ -4,12 +4,18 @@
 #include <QTimer>
 #include <math.h>
 
-Player::Player(QVector3D position,QQuickItem * obj,World * worldptr):
+Player::Player():
     Entity(position,worldptr)
 {
     m_obj = obj;
-    m_dimensions = QVector3D(20,20,40);
-    setDetectionBoxDimension(QVector3D(m_dimensions.x(),m_dimensions.y(),m_dimensions.z()+1));
+    m_dimension = QVector3D(20,20,40);
+
+    m_velocity = QVector3D(0,0,0);
+    m_acceleration = QVector3D(0,0,0);
+
+    m_mass = 70;
+    setDetectionBoxDimension(QVector3D(m_dimension.x()+2,m_dimension.y()+2,m_dimension.z()+2));
+    setContext(detection,true);
 }
 
 
@@ -25,22 +31,22 @@ void Player::move(int d)
         setRotation(1);
         break;
     case up:
-        if(is_climbing == false){
+        if(getContext(climbing) == false){
             setVelocityY(-1*travel_speed);
             setRotation(0);
         }
-        if(is_climbing == true) {
+        if(getContext(climbing) == true) {
             if(climbing_direction == 0) {setVelocityZ(travel_speed);}
 
             if(climbing_direction == 2) {setVelocityZ(-1*travel_speed);}
         }
         break;
     case down:
-        if(is_climbing == false){
+        if(getContext(climbing) == false){
             setVelocityY(travel_speed);
             setRotation(2);
         }
-        if(is_climbing == true) {
+        if(getContext(climbing) == true) {
             if(climbing_direction == 0) {setVelocityZ(-1*travel_speed);}
 
             if(climbing_direction == 2) {setVelocityZ(travel_speed);}
@@ -65,13 +71,13 @@ void Player::stop(int d)
         }
         break;
     case up:
-        if(is_climbing == false){
+        if(getContext(climbing) == false){
             if(m_velocity.y() == -travel_speed){
                 setVelocityY(0);
                 break;
             }
         }
-        if(is_climbing == true) {
+        if(getContext(climbing) == true) {
             if(m_velocity.z() == abs(travel_speed)){
                 setVelocityZ(0);
                 break;
@@ -79,13 +85,13 @@ void Player::stop(int d)
         }
         break;
     case down:
-        if(is_climbing == false){
+        if(getContext(climbing) == false){
             if(m_velocity.y() == travel_speed){
                 setVelocityY(0);
                 break;
             }
         }
-        if(is_climbing == true) {
+        if(getContext(climbing) == true) {
             if(m_velocity.z() == abs(travel_speed)){
                 setVelocityZ(0);
                 break;
@@ -96,36 +102,40 @@ void Player::stop(int d)
     }
 }
 
-QVector3D Player::getCurrentTilePosition()
+QVector3D Player::getTilePosition()
 {
     return QVector3D(m_position.x() / Constants::tile_width_pixels , m_position.y() / Constants::tile_width_pixels , m_position.z() / Constants::tile_width_pixels);
 }
 
 void Player::iterate()
 {
-    transform(m_velocity);
-    updatePlayerRotation();
-    updateStates();
-    resolveStates();
+    Entity::iterate();
 
-    qDebug()<<"player velocity"<<m_velocity;
-    qDebug()<<"player rotation"<<player_cardinal_rotation;
+    updatePlayerRotation();
+    updateContext();
+    resolveContext();
+
+
+    //qDebug()<<"player velocity"<<m_velocity;
+    //qDebug()<<"player rotation"<<player_cardinal_rotation;
 
     if(m_velocity.length() != 0){
         incrementAnimCycle();
-        //updateProximalEntities();
-        //qDebug()<<getProximalEntities();
     }else{
         resetAnimCycle();
     }
 
 
 
-    qDebug()<<"player position"<<getPosition();
-    qDebug()<<"player detection state"<<getDetectionState();
-    m_obj->setZ(getCurrentTilePosition().y());
 
-    setDetectionBoxPosition(QVector3D(m_position.x(),m_position.y(),m_position.z()-1));
+    qDebug()<<"player position"<<getPosition();
+    qDebug()<<"player detection state"<<getContext(detection);
+    qDebug()<<"player climbing state"<<getContext(climbing);
+    qDebug()<<"player in air state"<<getContext(in_air);
+    qDebug()<<"player spaces supporting"<<getSpacesSupporting();
+    m_obj->setZ(getTilePosition().y());
+
+    setDetectionBoxPosition(QVector3D(m_position.x()-1,m_position.y()-1,m_position.z()-1));
 
     updateDisplay();
 
@@ -140,15 +150,16 @@ void Player::interactWith(Entity * e2)
 
 void Player::onDetectingEntity(Entity* e)
 {
-    qDebug()<<"detected"<<e;
+    //qDebug()<<"detected"<<e;
     if(typeid (*e) == typeid (Ladder)){
         if(this->getCardinalRotation().x() == e->getCardinalRotation().x() ||
            this->getCardinalRotation().y() == e->getCardinalRotation().y()){
             resetVelocity();
-            qDebug()<<"interacted with ladder"<<e;
+            //qDebug()<<"interacted with ladder"<<e;
             setVelocityZ(1);
-            disableDetection();
-            setClimbingState(true);
+            setContext(detection,false);
+            setContext(climbing,true);
+            setContext(supported,true);
             setClimbingDirection(e->getRotation());
         }
     }
@@ -158,13 +169,14 @@ void Player::onDepartingEntity(Entity* e){
 
     if(typeid (*e) == typeid (Ladder)){
 
-        enableDetection();
+        setContext(detection,true);
+        setContext(in_air,false);
 
-            if (getClimbingState() == true){
+            if (getContext(climbing) == true){
 
             setVelocityZ(0);
+
             if (climbing_direction == 0) {
-                qDebug()<<"triggered nudge";
                 if (getCardinalRotation().y()==-1 || getRotation()==0) {setVelocityY(-1*travel_speed);}
 
                 if (getCardinalRotation().x()==1 || getRotation()==2) {setVelocityX(travel_speed);}
@@ -173,24 +185,24 @@ void Player::onDepartingEntity(Entity* e){
 
             if (climbing_direction == 2) {setVelocityY(1);}
 
-            setClimbingState(false);
+            setContext(climbing,false);
 
-            qDebug()<<"left the ladder";
+            //qDebug()<<"left the ladder";
         }
     }
 }
 
 void Player::updateDisplay()
 {
-    QVector3D adjust = QVector3D(m_position.x(),m_position.y(),m_position.z() + m_dimensions.z());
+    QVector3D adjust = QVector3D(m_position.x(),m_position.y(),m_position.z() + m_dimension.z());
     m_obj->setPosition(World::get2DProjection(adjust));
 
-    m_obj->setWidth(World::get2DProjection(m_dimensions).x());
+    m_obj->setWidth(World::get2DProjection(m_dimension).x());
 
-    QVector3D alt = QVector3D(m_dimensions.x(),m_dimensions.y(),m_dimensions.z()*-1);
+    QVector3D alt = QVector3D(m_dimension.x(),m_dimension.y(),m_dimension.z()*-1);
     m_obj->setHeight(World::get2DProjection(alt).y());
 
-    m_obj->setZ(float(getCenter().y()) / Constants::tile_width_pixels + float(getCenter().z())/100.0/Constants::tile_width_pixels-0.5);
+    m_obj->setZ(float((getPosition()+getDimension()).y()) / Constants::tile_width_pixels + float((getPosition()+getDimension()).z())/100.0/Constants::tile_width_pixels-0.5);
 }
 
 void Player::updatePlayerRotation()

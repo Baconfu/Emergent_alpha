@@ -7,13 +7,15 @@
 class Ladder: public Entity
 {
 public:
-    Ladder(World * worldptr, QVector3D position, int rotation);
+    Ladder(int rotation);
     int getSpan() {return m_span;}
 
     Entity* getPtr() {return this;}
 
     void onDetectingEntity(Entity*);
     void onDepartingEntity(Entity*);
+    void updateContext();
+    void resolveContext();
 
 
 private:

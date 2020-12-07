@@ -1,47 +1,51 @@
 #include "entitymanager.h"
 #include "paintladder.h"
 
-EntityManager::EntityManager(World * worldptr)
+EntityManager::EntityManager()
 {
-    myWorld = worldptr;
+
 }
 
-Entity* EntityManager::differentiate(QVector3D position, QVector3D dimension, int type, int rotation)
+Entity* EntityManager::differentiate(int type, int rotation)
 {
 
+    Entity * out = nullptr;
+    QQmlComponent * component = nullptr;
 
     if (type == ladder) {
-        //qDebug()<<"rotation value in differentiate function"<<rotation;
-        return differentiateToLadder(position, dimension, rotation);
-
-        //IDString = "ladder";
+        component = new QQmlComponent(m_appEngine,QUrl("qrc:/ladder.qml"));
+        out = differentiateToLadder(position, rotation);
     }
-    else{return nullptr;}
 
-    /*QQmlComponent ladderComponent(m_appEngine,QUrl("qrc:/"+IDString+".qml"));
-    QQuickItem * entityObjPtr = qobject_cast<QQuickItem*>(ladderComponent.create());
+    if (type == player) {
+        component = new QQmlComponent(m_appEngine,QUrl("qrc:/player.qml"));
+        out =  differentiateToPlayer(position);
+    }
 
-    entityObjPtr->setParentItem(m_appEngine->rootObjects()[0]->findChild<QQuickItem*>("root"));
-    entityObjPtr->setParent(m_appEngine);
-    differentiatedEntity->assignObj(entityObjPtr);
-    */
+    QQuickItem * obj = qobject_cast<QQuickItem*>(component->create());
+
+    obj->setParentItem(m_appEngine->rootObjects()[0]->findChild<QQuickItem*>("root"));
+    obj->setParent(m_appEngine);
+    out->assignObj(obj);
+
+    return out;
 }
 
-Entity* EntityManager::differentiateToLadder(QVector3D position, QVector3D dimension, int rotation){
+Entity* EntityManager::differentiateToLadder(QVector3D position, int rotation){
 
-    Ladder* newLadder = new Ladder(myWorld,position,rotation);
+    Ladder* newLadder = new Ladder(rotation);
 
     newLadder->setRotation(rotation);
-    newLadder->setDimension(dimension);
+    newLadder->setDimension(QVector3D(30,30,30));
 
     double detectionBoxWidthProportion = 0.9;
     double detectionBoxHeightProportion = 0.1;
 
-    qDebug()<<"ladder rotation in differentiateToLadder"<<newLadder->getRotation();
+    //qDebug()<<"ladder rotation in differentiateToLadder"<<newLadder->getRotation();
 
     if (rotation == 0){
 
-        qDebug()<<"ladder detection box 0 created";
+        //qDebug()<<"ladder detection box 0 created";
         newLadder->setDetectionBoxPosition(QVector3D(
                                                (position[0]+Constants::tile_width_pixels*(1-detectionBoxWidthProportion)/2),
                                                 position[1],
@@ -56,7 +60,7 @@ Entity* EntityManager::differentiateToLadder(QVector3D position, QVector3D dimen
 
     }
     else if (rotation == 2) {
-        qDebug()<<"ladder detection box 2 created";
+        //qDebug()<<"ladder detection box 2 created";
         newLadder->setDetectionBoxPosition(QVector3D((
                                                 position[0]+(Constants::tile_width_pixels*(1-detectionBoxWidthProportion)/2)),
                                                 position[1]+(Constants::tile_width_pixels-Constants::tile_width_pixels*detectionBoxHeightProportion),
@@ -70,5 +74,19 @@ Entity* EntityManager::differentiateToLadder(QVector3D position, QVector3D dimen
 
     }
 
-    return newLadder->getEntityPtr();
+    return newLadder;
+}
+
+Entity *EntityManager::differentiateToPlayer(QVector3D position)
+{
+    QVector3D initialPlayerPosition = position;
+    QVector3D initialPlayerDimension = QVector3D(Constants::player_width_pixels,Constants::player_width_pixels,Constants::player_height_pixels);
+    Player* player = new Player(position,nullptr,m_worldptr);
+
+
+    player->setDimension(initialPlayerDimension);
+    player->setDetectionBoxPosition(initialPlayerPosition);
+    player->setDetectionBoxDimension(initialPlayerDimension);
+
+    return player->getEntityPtr();
 }

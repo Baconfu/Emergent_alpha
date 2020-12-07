@@ -15,9 +15,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         air.cpp \
+    box.cpp \
         chunk.cpp \
         constants.cpp \
-        decorative.cpp \
         engine.cpp \
         entity.cpp \
         file.cpp \
@@ -28,13 +28,10 @@ SOURCES += \
         paintplayeravatar.cpp \
         paintterrain.cpp \
         player.cpp \
-        sensor.cpp \
         terrain.cpp \
         testassistant.cpp \
-        traversible.cpp \
         unitspace.cpp \
         world.cpp \
-    collidable.cpp \
     paintladder.cpp \
     entitymanager.cpp
 
@@ -53,9 +50,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     air.h \
+    box.h \
     chunk.h \
     constants.h \
-    decorative.h \
     engine.h \
     entity.h \
     file.h \
@@ -65,13 +62,10 @@ HEADERS += \
     paintplayeravatar.h \
     paintterrain.h \
     player.h \
-    sensor.h \
     terrain.h \
     testassistant.h \
-    traversible.h \
     unitspace.h \
     world.h \
-    collidable.h \
     paintladder.h \
     entitymanager.h
 

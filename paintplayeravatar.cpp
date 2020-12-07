@@ -7,18 +7,18 @@
 #include <constants.h>
 
 
-PaintPlayerAvatar::PaintPlayerAvatar(QQuickItem *parent):
+PaintPlayer::PaintPlayer(QQuickItem *parent):
     QQuickPaintedItem(parent)
 {
 
 }
 
-PaintPlayerAvatar::~PaintPlayerAvatar()
+PaintPlayer::~PaintPlayer()
 {
 
 }
 
-void PaintPlayerAvatar::paint(QPainter *painter)
+void PaintPlayer::paint(QPainter *painter)
 {
     QPen pen;
     pen.setColor(Qt::red);

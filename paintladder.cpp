@@ -30,7 +30,7 @@ void PaintLadder::paint(QPainter *painter)
 
     if (m_painted_rotation == 0){
 
-        qDebug()<<"Drawn ladder in rotation 0";
+        //qDebug()<<"Drawn ladder in rotation 0";
         for (int i=0 ; i<stepCount ; i++){
             QRect r = QRect(QPoint(5,i*stepHeight*2),QPoint(25,i*stepHeight*2+stepHeight));
             painter->fillRect(r,ladderColor);

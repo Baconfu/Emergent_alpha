@@ -53,6 +53,11 @@ QVector<Hex *> WorldGenerator::getAllHexes()
     return out;
 }
 
+void WorldGenerator::evaluatePlateCollision()
+{
+
+}
+
 QVector<TectonicPlate *> WorldGenerator::getAdjacentPlates(QPoint position)
 {
     QVector<TectonicPlate*> out;

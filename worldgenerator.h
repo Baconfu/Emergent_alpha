@@ -25,6 +25,8 @@ public:
     QVector<Hex*> getAllHexes();
     QVector<TectonicPlate*> getAllPlates(){return world;}
 
+    void evaluatePlateCollision();
+
 private:
     QRandomGenerator * gen = nullptr;
     QVector<TectonicPlate*> world;

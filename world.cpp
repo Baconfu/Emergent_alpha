@@ -9,6 +9,7 @@
 #include <ladder.h>
 #include <entitymanager.h>
 #include <math.h>
+#include <debugoverlay.h>
 
 
 World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coordinates)
@@ -77,6 +78,8 @@ World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coord
 
     //getChunk(getChunkFromTile( global tile position ))->getSpace( getTilePositionInChunk( global tile position ));
 
+
+    initializeDebugInterface();
 }
 
 void World::createEntity(QVector3D position,QVector3D dimension,int type, int rotation)
@@ -132,6 +135,30 @@ void World::registerEntityToTile(QVector3D position, Entity *e)
 
 }
 
+void World::updateDebug()
+{
+
+
+}
+
+Entity *World::getPlayer()
+{
+    return player;
+}
+
+void World::initializeDebugInterface()
+{
+
+    QQmlComponent component(m_appEngine,QUrl("qrc:/overlay.qml"));
+    QQuickItem * obj = qobject_cast<QQuickItem*>(component.create());
+    obj->setParentItem(m_window->findChild<QQuickItem*>("info_panel"));
+    //qDebug()<<m_window->findChild<QQuickItem*>("info_panel");
+    obj->setParent(m_appEngine);
+    debug = new DebugOverlay(obj,this,m_appEngine);
+
+
+}
+
 
 
 void World::iterate()
@@ -164,7 +191,7 @@ void World::iterate()
         Chunk * chunk = getChunkPtrFromChunkPosition(getChunkPositionFromTilePosition(tiles_occupied_by_player[i]));
         UnitSpace * space = chunk->getSpacePtrFromLocalPosition(getTilePositionInChunk(tiles_occupied_by_player[i]));
 
-        qDebug()<<"checkpoint"<<chunk<<space<<tiles_occupied_by_player;
+        //qDebug()<<"checkpoint"<<chunk<<space<<tiles_occupied_by_player;
 
         if(space->collision_player()){
             //qDebug()<<space->position();
@@ -174,6 +201,7 @@ void World::iterate()
 
     }
 
+    updateDebug();
 
 }
 
@@ -185,6 +213,11 @@ void World::keyInputs(int event_key)
 void World::keyRelease(int event_key)
 {
     player->stop(event_key);
+}
+
+void World::mouseHover(QPointF position)
+{
+
 }
 
 QPointF World::get2DProjection(QVector3D position)
@@ -203,6 +236,7 @@ int World::index(int i, int j)
 
 void World::updateCamera()
 {
+    //qDebug()<<player->getPosition()<<root->width();
 
     root->setX(player->getPosition().x()*-1 + root->width()/2);
     root->setY(player->getPosition().y()*-1 + root->height()/2);
@@ -232,7 +266,7 @@ Chunk *World::generateChunk(QPoint pos)
                 }
             }
             if(z == 0){
-                if(gen.generate()%100>80){
+                if(gen.generate()%100>0){
 
                     area.append(new Terrain(QVector3D(x,y,0)));
                 }else{
@@ -245,7 +279,7 @@ Chunk *World::generateChunk(QPoint pos)
     }
 
     chunk->setChunkData(area);
-    qDebug()<<area.length();
+    //qDebug()<<area.length();
     return chunk;
 }
 

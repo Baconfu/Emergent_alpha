@@ -10,6 +10,8 @@ public:
     Ladder(World * worldptr, QVector3D position, int rotation);
     int getSpan() {return m_span;}
 
+    QString getTypeName(){return "ladder";}
+
     Entity* getPtr() {return this;}
 
 

@@ -17,6 +17,7 @@ SOURCES += \
         air.cpp \
         chunk.cpp \
         constants.cpp \
+    debugoverlay.cpp \
         decorative.cpp \
         engine.cpp \
         entity.cpp \
@@ -55,6 +56,7 @@ HEADERS += \
     air.h \
     chunk.h \
     constants.h \
+    debugoverlay.h \
     decorative.h \
     engine.h \
     entity.h \

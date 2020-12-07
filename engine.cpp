@@ -8,10 +8,15 @@ Engine::Engine(QObject *parent, QQmlApplicationEngine *engine, QQuickWindow *win
     m_appEngine = engine;
     m_window = window;
 
+
     root = window->findChild<QQuickItem*>("root");
+    qDebug()<<window<<root;
 
     connect(window,SIGNAL(keyPressed(int)),this,SLOT(keyPressed(int)));
     connect(window,SIGNAL(keyReleased(int)),this,SLOT(keyReleased(int)));
+
+    connect(window,SIGNAL(mouseHover(int,int)),this,SLOT(mouseMoved(int,int)));
+    connect(window,SIGNAL(mousePressed()),this,SLOT(mousePressed()));
 
     loadWorld();
 
@@ -45,6 +50,17 @@ void Engine::keyReleased(int event_key)
     removePressedKey(event_key);
 
     world->keyRelease(event_key);
+}
+
+void Engine::mouseMoved(int x, int y)
+{
+    mousePos = QPointF(x,y);
+    qDebug()<<mousePos;
+}
+
+void Engine::mousePressed()
+{
+
 }
 
 void Engine::timeout()

@@ -19,6 +19,7 @@ public:
 
 
 
+
 private:
     QQuickWindow * m_window = nullptr;
     QQmlApplicationEngine * m_appEngine = nullptr;
@@ -36,10 +37,14 @@ private:
     void loadWorld();
     World * world = nullptr;
 
+    QPointF mousePos;
+
 
 public slots:
     void keyPressed(int event_key);
     void keyReleased(int event_key);
+    void mouseMoved(int x,int y);
+    void mousePressed();
 
     void timeout();
 

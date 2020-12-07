@@ -19,6 +19,8 @@ public:
 
     QVector3D getCenter(){return m_position + m_dimensions/2;}
 
+    virtual QString getTypeName() = 0;
+
     void setPosition(QVector3D getPosition);
     void setX(float x){m_position.setX(x);}
     void setY(float y){m_position.setY(y);}

@@ -4,5 +4,7 @@
         <file>playerAvatar.qml</file>
         <file>terrain.qml</file>
         <file>ladder.qml</file>
+        <file>overlay.qml</file>
+        <file>entityInfo.qml</file>
     </qresource>
 </RCC>

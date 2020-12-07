@@ -14,9 +14,11 @@
 //Entity management, player management
 //World manages which entities are loaded, and manages player interaction with entities. Also manages visibility of entities.
 
+
 class Entity;
 class Player;
 class Chunk;
+class DebugOverlay;
 class Terrain;
 class UnitSpace;
 class Ladder;
@@ -33,9 +35,15 @@ public:
     void keyInputs(int event_key);
     void keyRelease(int event_key);
 
+    void mouseHover(QPointF position);
+    void mouseClicked(QPointF position);
+
     QVector<Chunk*> getEnvironment(){return environment;}
 
     static QPointF get2DProjection(QVector3D position);
+
+    QPoint getChunkPositionFromTilePosition(QVector3D global_tile_position);
+    QVector3D getTilePositionInChunk(QVector3D global_tile_position);
 
 
 
@@ -47,8 +55,16 @@ public:
 
     void registerEntityToTile(QVector3D position, Entity * e);
 
+    void updateDebug();
+
+    Entity *getPlayer();
+
+
 private:
     int tally = 0;
+    DebugOverlay * debug = nullptr;
+    void initializeDebugInterface();
+
     QRandomGenerator gen;
 
     int screen_width_tiles = 640 / 30;
@@ -69,9 +85,6 @@ private:
     QVector<Chunk*> environment;
     Chunk * getChunkPtrFromChunkPosition(QPoint chunk_position);
 
-
-    QPoint getChunkPositionFromTilePosition(QVector3D global_tile_position);
-    QVector3D getTilePositionInChunk(QVector3D global_tile_position);
 
     Chunk * loadChunk(QPoint pos);
 
@@ -96,6 +109,8 @@ private:
 
     int tile_size = 30;
 
+
+
 public:
     QVector<QString> entityIDDictionary;
     void initialiseEntityIDDictionary(){
@@ -105,7 +120,6 @@ public:
 
         entityIDDictionary[200] = "ladder";
     }
-
 
 };
 

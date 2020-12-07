@@ -26,6 +26,8 @@ public:
 
     QVector3D currentTilePosition();
 
+    QString getTypeName(){return "player";}
+
 
     void iterate();
 

@@ -12,7 +12,8 @@
 class Player: public Entity
 {
 public:
-    Player(QVector3D getPosition,QQuickItem * obj = nullptr,World * worldptr = nullptr);
+    Player();
+    Player* getEntityPtr() {return this;}
 
     enum direction{
         left = 65,
@@ -37,21 +38,15 @@ public:
     }
 
     void updateContext() {
-        if (m_position.z() < 0) {setContext(below_zero,true);}
+        Entity::updateContext();
+
     }
 
     void resolveContext() {
-        if(getContext(below_zero) == true){
-            setContext(climbing,false);
-            setContext(below_zero,false);
-                if (getClimbingDirection() == 0) {setVelocityY(1);}
-                if (getClimbingDirection() == 2) {setVelocityY(-1);}
-            setPositionZ(0);            
-        }
-
+        Entity::resolveContext();
     }
 
-    QVector3D getCurrentTilePosition();
+    QVector3D getTilePosition();
 
 
     void iterate();

@@ -15,6 +15,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         air.cpp \
+    box.cpp \
         chunk.cpp \
         constants.cpp \
         engine.cpp \
@@ -49,6 +50,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     air.h \
+    box.h \
     chunk.h \
     constants.h \
     engine.h \

@@ -3,14 +3,13 @@
 
 UnitSpace::UnitSpace(QVector3D position)
 {
-    ////qDebug()<<"init_pos"<<position;
+
     m_position = position;
 
 }
 
 void UnitSpace::setPosition(QVector3D position)
 {
-    ////qDebug()<<"setpos"<<position;
     m_position = position;
 }
 

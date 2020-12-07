@@ -4,11 +4,15 @@
 #include <QTimer>
 #include <math.h>
 
-Player::Player(QVector3D position,QQuickItem * obj,World * worldptr):
+Player::Player():
     Entity(position,worldptr)
 {
     m_obj = obj;
     m_dimension = QVector3D(20,20,40);
+
+    m_velocity = QVector3D(0,0,0);
+    m_acceleration = QVector3D(0,0,0);
+
     m_mass = 70;
     setDetectionBoxDimension(QVector3D(m_dimension.x()+2,m_dimension.y()+2,m_dimension.z()+2));
     setContext(detection,true);
@@ -98,17 +102,19 @@ void Player::stop(int d)
     }
 }
 
-QVector3D Player::getCurrentTilePosition()
+QVector3D Player::getTilePosition()
 {
     return QVector3D(m_position.x() / Constants::tile_width_pixels , m_position.y() / Constants::tile_width_pixels , m_position.z() / Constants::tile_width_pixels);
 }
 
 void Player::iterate()
 {
-    transform(m_velocity);
+    Entity::iterate();
+
     updatePlayerRotation();
     updateContext();
     resolveContext();
+
 
     //qDebug()<<"player velocity"<<m_velocity;
     //qDebug()<<"player rotation"<<player_cardinal_rotation;
@@ -121,11 +127,13 @@ void Player::iterate()
 
 
 
-    //qDebug()<<"player position"<<getPosition();
-    //qDebug()<<"player detection state"<<getContext(detection);
-    //qDebug()<<"player climbing state"<<getContext(climbing);
 
-    m_obj->setZ(getCurrentTilePosition().y());
+    qDebug()<<"player position"<<getPosition();
+    qDebug()<<"player detection state"<<getContext(detection);
+    qDebug()<<"player climbing state"<<getContext(climbing);
+    qDebug()<<"player in air state"<<getContext(in_air);
+    qDebug()<<"player spaces supporting"<<getSpacesSupporting();
+    m_obj->setZ(getTilePosition().y());
 
     setDetectionBoxPosition(QVector3D(m_position.x()-1,m_position.y()-1,m_position.z()-1));
 
@@ -144,6 +152,7 @@ void Player::onDetectingEntity(Entity* e)
             setVelocityZ(1);
             setContext(detection,false);
             setContext(climbing,true);
+            setContext(supported,true);
             setClimbingDirection(e->getRotation());
         }
     }
@@ -154,6 +163,7 @@ void Player::onDepartingEntity(Entity* e){
     if(typeid (*e) == typeid (Ladder)){
 
         setContext(detection,true);
+        setContext(in_air,false);
 
             if (getContext(climbing) == true){
 

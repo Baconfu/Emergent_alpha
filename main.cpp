@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     }, Qt::QueuedConnection);
 
     qmlRegisterType<PaintGrid>("Paint",1,0,"PaintGrid");
-    qmlRegisterType<PaintPlayerAvatar>("Paint",1,0,"PaintAvatar");
+    qmlRegisterType<PaintPlayer>("Paint",1,0,"PaintPlayer");
     qmlRegisterType<PaintTerrain>("Paint",1,0,"PaintTerrain");
     qmlRegisterType<PaintLadder>("Paint",1,0,"PaintLadder");
 

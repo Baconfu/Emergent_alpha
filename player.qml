@@ -2,7 +2,7 @@ import QtQuick 2.0
 import Paint 1.0
 
 
-PaintAvatar {
+PaintPlayer {
     x:0
     y:0
 

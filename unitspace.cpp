@@ -8,6 +8,14 @@ UnitSpace::UnitSpace(QVector3D position)
 
 }
 
+Box UnitSpace::getBox()
+{
+    Box b;
+    b.setPosition(m_position * Constants::tile_width_pixels);
+    b.setDimensions(m_dimensions * Constants::tile_width_pixels);
+    return b;
+}
+
 void UnitSpace::setPosition(QVector3D position)
 {
     m_position = position;

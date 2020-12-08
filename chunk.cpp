@@ -3,11 +3,9 @@
 #include <QDir>
 
 
-Chunk::Chunk(QPoint chunkPosition)
+Chunk::Chunk(QVector3D chunkPosition)
 {
     m_pos = chunkPosition;
-
-
 }
 
 QVector<UnitSpace*> Chunk::loadChunkFromFile()
@@ -18,10 +16,11 @@ QVector<UnitSpace*> Chunk::loadChunkFromFile()
     QJsonArray field = obj["chunk"].toArray();
 
     for(int i=0; i<field.count(); i++){
-        spaces.append(loadSpace(field[i].toObject(),QVector3D(i % Constants::chunk_width_tiles,int((i % Constants::chunk_layer_count_tiles) / Constants::chunk_width_tiles),int(i/Constants::chunk_layer_count_tiles))));
+        QVector3D localPosition = QVector3D(i % Constants::chunk_width_tiles,int((i % Constants::chunk_layer_count_tiles) / Constants::chunk_width_tiles),int(i/Constants::chunk_layer_count_tiles));
+
+        spaces.append(loadSpace(field[i].toObject(),localPosition + getPosition() * Constants::chunk_width_tiles));
     }
 
-    ////qDebug()<<spaces.length();
     return spaces;
 }
 
@@ -69,7 +68,7 @@ void Chunk::setChunkData(QVector<UnitSpace*> chunk_data)
     spaces = chunk_data;
 }
 
-UnitSpace *Chunk::getSpacePtrFromLocalTilePosition(QVector3D p)
+UnitSpace *Chunk::getTile(QVector3D p)
 {
     return spaces[Constants::chunk_layer_count_tiles * p.z() + Constants::chunk_width_tiles * p.y() + p.x()];
 }

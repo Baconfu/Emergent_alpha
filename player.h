@@ -25,9 +25,6 @@ public:
     void move(int d);
     void stop(int d);
 
-    void setClimbingDirection(int r) {climbing_direction = r;}
-    int getClimbingDirection() {return climbing_direction;}
-
     void setContext(int state, bool desired) {
         Entity::setContext(state,desired);
         if (state == climbing) {
@@ -37,45 +34,16 @@ public:
         }
     }
 
-    void updateContext() {
-        Entity::updateContext();
-
-    }
-
-    void resolveContext() {
-        Entity::resolveContext();
-    }
-
-    QVector3D getTilePosition();
-
 
     void iterate();
-    void interactWith(Entity *);
 
-
-    void onDetectingEntity(Entity*);
-    void onDepartingEntity(Entity*);
-
-    void updateDisplay();
-
-    QPoint getCardinalRotation() {return player_cardinal_rotation;}
-    void updatePlayerRotation();
-
-    //QVector<Entity*> getCurrentInteractionEntity() {return current_interaction_entity;}
+    void interact(Entity*);
 
 
 private:
 
-    //QVector<Entity*> current_interaction_entity = QVector<Entity*> ();
 
     float travel_speed = 1;
-    QPoint player_cardinal_rotation;
-
-    int climbing_direction = 0;
-
-
-
-
 
     void resetAnimCycle();
     void incrementAnimCycle();

@@ -8,6 +8,7 @@
 
 #include <constants.h>
 #include <world.h>
+#include <box.h>
 
 class UnitSpace
 {
@@ -17,6 +18,7 @@ public:
     virtual bool collision_player() = 0;
 
     virtual QString type(){return QString();}
+
 
     float x(){return m_position.x();}
     float y(){return m_position.y();}
@@ -34,6 +36,8 @@ public:
         //qDebug()<<"SETZ"<<z;
         m_position.setZ(z);
     }
+
+    Box getBox();
 
     QVector3D dimensions(){return m_dimensions;}
     float width(){return m_dimensions.x();}

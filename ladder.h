@@ -7,15 +7,11 @@
 class Ladder: public Entity
 {
 public:
-    Ladder(int rotation);
+    Ladder();
+
     int getSpan() {return m_span;}
 
-    Entity* getPtr() {return this;}
-
-    void onDetectingEntity(Entity*);
-    void onDepartingEntity(Entity*);
-    void updateContext();
-    void resolveContext();
+    void interact(Entity *){}
 
 
 private:

@@ -16,7 +16,7 @@ Engine::Engine(QObject *parent, QQmlApplicationEngine *engine, QQuickWindow *win
 
     loadWorld();
 
-    timer = new QTimer;
+    timer = new QTimer();
     timer->setInterval(18);
 
     connect(timer,SIGNAL(timeout()),this,SLOT(timeout()));
@@ -52,12 +52,7 @@ void Engine::timeout()
 {
     //Drives game loop
 
-
-    QElapsedTimer time;
-    time.start();
-    //Allocating player movement
     world->iterate();
-    qDebug()<<time.nsecsElapsed();
-    //tester->testChunks();
+
 
 }

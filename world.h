@@ -20,7 +20,7 @@ class Chunk;
 class Terrain;
 class UnitSpace;
 class Ladder;
-class EntityManager;
+class EntityCreator;
 
 class World
 {
@@ -39,50 +39,49 @@ public:
 
     Player* getPlayerPtr() {return player;}
 
-    void createEntity(QVector3D position, QVector3D dimension, int type, int rotation);
-
 
     UnitSpace* getTile(QVector3D tile_position);
+    Chunk* getChunk(QVector3D chunk_position);
 
-    static QPoint getChunkPositionFromTilePosition(QVector3D global_tile_position);
-    static QVector3D getLocalTilePositionFromGlobalPosition(QVector3D global_tile_position);
+    void registerEntityToTile(Entity * e);
 
-    void registerEntityToTile(QVector3D position, Entity * e);
-    QVector<UnitSpace*> getTilesOccupiedPtr(Entity* e);
+    QVector<QString> entityIDDictionary;
+    void initialiseEntityIDDictionary(){
+        for(int i=0; i<1000; i++){
+            entityIDDictionary.append("");
+        }
 
-    static void removeDuplicateEntityFromVector(QVector<Entity*>);
-
-    static bool detectionBoxOverlapCheck(Entity* entity_1, Entity* entity_2);
+        entityIDDictionary[200] = "ladder";
+        entityIDDictionary[999] = "player";
+    }
 
 private:
+    //Debug tools
     int tally = 0;
+    //end: Debug tools
+
+    //important pointers
     QRandomGenerator gen;
-
-    int screen_width_tiles = 640 / 30;
-    int screen_height_tiles = 480 / 26;
-
-
-
-    int index(int i,int j);
 
     QQmlApplicationEngine * m_appEngine = nullptr;
     QQuickWindow * m_window = nullptr;
     QQuickItem * root = nullptr;
 
+    EntityCreator * entityCreator = nullptr;
+    Player* player = nullptr;
+
     void updateCamera();
 
-    Chunk * generateChunk(QPoint pos);
 
+    //chunk management
     QVector<Chunk*> chunk_ptr_list;
-    Chunk * getChunkPtrFromChunkPosition(QPoint chunk_position);
+
+    Chunk * generateChunk(QVector3D pos);
+    Chunk * loadChunk(QVector3D pos);
+    bool chunkAlreadyLoaded(QVector3D chunk_position);
 
 
 
-    Chunk * loadChunk(QPoint pos);
-
-
-
-    bool chunkAlreadyLoaded(QPoint chunk_position);
 
     void loadUnitSpaceGraphics(UnitSpace * space);
 
@@ -93,24 +92,12 @@ private:
     void resolveCollision(Entity * entity,UnitSpace * space);
     void resolveCollision(Entity * entity1, Entity * entity2);
 
-    Player* player = nullptr;
+
+    Entity * createEntity(int type,QVector3D position,int rotation);
+
 
     QPoint player_current_chunk;
 
-    int chunk_size = 100;
-
-    int tile_size = 30;
-
-public:
-    QVector<QString> entityIDDictionary;
-    void initialiseEntityIDDictionary(){
-        for(int i=0; i<1000; i++){
-            entityIDDictionary.append("");
-        }
-
-        entityIDDictionary[200] = "ladder";
-        entityIDDictionary[999] = "player";
-    }
 
 
 };

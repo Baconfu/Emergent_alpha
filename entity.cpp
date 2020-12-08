@@ -8,33 +8,8 @@
 
 Entity::Entity()
 {
-    m_geometry = new Box;
+    m_geometry = new Box();
     initialiseContextList();
-}
-
-void Entity::setPosition(QVector3D position)
-{
-    m_previous_position = m_position;
-    m_position = position;
-
-    //register entity to tile is driven by the entity itself, so it is only run when necessary
-    //(when the entity has moved)
-    m_worldptr->registerEntityToTile(position,this);
-}
-
-void Entity::setDimensionX(float width)
-{
-    m_dimension.setX(width);
-}
-
-void Entity::setDimensionY(float height)
-{
-    m_dimension.setY(height);
-}
-
-void Entity::setDimensionZ(float depth)
-{
-    m_dimension.setZ(depth);
 }
 
 void Entity::setRotation(int rotation)
@@ -42,98 +17,120 @@ void Entity::setRotation(int rotation)
     m_rotation = rotation;
 }
 
-void Entity::transform(QVector3D vector)
+QPoint Entity::getCardinalRotation() {
+    if (m_rotation == 0) {return QPoint(0,-1);}
+    if (m_rotation == 1) {return QPoint(1,0);}
+    if (m_rotation == 2) {return QPoint(0,1);}
+    if (m_rotation == 3) {return QPoint(-1,0);}
+    return QPoint(0,0);
+}
+
+void Entity::unregisterFromTiles()
 {
-    setPosition(m_position + vector);
-    setDetectionBoxPosition(m_detectionBoxPosition + vector);
-    //___________________________________________
-
-    m_obj->setZ(getTilePosition().y());
-
-    updateSpacesOccupied();
-
-    updateDisplay();
+    for(int i=0; i<interactingTiles.length(); i++){
+        interactingTiles[i]->removeEntity(this);
+    }
+    interactingTiles.clear();
 }
 
 
-
-
-
-QVector3D Entity::getGlobalPositionFromLocalPosition(QVector3D box_position, QVector3D local_position)
+void Entity::setInteractingTiles(QVector<UnitSpace *> tiles)
 {
-    return box_position + local_position;
-}
-
-QVector3D Entity::getTilePosition()
-{
-    return QVector3D(m_position.x() / Constants::tile_width_pixels , m_position.y() / Constants::tile_width_pixels , m_position.z() / Constants::tile_width_pixels);
-}
-
-QVector<QVector3D> Entity::getOccupiedTilePositions()
-{
-    QVector<QVector3D> out;
-
-    QVector3D up_left_bottom_tile = m_position/Constants::tile_width_pixels;
-    QVector3D down_right_top_tile = (m_position + m_dimension)/Constants::tile_width_pixels;
-
-    for (int i = up_left_bottom_tile[0] ; i<(down_right_top_tile[0]+1) ; i++){
-        for (int j = up_left_bottom_tile[1] ; j<(down_right_top_tile[1]+1) ; j++){
-            for (int k = up_left_bottom_tile[2] ; k<(down_right_top_tile[2]+1) ; k++){
-                    out.append(QVector3D(i,j,k));
+    interactingTiles = tiles;
+    for(int i=0; i<interactingTiles.length(); i++){
+        interactingTiles[i]->assignEntity(this);
+        QVector<Entity*> entities = interactingTiles[i]->getEntitiesOnTile();
+        for(int j=0; j<entities.length(); j++){
+            if(!interactingEntities.contains(entities[j])){
+                appendInteractingEntity(entities[j]);
+                entities[j]->appendInteractingEntity(this);
             }
         }
     }
-
-    return out;
 }
 
-
+void Entity::appendInteractingEntity(Entity *e)
+{
+    interactingEntities.append(e);
+}
 
 void Entity::assignObj(QQuickItem *obj)
 {
     m_obj = obj;
 }
 
-QVector<UnitSpace*> Entity::getSpacesSupporting()
-{
-    QVector<UnitSpace*> out = QVector<UnitSpace*>();
-    if (int(getPositionZ()) % 30 >= 1) {return out;}
-
-    QVector3D bottom_up_left_corner = m_position + QVector3D(0,0,-1);
-    QVector3D bottom_down_right_corner = m_position + QVector3D(m_dimension.x(),m_dimension.y(),-1);
-
-    QVector<UnitSpace*> spaces_below = m_worldptr->getTilePtrListFromPixel(bottom_up_left_corner,bottom_down_right_corner);
-    for (int i=0; i<spaces_below.length(); i++){
-        if (typeid(*spaces_below[i]) == typeid(Terrain)){
-            out.append(spaces_below[i]);
-        }
-    }
-    return out;
-}
-
 void Entity::iterate()
 {
-    updateContext();
-    resolveContext();
-
-    iterateTransformation();
-
-
-
-
-}
-
-void Entity::iterateTransformation()
-{
+    for(int i=0; i<interactingEntities.length(); i++){
+        interact(interactingEntities[i]);
+    }
 
     if (m_acceleration.length() > 0.01){
-        setVelocity(getVelocity()+getAcceleration());
+        //setVelocity(getVelocity()+getAcceleration());
     }
     if (m_velocity.length() > 0.01) {
-        transform(m_velocity);
+        m_geometry->transform(m_velocity);
     }
 
+    updateDisplay();
+
 }
+
+bool Entity::collide(Box box)
+{
+    QVector3D v1 = m_geometry->get111() - box.get000();
+    QVector3D v2 = m_geometry->get000() - box.get111();
+
+    if(v2.x() < 0 && v2.y() < 0 && v2.z() < 0 && v1.x() > 0 && v1.y() > 0 && v1.z() > 0){
+        //entity box overlaps with space
+
+
+        //transform vector: shortest distance to get the entity outside of the space.
+        QVector3D transform = QVector3D(100,100,100);
+
+        if(v2.x() * -1 < transform.length()){
+            transform = QVector3D(v2.x(), 0, 0);
+        }
+        if(v2.y() * -1 < transform.length()){
+            transform = QVector3D(0, v2.y(), 0);
+        }
+        if(v2.z() * -1 < transform.length()){
+            transform = QVector3D(0, 0, v2.z());
+        }
+        if(v1.x() < transform.length()){
+            transform = QVector3D(v1.x(), 0, 0);
+        }
+        if(v1.y() < transform.length()){
+            transform = QVector3D(0, v1.y(), 0);
+        }
+        if(v1.z() < transform.length()){
+            transform = QVector3D(0, 0, v1.z());
+        }
+        transform *= -1;
+
+        m_geometry->transform(transform);
+
+        //the velocity of the entity on the axis of collision should be set to 0.
+        //the axis of collision corresponds to the non-zero part of QVector3D transform.
+        if(transform[0] != 0){
+            setVelocityX(0);
+        }
+        if(transform[1] != 0){
+            setVelocityY(0);
+        }
+        if(transform[2] != 0){
+            setVelocityZ(0);
+        }
+
+        return true;
+
+    }
+
+    return false;
+
+}
+
+
 
 /*void Entity::updateProximalEntities()
 {
@@ -148,17 +145,15 @@ void Entity::iterateTransformation()
 
 void Entity::updateDisplay()
 {
+    m_obj->setPosition(World::get2DProjection(m_geometry->get001()));
+    qDebug()<<World::get2DProjection(m_geometry->get001());
 
-    QVector3D adjust = QVector3D(m_position.x(),m_position.y(),m_position.z() + m_dimension.z());
-    //qDebug()<<"checkpoint1";
-    m_obj->setPosition(World::get2DProjection(adjust));
+    m_obj->setWidth(m_geometry->width());
 
-    m_obj->setWidth(World::get2DProjection(m_dimension).x());
-
-    QVector3D alt = QVector3D(m_dimension.x(),m_dimension.y(),m_dimension.z()*-1);
+    QVector3D alt = QVector3D(m_geometry->x(),m_geometry->y(),m_geometry->z()*-1);
     m_obj->setHeight(World::get2DProjection(alt).y());
 
-    m_obj->setZ(float(m_detectionBoxPosition.y()) / Constants::tile_width_pixels + float(m_detectionBoxPosition.z()/100.0/Constants::tile_width_pixels-0.5));
+    m_obj->setZ(float(m_geometry->get110().y()) / Constants::tile_width_pixels + float(m_geometry->get110().z()/100.0/Constants::tile_width_pixels));
 }
 
 

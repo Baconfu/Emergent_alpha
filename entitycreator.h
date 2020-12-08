@@ -9,11 +9,11 @@
 #include <ladder.h>
 #include <player.h>
 
-class EntityManager
+class EntityCreator
 {
 public:
-    EntityManager();
-    Entity* differentiate(QVector3D position, int type, int rotation);
+    EntityCreator(QQmlApplicationEngine * appEngine);
+    Entity* createEntity(int type);
 
     /*initial idea of item id:
      * 1xx: building
@@ -30,11 +30,13 @@ public:
         player = 999,
     };
 
-    Entity* differentiateToLadder(QVector3D position, int rotation);
-    Entity* differentiateToPlayer(QVector3D position);
+
 
 private:
     QQmlApplicationEngine * m_appEngine = nullptr;
+
+    Entity* createLadder();
+    Entity* createPlayer();
 
 };
 

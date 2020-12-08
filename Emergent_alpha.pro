@@ -20,6 +20,7 @@ SOURCES += \
         constants.cpp \
         engine.cpp \
         entity.cpp \
+    entitycreator.cpp \
         file.cpp \
         interface.cpp \
         ladder.cpp \
@@ -32,8 +33,7 @@ SOURCES += \
         testassistant.cpp \
         unitspace.cpp \
         world.cpp \
-    paintladder.cpp \
-    entitymanager.cpp
+    paintladder.cpp
 
 RESOURCES += qml.qrc
 
@@ -55,6 +55,7 @@ HEADERS += \
     constants.h \
     engine.h \
     entity.h \
+    entitycreator.h \
     file.h \
     interface.h \
     ladder.h \
@@ -66,8 +67,7 @@ HEADERS += \
     testassistant.h \
     unitspace.h \
     world.h \
-    paintladder.h \
-    entitymanager.h
+    paintladder.h
 
 DISTFILES += \
     Constants.json

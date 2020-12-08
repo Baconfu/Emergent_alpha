@@ -26,6 +26,7 @@ class World
 {
 public:
     World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coordinates);
+    ~World();
 
 
     void iterate();

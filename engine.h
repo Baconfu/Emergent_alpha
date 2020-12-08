@@ -2,6 +2,7 @@
 #define ENGINE_H
 
 #include <QObject>
+#include <QPointer>
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
 #include <QQuickItem>
@@ -16,15 +17,17 @@ class Engine: public QObject
     Q_OBJECT
 public:
     Engine(QObject * parent,QQmlApplicationEngine * engine,QQuickWindow * window);
+    ~Engine();
+
 
 
 
 private:
-    QQuickWindow * m_window = nullptr;
-    QQmlApplicationEngine * m_appEngine = nullptr;
-    QQuickItem * root = nullptr;
+    QPointer<QQuickWindow> m_window = nullptr;
+    QPointer<QQmlApplicationEngine> m_appEngine = nullptr;
+    QPointer<QQuickItem> root = nullptr;
 
-    QTimer * timer = nullptr;
+    QPointer<QTimer> timer = nullptr;
 
     TestAssistant * tester = nullptr;
 
@@ -40,7 +43,7 @@ private:
 public slots:
     void keyPressed(int event_key);
     void keyReleased(int event_key);
-
+    void closingWindow();
     void timeout();
 
 };

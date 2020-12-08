@@ -37,6 +37,7 @@ Entity* EntityCreator::createEntity(int type)
     obj->setParent(m_appEngine);
     out->assignObj(obj);
 
+    delete(component);
     return out;
 }
 

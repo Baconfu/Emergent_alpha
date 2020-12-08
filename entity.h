@@ -16,6 +16,7 @@ class Entity
 {
 public:
     Entity();
+    virtual ~Entity();
 
     Box * geometry(){return m_geometry;}
 
@@ -75,6 +76,8 @@ public:
 
 
     virtual void updateDisplay();
+
+    void destroy();
 
 protected:
 

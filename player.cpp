@@ -102,7 +102,7 @@ void Player::stop(int d)
 void Player::iterate()
 {
 
-
+    //qDebug()<<"iteration";
     //qDebug()<<"player velocity"<<m_velocity;
     //qDebug()<<"player rotation"<<player_cardinal_rotation;
 
@@ -110,9 +110,17 @@ void Player::iterate()
         //setVelocity(getVelocity()+getAcceleration());
     }
     if (m_velocity.length() > 0.01) {
+
         m_geometry->transform(m_velocity);
+        //qDebug()<<"position after transform"<<geometry()->position();
     }
 
+    for(int i=0; i<interactingTiles.length(); i++){
+        if(interactingTiles[i]->collision_player()){
+            collide(interactingTiles[i]->getBox());
+            //qDebug()<<"position after warp"<<geometry()->position();
+        }
+    }
     if(m_velocity.length() != 0){
         incrementAnimCycle();
     }else{

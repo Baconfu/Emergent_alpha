@@ -1,9 +1,10 @@
 import QtQuick 2.12
 import QtQuick.Window 2.12
+import QtQuick.Controls 2.0
 
 import Paint 1.0
 
-Window {
+ApplicationWindow {
     id: myWin
     visible: true
     width: 640
@@ -12,6 +13,11 @@ Window {
 
     signal keyPressed(int event_key)
     signal keyReleased(int event_key)
+    signal closingWindow();
+
+    onClosing: {
+        closingWindow();
+    }
 
 
     Item {

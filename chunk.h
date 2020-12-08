@@ -23,6 +23,7 @@ class Chunk: public File
 public:
 
     Chunk(QVector3D chunkPosition);
+    ~Chunk();
 
     QVector3D getPosition(){return m_pos;}
 
@@ -37,6 +38,7 @@ public:
     UnitSpace * getTile(QVector3D p);
 
 
+    void destroy();
 private:
     QVector3D m_pos;
 

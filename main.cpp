@@ -2,6 +2,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
+#include <QPointer>
 
 #include <engine.h>
 #include <paintgrid.h>
@@ -17,7 +18,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
 
-    QQmlApplicationEngine * engine = new QQmlApplicationEngine;
+    QPointer<QQmlApplicationEngine> engine = new QQmlApplicationEngine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
@@ -35,8 +36,8 @@ int main(int argc, char *argv[])
 
 
 
-    QQuickWindow * window = qobject_cast<QQuickWindow*>(engine->rootObjects().at(0));
-    Engine * e = new Engine(nullptr, engine, window);
+    QPointer<QQuickWindow> window = qobject_cast<QQuickWindow*>(engine->rootObjects().at(0));
+    Engine e(nullptr, engine.data(), window.data());
 
     return app.exec();
 }

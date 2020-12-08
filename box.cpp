@@ -1,6 +1,7 @@
 #include "box.h"
 
 #include <constants.h>
+#include <QDebug>
 
 Box::Box()
 {
@@ -50,14 +51,19 @@ QVector<QVector3D> Box::getOccupiedTiles()
 {
     QVector<QVector3D> out;
 
-    QVector3D vector = get111() / Constants::tile_width_pixels - m_position / Constants::tile_width_pixels;
-    for(int x = 0; x <= vector.x(); x++){
-        for(int y = 0; y <= vector.y(); y++){
-            for(int z = 0; z <= vector.z(); z++){
-                out.append(m_position/Constants::tile_width_pixels + QVector3D(x,y,z));
+    QVector3D p1 = get000() / Constants::tile_width_pixels;
+    QVector3D p2 = get111() / Constants::tile_width_pixels;
+
+    QVector3D start = QVector3D(int(p1.x()),int(p1.y()),int(p1.z()));
+    QVector3D end = QVector3D(int(p2.x()),int(p2.y()),int(p2.z()));
+    for(int x = start.x(); x <= end.x(); x++){
+        for(int y = start.y(); y <= end.y(); y++){
+            for(int z = start.z(); z <= end.z(); z++){
+                out.append(QVector3D(x,y,z));
             }
         }
     }
+    //qDebug()<<start<<end<<"divider"<<out;
     return out;
 }
 

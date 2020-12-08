@@ -14,6 +14,7 @@ class UnitSpace
 {
 public:
     UnitSpace(QVector3D position);
+    virtual ~UnitSpace();
 
     virtual bool collision_player() = 0;
 
@@ -56,6 +57,7 @@ public:
     QQuickItem * getObj(){return m_obj;}
 
     void updateDisplay();
+    void destroy();
 
 protected:
     QVector3D m_position;

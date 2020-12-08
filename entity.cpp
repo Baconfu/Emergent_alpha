@@ -12,6 +12,12 @@ Entity::Entity()
     initialiseContextList();
 }
 
+Entity::~Entity()
+{
+    m_obj->deleteLater();
+    delete(m_geometry);
+}
+
 void Entity::setRotation(int rotation)
 {
     m_rotation = rotation;
@@ -61,15 +67,24 @@ void Entity::assignObj(QQuickItem *obj)
 
 void Entity::iterate()
 {
-    for(int i=0; i<interactingEntities.length(); i++){
-        interact(interactingEntities[i]);
-    }
+
 
     if (m_acceleration.length() > 0.01){
         //setVelocity(getVelocity()+getAcceleration());
     }
+
     if (m_velocity.length() > 0.01) {
         m_geometry->transform(m_velocity);
+    }
+
+    for(int i=0; i<interactingEntities.length(); i++){
+        interact(interactingEntities[i]);
+    }
+    for(int i=0; i<interactingTiles.length(); i++){
+        if(interactingTiles[i]->collision_player()){
+            collide(interactingTiles[i]->getBox());
+        }
+
     }
 
     updateDisplay();
@@ -108,19 +123,11 @@ bool Entity::collide(Box box)
         }
         transform *= -1;
 
-        m_geometry->transform(transform);
+        m_geometry->transform(transform*0.99);
 
         //the velocity of the entity on the axis of collision should be set to 0.
         //the axis of collision corresponds to the non-zero part of QVector3D transform.
-        if(transform[0] != 0){
-            setVelocityX(0);
-        }
-        if(transform[1] != 0){
-            setVelocityY(0);
-        }
-        if(transform[2] != 0){
-            setVelocityZ(0);
-        }
+
 
         return true;
 
@@ -146,14 +153,17 @@ bool Entity::collide(Box box)
 void Entity::updateDisplay()
 {
     m_obj->setPosition(World::get2DProjection(m_geometry->get001()));
-    qDebug()<<World::get2DProjection(m_geometry->get001());
 
     m_obj->setWidth(m_geometry->width());
+    m_obj->setHeight(World::get2DProjection(m_geometry->get110()).y() - World::get2DProjection(m_geometry->get001()).y());
 
-    QVector3D alt = QVector3D(m_geometry->x(),m_geometry->y(),m_geometry->z()*-1);
-    m_obj->setHeight(World::get2DProjection(alt).y());
+    m_obj->setZ(float(m_geometry->get110().y()-0.1) / Constants::tile_width_pixels + float(m_geometry->get110().z()/100.0/Constants::tile_width_pixels));
+}
 
-    m_obj->setZ(float(m_geometry->get110().y()) / Constants::tile_width_pixels + float(m_geometry->get110().z()/100.0/Constants::tile_width_pixels));
+void Entity::destroy()
+{
+    m_obj->deleteLater();
+    delete(m_geometry);
 }
 
 

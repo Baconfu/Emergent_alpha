@@ -8,6 +8,13 @@ Chunk::Chunk(QVector3D chunkPosition)
     m_pos = chunkPosition;
 }
 
+Chunk::~Chunk()
+{
+    for(int i=0; i<spaces.length(); i++){
+        delete(spaces[i]);
+    }
+}
+
 QVector<UnitSpace*> Chunk::loadChunkFromFile()
 {
     QString file_name = "chunk_" + QString::number(m_pos.x()) + "_" + QString::number(m_pos.y()) + ".json";
@@ -72,3 +79,4 @@ UnitSpace *Chunk::getTile(QVector3D p)
 {
     return spaces[Constants::chunk_layer_count_tiles * p.z() + Constants::chunk_width_tiles * p.y() + p.x()];
 }
+

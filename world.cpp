@@ -1,6 +1,7 @@
 #include "world.h"
 
 #include <QElapsedTimer>
+#include <QScopedPointer>
 
 #include <constants.h>
 #include <entity.h>
@@ -67,6 +68,16 @@ World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coord
 
 }
 
+World::~World()
+{
+    for(int i=0; i<entityList.length(); i++){
+        delete(entityList[i]);
+    }
+    for(int i=0; i<chunk_ptr_list.length(); i++){
+        delete(chunk_ptr_list[i]);
+    }
+    delete(entityCreator);
+}
 
 
 void World::registerEntityToTile(Entity* entity)
@@ -78,6 +89,7 @@ void World::registerEntityToTile(Entity* entity)
         occupiedTiles.append(getTile(occupied[i]));
     }
 
+    //qDebug()<<occupied;
 
     entity->setInteractingTiles(occupiedTiles);
 
@@ -238,7 +250,7 @@ bool World::chunkAlreadyLoaded(QVector3D pos)
 
 void World::loadUnitSpaceGraphics(UnitSpace * space)
 {
-    QQuickItem * obj;
+    QQuickItem * obj = nullptr;
     if(typeid (*space) == typeid (Terrain)){
         QQmlComponent component(m_appEngine,QUrl("qrc:/terrain.qml"));
         obj = qobject_cast<QQuickItem*>(component.create());

@@ -8,6 +8,11 @@ UnitSpace::UnitSpace(QVector3D position)
 
 }
 
+UnitSpace::~UnitSpace()
+{
+    m_obj->deleteLater();
+}
+
 Box UnitSpace::getBox()
 {
     Box b;
@@ -35,4 +40,5 @@ void UnitSpace::updateDisplay()
     m_obj->setHeight(World::get2DProjection(alt * Constants::tile_width_pixels).ry());
     m_obj->setZ(float(m_position.y()) + float(m_position.z())/100.0);
 }
+
 

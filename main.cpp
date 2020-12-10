@@ -3,6 +3,7 @@
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
 #include <QPointer>
+#include <QSharedPointer>
 
 #include <engine.h>
 #include <paintgrid.h>
@@ -18,9 +19,9 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
 
-    QPointer<QQmlApplicationEngine> engine = new QQmlApplicationEngine;
+    QSharedPointer<QQmlApplicationEngine> engine = QSharedPointer<QQmlApplicationEngine>(new QQmlApplicationEngine);
     const QUrl url(QStringLiteral("qrc:/main.qml"));
-    QObject::connect(engine, &QQmlApplicationEngine::objectCreated,
+    QObject::connect(engine.data(), &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
         if (!obj && url == objUrl)
             QCoreApplication::exit(-1);
@@ -34,9 +35,7 @@ int main(int argc, char *argv[])
     engine->load(url);
 
 
-
-
-    QPointer<QQuickWindow> window = qobject_cast<QQuickWindow*>(engine->rootObjects().at(0));
+    QSharedPointer<QQuickWindow> window = QSharedPointer<QQuickWindow>(qobject_cast<QQuickWindow*>(engine->rootObjects().at(0)));
     Engine e(nullptr, engine.data(), window.data());
 
     return app.exec();

@@ -37,7 +37,8 @@ Entity* EntityCreator::createEntity(int type)
     obj->setParent(m_appEngine);
     out->assignObj(obj);
 
-    delete(component);
+    //delete(component);
+    //qDebug()<<out<<2<<out->geometry();
     return out;
 }
 
@@ -55,6 +56,7 @@ Entity* EntityCreator::createLadder()
                                             Constants::tile_width_pixels*detectionBoxWidthProportion,
                                             Constants::tile_width_pixels*detectionBoxHeightProportion,
                                             Constants::tile_width_pixels));
+    return newLadder;
 }
 
 Entity *EntityCreator::createPlayer()

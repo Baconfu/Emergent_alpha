@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QPointer>
+#include <QSharedPointer>
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
 #include <QQuickItem>
@@ -23,11 +24,11 @@ public:
 
 
 private:
-    QPointer<QQuickWindow> m_window = nullptr;
-    QPointer<QQmlApplicationEngine> m_appEngine = nullptr;
-    QPointer<QQuickItem> root = nullptr;
+    QSharedPointer<QQuickWindow> m_window = nullptr;
+    QSharedPointer<QQmlApplicationEngine> m_appEngine = nullptr;
+    QSharedPointer<QQuickItem> root = nullptr;
 
-    QPointer<QTimer> timer = nullptr;
+    QSharedPointer<QTimer> timer = nullptr;
 
     TestAssistant * tester = nullptr;
 

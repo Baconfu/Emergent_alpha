@@ -13,6 +13,10 @@ public:
     void transform(QVector3D vector){m_position += vector;}
     void setDimensions(QVector3D dimensions){m_dimensions = dimensions;}
 
+    void setX(float x){m_position.setX(x);}
+    void setY(float y){m_position.setY(y);}
+    void setZ(float z){m_position.setZ(z);}
+
     QVector3D position(){return m_position;}
     QVector3D dimensions(){return m_dimensions;}
 
@@ -34,6 +38,8 @@ public:
     QVector3D get110();
     QVector3D get111();
 
+    void rotate(int direction);
+
 
     QVector<QVector3D> getOccupiedTiles();
 
@@ -41,8 +47,9 @@ public:
     bool isColliding(Box);
 
 private:
-    QVector3D m_position = QVector3D();
-    QVector3D m_dimensions = QVector3D();
+    int rotation = 0;
+    QVector3D m_position = QVector3D(0,0,0);
+    QVector3D m_dimensions = QVector3D(0,0,0);
 };
 
 #endif // BOX_H

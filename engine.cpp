@@ -7,10 +7,10 @@
 Engine::Engine(QObject *parent, QQmlApplicationEngine *engine, QQuickWindow *window):
     QObject(parent)
 {
-    m_appEngine = engine;
-    m_window = window;
+    m_appEngine = QSharedPointer<QQmlApplicationEngine>(engine);
+    m_window = QSharedPointer<QQuickWindow> (window);
 
-    root = window->findChild<QQuickItem*>("root");
+    root = QSharedPointer<QQuickItem>(window->findChild<QQuickItem*>("root"));
 
     connect(window,SIGNAL(keyPressed(int)),this,SLOT(keyPressed(int)));
     connect(window,SIGNAL(keyReleased(int)),this,SLOT(keyReleased(int)));
@@ -18,10 +18,10 @@ Engine::Engine(QObject *parent, QQmlApplicationEngine *engine, QQuickWindow *win
 
     loadWorld();
 
-    timer = new QTimer();
+    timer = QSharedPointer<QTimer>(new QTimer);
     timer->setInterval(18);
 
-    connect(timer,SIGNAL(timeout()),this,SLOT(timeout()));
+    connect(timer.data(),SIGNAL(timeout()),this,SLOT(timeout()));
 
     tester = new TestAssistant(world);
 

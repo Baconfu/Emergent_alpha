@@ -29,11 +29,12 @@ public:
         Entity::setContext(state,desired);
         if (state == climbing) {
             if (desired == false){
-                setVelocityZ(0);
+
             }
         }
     }
 
+    void climb(bool);
 
     void iterate();
 
@@ -41,7 +42,12 @@ public:
 
 
 private:
+    bool upPressed = false;
+    bool downPressed = false;
+    bool leftPressed = false;
+    bool rightPressed = false;
 
+    int tally = 0; //for debug purposes only
 
     float travel_speed = 1;
 

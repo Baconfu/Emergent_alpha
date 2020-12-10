@@ -29,7 +29,7 @@ World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coord
 
     //Creating player
     initialiseEntityIDDictionary();
-    Entity * entity = entityCreator->createEntity(EntityCreator::player);
+    Entity * entity = createEntity(EntityCreator::player,QVector3D(0,0,0),0);
     appendEntity(entity);
     player = dynamic_cast<Player*>(entity);
 
@@ -51,10 +51,10 @@ World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coord
     chunk_ptr_list.append(loadChunk(QVector3D(0,0,0)));
 
 
-    entityCreator->createEntity(EntityCreator::ladder);
+    entityList.append(createEntity(EntityCreator::ladder,QVector3D(30,60,0),0));
 
-    entityCreator->createEntity(EntityCreator::ladder);
-    entityCreator->createEntity(EntityCreator::ladder);
+    //entityCreator->createEntity(EntityCreator::ladder);
+    //entityCreator->createEntity(EntityCreator::ladder);
 
     //qDebug()<<"tiles occupied by ladder"<<entityList[0]->getTilesOccupied();
     //qDebug()<<"entities registered to (1,2,0)"<<getTilePtrFromTilePosition(QVector3D(1,2,0))->getEntitiesOnTile();
@@ -65,7 +65,6 @@ World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coord
               ->getEntitiesOnThisUnitSpace();*/
 
     //getChunk(getChunkFromTile( global tile position ))->getSpace( getTilePositionInChunk( global tile position ));
-
 }
 
 World::~World()
@@ -120,9 +119,7 @@ void World::iterate()
     //it is desirable for all entities to iterate before evaluating interactions.
 
     //Entities iterate
-    for (int i = 0 ; i<entityList.length() ; i++){
-        entityList[i]->iterate();
-    }
+
     //remove footprints from previous iteration
     for(int i=0; i<entityList.length(); i++){
         entityList[i]->unregisterFromTiles();
@@ -131,7 +128,9 @@ void World::iterate()
     for(int i=0; i<entityList.length(); i++){
         registerEntityToTile(entityList[i]);
     }
-
+    for (int i = 0 ; i<entityList.length() ; i++){
+        entityList[i]->iterate();
+    }
 
 }
 
@@ -276,9 +275,10 @@ void World::resolveCollision(Entity *entity, UnitSpace *space)
 Entity *World::createEntity(int type, QVector3D position, int rotation)
 {
     Entity * entity = entityCreator->createEntity(type);
-
     entity->geometry()->setPosition(position);
     entity->setRotation(rotation);
+
+    return entity;
 
 }
 

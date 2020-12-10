@@ -47,6 +47,18 @@ QVector3D Box::get111()
     return QVector3D(m_position.x()+m_dimensions.x(),m_position.y()+m_dimensions.y(),m_position.z()+m_dimensions.z());
 }
 
+void Box::rotate(int direction)
+{
+
+    /* WORK IN PROGRESS
+    int delta = direction - rotation;
+    if(delta<0){
+        delta +=4;
+    }
+    delta*/
+
+}
+
 QVector<QVector3D> Box::getOccupiedTiles()
 {
     QVector<QVector3D> out;

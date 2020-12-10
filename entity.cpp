@@ -8,7 +8,7 @@
 
 Entity::Entity()
 {
-    m_geometry = new Box();
+    m_geometry = new Box;
     initialiseContextList();
 }
 
@@ -44,7 +44,7 @@ void Entity::setInteractingTiles(QVector<UnitSpace *> tiles)
 {
     interactingTiles = tiles;
     for(int i=0; i<interactingTiles.length(); i++){
-        interactingTiles[i]->assignEntity(this);
+
         QVector<Entity*> entities = interactingTiles[i]->getEntitiesOnTile();
         for(int j=0; j<entities.length(); j++){
             if(!interactingEntities.contains(entities[j])){
@@ -52,6 +52,7 @@ void Entity::setInteractingTiles(QVector<UnitSpace *> tiles)
                 entities[j]->appendInteractingEntity(this);
             }
         }
+        interactingTiles[i]->assignEntity(this);
     }
 }
 
@@ -69,12 +70,17 @@ void Entity::iterate()
 {
 
 
+
     if (m_acceleration.length() > 0.01){
         //setVelocity(getVelocity()+getAcceleration());
     }
 
     if (m_velocity.length() > 0.01) {
         m_geometry->transform(m_velocity);
+    }
+    if(m_geometry->position().z() <= 0){
+        m_geometry->setZ(0);
+        setVelocityZ(0);
     }
 
     for(int i=0; i<interactingEntities.length(); i++){
@@ -84,8 +90,8 @@ void Entity::iterate()
         if(interactingTiles[i]->collision_player()){
             collide(interactingTiles[i]->getBox());
         }
-
     }
+    interactingEntities.clear();
 
     updateDisplay();
 
@@ -104,26 +110,26 @@ bool Entity::collide(Box box)
         QVector3D transform = QVector3D(100,100,100);
 
         if(v2.x() * -1 < transform.length()){
-            transform = QVector3D(v2.x(), 0, 0);
+            transform = QVector3D(v2.x() + 0.1, 0, 0);
         }
         if(v2.y() * -1 < transform.length()){
-            transform = QVector3D(0, v2.y(), 0);
+            transform = QVector3D(0, v2.y() + 0.1, 0);
         }
         if(v2.z() * -1 < transform.length()){
-            transform = QVector3D(0, 0, v2.z());
+            transform = QVector3D(0, 0, v2.z() + 0.1);
         }
         if(v1.x() < transform.length()){
-            transform = QVector3D(v1.x(), 0, 0);
+            transform = QVector3D(v1.x() - 0.1, 0, 0);
         }
         if(v1.y() < transform.length()){
-            transform = QVector3D(0, v1.y(), 0);
+            transform = QVector3D(0, v1.y() - 0.1, 0);
         }
         if(v1.z() < transform.length()){
-            transform = QVector3D(0, 0, v1.z());
+            transform = QVector3D(0, 0, v1.z() - 0.1);
         }
         transform *= -1;
 
-        m_geometry->transform(transform*0.99);
+        m_geometry->transform(transform);
 
         //the velocity of the entity on the axis of collision should be set to 0.
         //the axis of collision corresponds to the non-zero part of QVector3D transform.
@@ -157,7 +163,7 @@ void Entity::updateDisplay()
     m_obj->setWidth(m_geometry->width());
     m_obj->setHeight(World::get2DProjection(m_geometry->get110()).y() - World::get2DProjection(m_geometry->get001()).y());
 
-    m_obj->setZ(float(m_geometry->get110().y()-0.1) / Constants::tile_width_pixels + float(m_geometry->get110().z()/100.0/Constants::tile_width_pixels));
+    m_obj->setZ(float(m_geometry->get110().y()-0.5) / Constants::tile_width_pixels + float(m_geometry->get110().z()/100.0/Constants::tile_width_pixels));
 }
 
 void Entity::destroy()

@@ -88,13 +88,13 @@ protected:
     QVector<UnitSpace*> interactingTiles;
     QVector<Entity*> interactingEntities;
 
-    Box * m_geometry;
+    Box * m_geometry = nullptr;
 
-    QVector3D m_velocity;
+    QVector3D m_velocity = QVector3D(0,0,0);
 
-    QVector3D m_acceleration;
+    QVector3D m_acceleration = QVector3D(0,0,-0.1);
 
-    float m_mass;
+    float m_mass = 0;
 
     QQuickItem * m_obj = nullptr;
 

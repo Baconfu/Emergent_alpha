@@ -29,7 +29,7 @@ World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coord
 
     //Creating player
     initialiseEntityIDDictionary();
-    Entity * entity = createEntity(EntityCreator::player,QVector3D(0,0,0),0);
+    Entity * entity = createEntity(EntityCreator::player,QVector3D(0,0,30),0);
     appendEntity(entity);
     player = dynamic_cast<Player*>(entity);
 
@@ -51,7 +51,8 @@ World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coord
     chunk_ptr_list.append(loadChunk(QVector3D(0,0,0)));
 
 
-    entityList.append(createEntity(EntityCreator::ladder,QVector3D(30,60,0),0));
+    entityList.append(createEntity(EntityCreator::ladder,QVector3D(30,30,30),0));
+    entityList.append(createEntity(EntityCreator::ladder,QVector3D(30,30,60),0));
 
     //entityCreator->createEntity(EntityCreator::ladder);
     //entityCreator->createEntity(EntityCreator::ladder);

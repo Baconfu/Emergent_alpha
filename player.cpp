@@ -189,7 +189,7 @@ void Player::iterate()
 
     if (m_acceleration.length() > 0.01){
         if(!getContext(climbing)){
-            setVelocity(getVelocity()+getAcceleration());
+            //setVelocity(getVelocity()+getAcceleration());
 
         }
 
@@ -215,6 +215,8 @@ void Player::iterate()
     }
     for(int i=0; i<interactingTiles.length(); i++){
         if(interactingTiles[i]->collision_player()){
+            qDebug()<<tally<<interactingTiles[i]->position();
+            tally+=1;
             collide(interactingTiles[i]->getBox());
         }
     }

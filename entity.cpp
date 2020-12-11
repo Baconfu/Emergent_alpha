@@ -6,6 +6,8 @@
 #include <player.h>
 #include <chunk.h>
 
+#include <QElapsedTimer>
+
 Entity::Entity()
 {
     m_geometry = new Box;
@@ -93,6 +95,7 @@ void Entity::iterate()
     }
     interactingEntities.clear();
 
+
     updateDisplay();
 
 }
@@ -158,6 +161,7 @@ bool Entity::collide(Box box)
 
 void Entity::updateDisplay()
 {
+
     m_obj->setPosition(World::get2DProjection(m_geometry->get001()));
 
     m_obj->setWidth(m_geometry->width());

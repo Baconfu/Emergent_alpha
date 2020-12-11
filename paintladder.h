@@ -1,6 +1,8 @@
 #ifndef PAINTLADDER_H
 #define PAINTLADDER_H
 
+#include <QDir>
+#include <QImage>
 #include <QQuickPaintedItem>
 #include <ladder.h>
 
@@ -20,6 +22,7 @@ public:
     int rotation(){return m_painted_rotation;}
 
 private:
+    QImage src;
     int m_painted_rotation;
 
 signals:

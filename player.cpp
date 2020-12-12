@@ -189,7 +189,7 @@ void Player::iterate()
 
     if (m_acceleration.length() > 0.01){
         if(!getContext(climbing)){
-            //setVelocity(getVelocity()+getAcceleration());
+            setVelocity(getVelocity()+getAcceleration());
 
         }
 

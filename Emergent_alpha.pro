@@ -15,12 +15,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         air.cpp \
-        box.cpp \
+    box.cpp \
         chunk.cpp \
         constants.cpp \
         engine.cpp \
         entity.cpp \
-        entitycreator.cpp \
+    entitycreator.cpp \
         file.cpp \
         interface.cpp \
         ladder.cpp \
@@ -33,7 +33,7 @@ SOURCES += \
         testassistant.cpp \
         unitspace.cpp \
         world.cpp \
-        paintladder.cpp
+    paintladder.cpp
 
 RESOURCES += qml.qrc
 

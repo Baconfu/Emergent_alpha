@@ -3,13 +3,13 @@
 
 #include <QQuickPaintedItem>
 
-class PaintPlayer: public QQuickPaintedItem
+class PaintPlayerAvatar: public QQuickPaintedItem
 {
     Q_OBJECT
     Q_PROPERTY(int m_anim READ anim WRITE setAnim NOTIFY animChanged)
 public:
-    PaintPlayer(QQuickItem * parent = nullptr);
-    ~PaintPlayer();
+    PaintPlayerAvatar(QQuickItem * parent = nullptr);
+    ~PaintPlayerAvatar();
 
     void paint(QPainter *painter);
 

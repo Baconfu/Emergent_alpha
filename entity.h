@@ -6,108 +6,63 @@
 #include <QVector2D>
 #include <QVector3D>
 
+#include <world.h>
 
-#include <box.h>
-#include <unitspace.h>
-
-class World;
 
 class Entity
 {
 public:
-    Entity();
-    virtual ~Entity();
+    Entity(QVector3D position);
 
-    Box * geometry(){return m_geometry;}
+    QVector3D position(){return m_position;}
 
-    void setRotation(int rotation);
-    int getRotation(){return m_rotation;}
-    QPoint getCardinalRotation();
+    void setPosition(QVector3D position);
+    void setX(float x){m_position.setX(x);}
+    void setY(float y){m_position.setY(y);}
+    void setZ(float z){m_position.setZ(z);}
+    float x(){return m_position.x();}
+    float y(){return m_position.y();}
+    float z(){return m_position.z();}
+
+    QVector3D dimensions(){return m_dimensions;}
+    void setDimensions(QVector3D dimensions){m_dimensions = dimensions;}
+    void setWidth(float width);
+    void setHeight(float height);
+    void setDepth(float depth);
+    float width(){return m_dimensions.x();}
+    float height(){return m_dimensions.y();}
+    float depth(){return m_dimensions.z();}
 
 
-    void unregisterFromTiles();
-
-    void setInteractingTiles(QVector<UnitSpace*> tiles);
-    void appendInteractingEntity(Entity * e);
-
+    virtual void transform(QVector3D vector);
 
     void setVelocity(QVector3D vec){m_velocity = vec;}
-    void setVelocityX(float x){m_velocity.setX(x);}
-    void setVelocityY(float y){m_velocity.setY(y);}
-    void setVelocityZ(float z){m_velocity.setZ(z);}
+    void setVelocityX(int x){m_velocity.setX(x);}
+    void setVelocityY(int y){m_velocity.setY(y);}
+    void setVelocityZ(int z){m_velocity.setZ(z);}
     QVector3D getVelocity(){return m_velocity;}
-    void resetVelocity() {m_velocity = QVector3D (0,0,0);}
 
-    void setAcceleration(QVector3D acc){m_acceleration = acc;}
-    void setAccelerationX(float x){m_acceleration.setX(x);}
-    void setAccelerationY(float y){m_acceleration.setY(y);}
-    void setAccelerationZ(float z){m_acceleration.setZ(z);}
-    QVector3D getAcceleration(){return m_acceleration;}
+    virtual QVector3D currentTile();
+
 
     QQuickItem * getObj(){return m_obj;}
     void assignObj(QQuickItem * obj);
 
-    QVector3D previous_position;
-
-
-    virtual void iterate();
-    bool collide(Box box);
-
-    virtual void interact(Entity*) = 0;
-
-    enum state{
-        in_air = 0,
-
-        supported = 100,
-        climbing = 101,
-        detection = 3,
-        collision = 4,
-
-    };
-
-    bool getContext(int state) {return m_context_list[state];}
-    virtual void setContext(int state, bool desired) {m_context_list.replace(state,desired);}
-
-    void initialiseContextList() {
-        for (int i=0; i<contextListLength; i++){
-            m_context_list.append(false);
-        }
-    }
-
-
-    virtual void updateDisplay();
-
-    void destroy();
+    void updateDisplay();
 
 protected:
 
+    QVector3D m_position;
 
+    QVector3D m_dimensions;
 
-    World * m_worldptr = nullptr;
-
-    QVector<UnitSpace*> interactingTiles;
-    QVector<Entity*> interactingEntities;
-
-    Box * m_geometry = nullptr;
-
-    QVector3D m_velocity = QVector3D(0,0,0);
-
-    QVector3D m_acceleration = QVector3D(0,0,-0.1);
-
-    float m_mass = 0;
+    QVector3D m_velocity;
 
     QQuickItem * m_obj = nullptr;
 
 
 private:
-
-    QVector<bool> m_context_list;
-    int contextListLength = static_cast<int>(102);
-
-    int m_rotation = 0;
-
-
-
+    float m_depth = 0;
 
 };
 

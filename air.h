@@ -13,12 +13,6 @@ public:
     QString type(){return QStringLiteral("air");}
 
     bool collision_player(){return false;}
-
-
-private:
-    float temperature;
-    float pressure;
-    float humidity;
 };
 
 #endif // AIR_H

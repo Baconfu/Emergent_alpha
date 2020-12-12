@@ -8,7 +8,6 @@
 #include <QJsonArray>
 #include <QPoint>
 #include <QVector>
-#include <QVector3D>
 
 #include <air.h>
 #include <constants.h>
@@ -22,10 +21,9 @@ class Chunk: public File
 
 public:
 
-    Chunk(QVector3D chunkPosition);
-    ~Chunk();
+    Chunk(QPoint chunkPosition);
 
-    QVector3D getPosition(){return m_pos;}
+    QPoint getPosition(){return m_pos;}
 
     QVector<UnitSpace*> loadChunkFromFile();
     UnitSpace * loadSpace(QJsonObject j,QVector3D position);
@@ -35,16 +33,15 @@ public:
 
     void setChunkData(QVector<UnitSpace*> chunk_data);
 
-    UnitSpace * getTile(QVector3D p);
+    UnitSpace * getSpace(QVector3D p);
 
 
-    void destroy();
 private:
-    QVector3D m_pos;
+    QPoint m_pos;
 
     QVector<UnitSpace*> spaces;
 
-    QString path_temp = "D:\\Qt\\build-Emergent_alpha-Desktop_Qt_5_12_0_MinGW_64_bit-Debug\\data\\chunks";
+    QString path_temp = "C:\\Users\\lixia\\Documents\\qt_projects\\Emergent_alpha\\data\\chunks\\";
 
     QJsonObject m_obj;
 

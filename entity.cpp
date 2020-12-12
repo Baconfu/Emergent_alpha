@@ -2,188 +2,57 @@
 #include <math.h>
 
 #include <constants.h>
-#include <ladder.h>
-#include <player.h>
-#include <chunk.h>
 
-#include <QElapsedTimer>
-
-Entity::Entity()
+Entity::Entity(QVector3D position)
 {
-    m_geometry = new Box;
-    initialiseContextList();
+    m_position = position;
 }
 
-Entity::~Entity()
+void Entity::setPosition(QVector3D position)
 {
-    m_obj->deleteLater();
-    delete(m_geometry);
+    m_position = position;
 }
 
-void Entity::setRotation(int direction)
+void Entity::setWidth(float width)
 {
+    m_dimensions.setX(width);
+}
 
-    //eight directions: 0 - 7. Collision box is an oblong, thus does not change when rotating 180 degrees
-    //This if statement is true if it is not a 180 degree rotation
-    if(abs(m_rotation - direction) % 4 != 0){
-        m_geometry->rotate();
-    }
+void Entity::setHeight(float height)
+{
+    m_dimensions.setY(height);
+}
 
+void Entity::setDepth(float depth)
+{
+    m_dimensions.setZ(depth);
+}
 
-    m_rotation = direction;
+void Entity::transform(QVector3D vector)
+{
+    setPosition(m_position + vector);
 
 }
 
-QPoint Entity::getCardinalRotation() {
-    if (m_rotation == 0) {return QPoint(0,-1);}
-    if (m_rotation == 1) {return QPoint(1,0);}
-    if (m_rotation == 2) {return QPoint(0,1);}
-    if (m_rotation == 3) {return QPoint(-1,0);}
-    return QPoint(0,0);
-}
-
-void Entity::unregisterFromTiles()
+QVector3D Entity::currentTile()
 {
-    for(int i=0; i<interactingTiles.length(); i++){
-        interactingTiles[i]->removeEntity(this);
-    }
-    interactingTiles.clear();
-}
-
-
-void Entity::setInteractingTiles(QVector<UnitSpace *> tiles)
-{
-    interactingTiles = tiles;
-    for(int i=0; i<interactingTiles.length(); i++){
-
-        QVector<Entity*> entities = interactingTiles[i]->getEntitiesOnTile();
-        for(int j=0; j<entities.length(); j++){
-            if(!interactingEntities.contains(entities[j])){
-                appendInteractingEntity(entities[j]);
-                entities[j]->appendInteractingEntity(this);
-            }
-        }
-        interactingTiles[i]->assignEntity(this);
-    }
-}
-
-void Entity::appendInteractingEntity(Entity *e)
-{
-    interactingEntities.append(e);
+    return QVector3D(m_position.x() / Constants::tile_width_pixels , m_position.y() / Constants::tile_width_pixels , m_position.z() / Constants::tile_width_pixels);
 }
 
 void Entity::assignObj(QQuickItem *obj)
 {
     m_obj = obj;
-}
 
-void Entity::iterate()
-{
-
-
-
-    if (m_acceleration.length() > 0.01){
-        //setVelocity(getVelocity()+getAcceleration());
-    }
-
-    if (m_velocity.length() > 0.01) {
-        m_geometry->transform(m_velocity);
-    }
-    if(m_geometry->position().z() <= 0){
-        m_geometry->setZ(0);
-        setVelocityZ(0);
-    }
-
-    for(int i=0; i<interactingEntities.length(); i++){
-        interact(interactingEntities[i]);
-    }
-    for(int i=0; i<interactingTiles.length(); i++){
-        if(interactingTiles[i]->collision_player()){
-            collide(interactingTiles[i]->getBox());
-        }
-    }
-    interactingEntities.clear();
-
-
-    updateDisplay();
 
 }
-
-bool Entity::collide(Box box)
-{
-    QVector3D v1 = m_geometry->get111() - box.get000();
-    QVector3D v2 = m_geometry->get000() - box.get111();
-
-    if(v2.x() < 0 && v2.y() < 0 && v2.z() < 0 && v1.x() > 0 && v1.y() > 0 && v1.z() > 0){
-        //entity box overlaps with space
-
-
-        //transform vector: shortest distance to get the entity outside of the space.
-        QVector3D transform = QVector3D(100,100,100);
-
-        if(v2.x() * -1 < transform.length()){
-            transform = QVector3D(v2.x() + 0.1, 0, 0);
-        }
-        if(v2.y() * -1 < transform.length()){
-            transform = QVector3D(0, v2.y() + 0.1, 0);
-        }
-        if(v2.z() * -1 < transform.length()){
-            transform = QVector3D(0, 0, v2.z() + 0.1);
-        }
-        if(v1.x() < transform.length()){
-            transform = QVector3D(v1.x() - 0.1, 0, 0);
-        }
-        if(v1.y() < transform.length()){
-            transform = QVector3D(0, v1.y() - 0.1, 0);
-        }
-        if(v1.z() < transform.length()){
-            transform = QVector3D(0, 0, v1.z() - 0.1);
-        }
-        transform *= -1;
-
-        m_geometry->transform(transform);
-
-        //the velocity of the entity on the axis of collision should be set to 0.
-        //the axis of collision corresponds to the non-zero part of QVector3D transform.
-
-
-        return true;
-
-    }
-
-    return false;
-
-}
-
-
-
-/*void Entity::updateProximalEntities()
-{
-    for (int i = 0; i<m_tiles_occupied.length(); i++){
-        for (int j = 0; j<Chunk::getSpacePtrFromLocalTilePosition(m_tiles_occupied[i])->getEntitiesOnTile().length(); j++){
-            m_proximal_entities.append(Chunk::getSpacePtrFromLocalTilePosition(World::getLocalTilePositionFromGlobalPosition(m_tiles_occupied[i]))->getEntitiesOnTile()[j]);
-
-        }
-    }
-}*/
-
 
 void Entity::updateDisplay()
 {
+    QVector3D adjust = QVector3D(m_position.x(),m_position.y(),m_position.z() + m_dimensions.z());
+    m_obj->setPosition(World::get2DProjection(adjust));
 
-    m_obj->setPosition(World::get2DProjection(m_geometry->get001()));
+    m_obj->setWidth(World::get2DProjection(m_dimensions).x());
 
-    m_obj->setWidth(m_geometry->width());
-    m_obj->setHeight(World::get2DProjection(m_geometry->get110()).y() - World::get2DProjection(m_geometry->get001()).y());
-
-    m_obj->setZ(float(m_geometry->get110().y()-0.5) / Constants::tile_width_pixels + float(m_geometry->get110().z()/100.0/Constants::tile_width_pixels));
+    QVector3D alt = QVector3D(m_dimensions.x(),m_dimensions.y(),m_dimensions.z() * -1);
+    m_obj->setHeight(World::get2DProjection(alt).y());
 }
-
-void Entity::destroy()
-{
-    m_obj->deleteLater();
-    delete(m_geometry);
-}
-
-
-

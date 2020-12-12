@@ -6,55 +6,35 @@
 
 #include <constants.h>
 #include <entity.h>
-#include <world.h>
 
 
 class Player: public Entity
 {
 public:
-    Player();
-    Player* getEntityPtr() {return this;}
+    Player(QVector3D position,QQuickItem * obj = nullptr);
 
     enum direction{
         left = 65,
         up = 87,
         right = 68,
-        down = 83,
+        down = 83
     };
 
     void move(int d);
     void stop(int d);
 
-    void setContext(int state, bool desired) {
-        Entity::setContext(state,desired);
-        if (state == climbing) {
-            if (desired == false){
+    QVector3D currentTile();
 
-            }
-        }
-    }
-
-    void climb(bool);
 
     void iterate();
 
-    void interact(Entity*);
-
 
 private:
-    bool upPressed = false;
-    bool downPressed = false;
-    bool leftPressed = false;
-    bool rightPressed = false;
-
-    int tally = 0; //for debug purposes only
 
     float travel_speed = 1;
 
     void resetAnimCycle();
     void incrementAnimCycle();
-
-
 };
 
 #endif // PLAYER_H

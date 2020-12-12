@@ -6,7 +6,7 @@ PaintTerrain {
     x: 0
     y: 0
     onZChanged: {
-        update
+        update()
     }
 
     width: 30

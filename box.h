@@ -38,7 +38,7 @@ public:
     QVector3D get110();
     QVector3D get111();
 
-    void rotate(int direction);
+    void rotate();
 
 
     QVector<QVector3D> getOccupiedTiles();

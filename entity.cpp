@@ -20,9 +20,18 @@ Entity::~Entity()
     delete(m_geometry);
 }
 
-void Entity::setRotation(int rotation)
+void Entity::setRotation(int direction)
 {
-    m_rotation = rotation;
+
+    //eight directions: 0 - 7. Collision box is an oblong, thus does not change when rotating 180 degrees
+    //This if statement is true if it is not a 180 degree rotation
+    if(abs(m_rotation - direction) % 4 != 0){
+        m_geometry->rotate();
+    }
+
+
+    m_rotation = direction;
+
 }
 
 QPoint Entity::getCardinalRotation() {

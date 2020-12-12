@@ -49,7 +49,7 @@ QSGNode *PaintTerrain::updatePaintNode(QSGNode * oldNode, QQuickItem::UpdatePain
 
 
         QSGFlatColorMaterial *topMaterial = new QSGFlatColorMaterial;
-        QColor topColor = QColor::fromRgb(70 + level*40, 70 + level*40 , 70 + level*40);
+        QColor topColor = QColor::fromRgb(160 + level*20 , 160 + level*20 , 160 + level*20);
         topMaterial->setColor(topColor);
 
         topNode->setMaterial(topMaterial);
@@ -67,7 +67,7 @@ QSGNode *PaintTerrain::updatePaintNode(QSGNode * oldNode, QQuickItem::UpdatePain
 
 
         QSGFlatColorMaterial *sideMaterial = new QSGFlatColorMaterial;
-        QColor sideColor = QColor::fromRgb(160 + level*30 , 160 + level*30 , 160 + level*30);
+        QColor sideColor = QColor::fromRgb(70 + level*40, 70 + level*40 , 70 + level*40);
         sideMaterial->setColor(sideColor);
 
         QSGGeometryNode * sideNode  = new QSGGeometryNode;
@@ -92,14 +92,15 @@ QSGNode *PaintTerrain::updatePaintNode(QSGNode * oldNode, QQuickItem::UpdatePain
             level = s[1].toInt();
         }
 
-        QColor topColor = QColor::fromRgb(70 + level*40, 70 + level*40 , 70 + level*40);
+        QColor topColor = QColor::fromRgb(160 + level*30 , 160 + level*30 , 160 + level*30);
         topMaterial->setColor(topColor);
 
-        QColor sideColor = QColor::fromRgb(160 + level*30 , 160 + level*30 , 160 + level*30);
+        QColor sideColor = QColor::fromRgb(70 + level*40, 70 + level*40 , 70 + level*40);
         sideMaterial->setColor(sideColor);
 
         m_topNode->setMaterial(topMaterial);
         m_sideNode->setMaterial(sideMaterial);
+
 
         m_topNode->markDirty(QSGNode::DirtyGeometry);
         m_sideNode->markDirty(QSGNode::DirtyGeometry);

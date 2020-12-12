@@ -2,13 +2,14 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
+#include <QPointer>
+#include <QSharedPointer>
 
 #include <engine.h>
 #include <paintgrid.h>
 #include <paintplayeravatar.h>
 #include <paintterrain.h>
-#include <paintuibase.h>
-#include <terraingeneration.h>
+#include <paintladder.h>
 
 
 int main(int argc, char *argv[])
@@ -18,27 +19,24 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
 
-    QQmlApplicationEngine * engine = new QQmlApplicationEngine;
+    QSharedPointer<QQmlApplicationEngine> engine = QSharedPointer<QQmlApplicationEngine>(new QQmlApplicationEngine);
     const QUrl url(QStringLiteral("qrc:/main.qml"));
-    QObject::connect(engine, &QQmlApplicationEngine::objectCreated,
+    QObject::connect(engine.data(), &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
         if (!obj && url == objUrl)
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
 
     qmlRegisterType<PaintGrid>("Paint",1,0,"PaintGrid");
-    qmlRegisterType<PaintPlayerAvatar>("Paint",1,0,"PaintAvatar");
+    qmlRegisterType<PaintPlayer>("Paint",1,0,"PaintPlayer");
     qmlRegisterType<PaintTerrain>("Paint",1,0,"PaintTerrain");
-    qmlRegisterType<PaintUIBase>("Paint",1,0,"PaintUiBase");
-    qmlRegisterType<TerrainGeneration>("Paint",1,0,"TerrainGeneration");
+    qmlRegisterType<PaintLadder>("Paint",1,0,"PaintLadder");
 
     engine->load(url);
 
 
-
-
-    QQuickWindow * window = qobject_cast<QQuickWindow*>(engine->rootObjects().at(0));
-    Engine * e = new Engine(nullptr, engine, window);
+    QSharedPointer<QQuickWindow> window = QSharedPointer<QQuickWindow>(qobject_cast<QQuickWindow*>(engine->rootObjects().at(0)));
+    Engine e(nullptr, engine.data(), window.data());
 
     return app.exec();
 }

@@ -15,27 +15,25 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         air.cpp \
+        box.cpp \
         chunk.cpp \
         constants.cpp \
         engine.cpp \
         entity.cpp \
+        entitycreator.cpp \
         file.cpp \
-        hex.cpp \
         interface.cpp \
+        ladder.cpp \
         main.cpp \
         paintgrid.cpp \
         paintplayeravatar.cpp \
         paintterrain.cpp \
-        paintuibase.cpp \
         player.cpp \
-        ridge.cpp \
-        tectonicplate.cpp \
         terrain.cpp \
-        terraingeneration.cpp \
         testassistant.cpp \
         unitspace.cpp \
         world.cpp \
-        worldgenerator.cpp
+        paintladder.cpp
 
 RESOURCES += qml.qrc
 
@@ -52,26 +50,24 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     air.h \
+    box.h \
     chunk.h \
     constants.h \
     engine.h \
     entity.h \
+    entitycreator.h \
     file.h \
-    hex.h \
     interface.h \
+    ladder.h \
     paintgrid.h \
     paintplayeravatar.h \
     paintterrain.h \
-    paintuibase.h \
     player.h \
-    ridge.h \
-    tectonicplate.h \
     terrain.h \
-    terraingeneration.h \
     testassistant.h \
     unitspace.h \
     world.h \
-    worldgenerator.h
+    paintladder.h
 
 DISTFILES += \
     Constants.json

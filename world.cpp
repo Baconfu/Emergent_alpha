@@ -1,19 +1,22 @@
 #include "world.h"
 
+#include <QElapsedTimer>
+#include <QScopedPointer>
 
 #include <constants.h>
 #include <entity.h>
-#include <interface.h>
 #include <player.h>
 #include <terrain.h>
 #include <testassistant.h>
-
+#include <ladder.h>
+#include <entitycreator.h>
+#include <math.h>
 
 
 World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coordinates)
 {
-    gen = QRandomGenerator();
 
+    gen = QRandomGenerator();
 
     //Pointers allows <World> to create and draw componenets.
     m_appEngine = engine;
@@ -22,9 +25,17 @@ World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coord
     //Root: the root item in the window. Base frame
     root = window->findChild<QQuickItem*>("root");
 
-    //load world from coordinates
+    entityCreator = new EntityCreator(engine);
 
-    //dev: generate 9 chunks
+    //Creating player
+    initialiseEntityIDDictionary();
+    Entity * entity = createEntity(EntityCreator::player,QVector3D(0,0,30),0);
+    appendEntity(entity);
+    player = dynamic_cast<Player*>(entity);
+
+
+    //-------------------------------------------- below: dev(temporary) -----------------------------------------
+
 
     /*
     for(int i=0; i<3; i++){
@@ -36,67 +47,95 @@ World::World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coord
         environment[i]->writeChunkToFile();
     }*/
 
-
-    //coordinates should refer to player position upon spawn
-
-    //Initialize player
-    player = new Player(QVector3D(0,0,0));
+    //Initialize 1st chunk
+    chunk_ptr_list.append(loadChunk(QVector3D(0,0,0)));
 
 
-    Interface * popup = newWarning("Test wrning");
-    popup->setParentItem(m_appEngine->rootObjects()[0]->findChild<QQuickItem*>("winBase"));
+    entityList.append(createEntity(EntityCreator::ladder,QVector3D(30,30,30),0));
+    entityList.append(createEntity(EntityCreator::ladder,QVector3D(30,30,60),0));
 
-    //Creating player avatar graphics
-    QQmlComponent component(engine,QUrl("qrc:/playerAvatar.qml"));
-    QQuickItem * obj = qobject_cast<QQuickItem*>(component.create());
-    //Parenting graphics item to player
-    obj->setParentItem(root);
-    obj->setParent(engine);
-    player->assignObj(obj);
+    //entityCreator->createEntity(EntityCreator::ladder);
+    //entityCreator->createEntity(EntityCreator::ladder);
 
-    player->setDimensions(QVector3D(20,20,40));
+    //qDebug()<<"tiles occupied by ladder"<<entityList[0]->getTilesOccupied();
+    //qDebug()<<"entities registered to (1,2,0)"<<getTilePtrFromTilePosition(QVector3D(1,2,0))->getEntitiesOnTile();
 
-    player->updateDisplay();
+    /*qDebug()<<"unit position entities:"<<getChunkPtrFromChunkPosition(
+                  getChunkPositionFromTilePosition(QVector3D(1,2,0)))
+              ->getSpacePtrFromLocalPosition(QVector3D(1,2,0))
+              ->getEntitiesOnThisUnitSpace();*/
+
+    //getChunk(getChunkFromTile( global tile position ))->getSpace( getTilePositionInChunk( global tile position ));
+}
+
+World::~World()
+{
+    for(int i=0; i<entityList.length(); i++){
+        delete(entityList[i]);
+    }
+    for(int i=0; i<chunk_ptr_list.length(); i++){
+        delete(chunk_ptr_list[i]);
+    }
+    delete(entityCreator);
+}
+
+
+void World::registerEntityToTile(Entity* entity)
+{
+
+    QVector<QVector3D> occupied = entity->geometry()->getOccupiedTiles();
+    QVector<UnitSpace*> occupiedTiles;
+    for(int i=0; i<occupied.length(); i++){
+        occupiedTiles.append(getTile(occupied[i]));
+    }
+
+    //qDebug()<<occupied;
+
+    entity->setInteractingTiles(occupiedTiles);
 
 }
+
 
 void World::iterate()
 {
-    player->iterate();
     updateCamera();
 
-
-    QVector<QPoint> screen_bounds;
+    QVector<QVector3D> screen_bounds;
     int screen_x = root->property("x").toInt();
     int screen_y = root->property("y").toInt();
-    screen_bounds.append(getChunkFromTile(getTileFromPixel(QVector3D(screen_x,screen_y,0))));
-    screen_bounds.append(getChunkFromTile(getTileFromPixel(QVector3D(screen_x + root->width(), screen_y,0))));
-    screen_bounds.append(getChunkFromTile(getTileFromPixel(QVector3D(screen_x,screen_y + root->height(),0))));
-    screen_bounds.append(getChunkFromTile(getTileFromPixel(QVector3D(screen_x + root->width(),screen_y + root->height(),0))));
+    int screen_z = player->geometry()->z();
+    screen_bounds.append(QVector3D(screen_x , screen_y , screen_z ));
+    screen_bounds.append(QVector3D(screen_x + root->width() , screen_y , screen_z ));
+    screen_bounds.append(QVector3D(screen_x , screen_y + root->height() , screen_z ));
+    screen_bounds.append(QVector3D(screen_x + root->width(), screen_y + root->height() , screen_z ));
 
     for(int i=0; i<screen_bounds.length(); i++){
-        if(!chunkAlreadyLoaded(screen_bounds[i])){
-            environment.append(loadChunk(screen_bounds[i]));
+        if(!chunkAlreadyLoaded(screen_bounds[i] / Constants::tile_width_pixels / Constants::chunk_width_tiles)){
+            chunk_ptr_list.append(loadChunk(screen_bounds[i] / Constants::tile_width_pixels / Constants::chunk_width_tiles));
         }
     }
 
 
+    //The following loops musn't be merged into one loop
+    //it is desirable for all entities to iterate before evaluating interactions.
 
+    //Entities iterate
 
-    QVector<QVector3D> player_space = tilesOccupied(player);
-    for(int i=0; i<player_space.length(); i++){
-        Chunk * chunk = getChunk(getChunkFromTile(player_space[i]));
-        UnitSpace * space = chunk->getSpace(getTilePositionInChunk(player_space[i]));
-        if(space->collision_player()){
-            //qDebug()<<space->position();
-            resolveCollision(player,space);
-        }
+    //remove footprints from previous iteration
+    for(int i=0; i<entityList.length(); i++){
+        entityList[i]->unregisterFromTiles();
     }
-
+    //add footprints and evaluate entity interactions.
+    for(int i=0; i<entityList.length(); i++){
+        registerEntityToTile(entityList[i]);
+    }
+    for (int i = 0 ; i<entityList.length() ; i++){
+        entityList[i]->iterate();
+    }
 
 }
 
-void World::keyInputs(int event_key)
+void World::keyPressed(int event_key)
 {
     player->move(event_key);
 }
@@ -109,196 +148,138 @@ void World::keyRelease(int event_key)
 QPointF World::get2DProjection(QVector3D position)
 {
     QPointF p;
+
     p.setX(position.x());
+
     p.setY(position.y() * sin(1.047) - position.z() * cos(1.047));
+
     return p;
 }
 
-Interface *World::newWarning(QString text)
+UnitSpace *World::getTile(QVector3D tile_position)
 {
-    Interface * warning = new Interface();
-    warning->setWidth(400);
-    warning->setHeight(300);
-    warning->setPosition(QPointF(640/2-400/2,480/2-300/2));
-
-    QQmlComponent component(m_appEngine,QUrl("qrc:/uiBase.qml"));
-    QQuickItem * obj = qobject_cast<QQuickItem*>(component.create());
-    obj->setParent(m_appEngine);
-    warning->assignBase(obj);
-    return warning;
+    tile_position = QVector3D(int(tile_position.x()),int(tile_position.y()),int(tile_position.z()));
+    Chunk * chunk = getChunk(tile_position / Constants::chunk_width_tiles);
+    return chunk->getTile(QVector3D(int(tile_position.x()) % Constants::chunk_width_tiles,int(tile_position.y()) % Constants::chunk_width_tiles,int(tile_position.z()) % Constants::chunk_width_tiles));
 }
 
-int World::index(int i, int j)
+Chunk *World::getChunk(QVector3D chunk_position)
 {
-    return j*Constants::chunk_width_tiles*Constants::world_width_chunks + i;
-
-}
-
-void World::updateCamera()
-{
-
-    root->setX(player->position().x()*-1 + root->width()/2);
-    root->setY(player->position().y()*-1 + root->height()/2);
-}
-
-Chunk *World::generateChunk(QPoint pos)
-{
-    Chunk * chunk = new Chunk(pos);
-    QVector<UnitSpace*> area;
-    for(int i=0; i<Constants::chunk_width_tiles * Constants::chunk_width_tiles; i++){
-        int y = (i - i%Constants::chunk_width_tiles)/Constants::chunk_width_tiles;
-        int x = i%Constants::chunk_width_tiles;
-        if(gen.generate()%100>80){
-
-            area.append(new Terrain(QVector3D(x,y,0)));
-        }else{
-            area.append(new Air(QVector3D(x,y,0)));
-        }
-    }
-    chunk->setChunkData(area);
-    return chunk;
-}
-
-Chunk *World::getChunk(QPoint chunk_position)
-{
-    for(int i=0; i<environment.length(); i++){
-        if(environment[i]->getPosition() == chunk_position){
-            return environment[i];
+    chunk_position = QVector3D(int(chunk_position.x()),int(chunk_position.y()),int(chunk_position.z()));
+    for(int i=0; i<chunk_ptr_list.length(); i++){
+        if(chunk_ptr_list[i]->getPosition() == chunk_position){
+            return chunk_ptr_list[i];
         }
     }
     return nullptr;
 }
 
-QVector3D World::getTileFromPixel(QVector3D global_pixel_position)
+
+void World::updateCamera()
 {
-    return QVector3D(int(global_pixel_position.x() / Constants::tile_width_pixels),
-                     int(global_pixel_position.y() / Constants::tile_width_pixels),
-                     int(global_pixel_position.z() / Constants::tile_width_pixels));
+
+    root->setX(player->geometry()->position().x()*-1 + root->width()/2);
+    root->setY(player->geometry()->position().y()*-1 + root->height()/2);
 }
 
-QPoint World::getChunkFromTile(QVector3D pos)
-{
-    QVector3D out = (pos - getTilePositionInChunk(pos)) / Constants::chunk_width_tiles;
-    return QPoint(out.x(),out.y());
-}
-
-QPoint World::getChunkFromTile(QPoint pos)
-{
-    QPoint out = pos / Constants::chunk_width_tiles;
-    return out;
-}
-
-QVector3D World::getTilePositionInChunk(QVector3D pos)
-{
-    return QVector3D(int(pos.x()) % Constants::chunk_width_tiles,int(pos.y()) % Constants::chunk_width_tiles,pos.z());
-}
-
-Chunk *World::loadChunk(QPoint pos)
+Chunk *World::generateChunk(QVector3D pos)
 {
     Chunk * chunk = new Chunk(pos);
-
-    QVector<UnitSpace*> area = chunk->loadChunkFromFile();
-    int w = Constants::chunk_width_tiles;
-
-
-    for(int i=0; i<area.length(); i++){
-        UnitSpace * u = area[i];
-        QVector3D pos = QVector3D(chunk->getPosition().x(),chunk->getPosition().y(),0) * Constants::chunk_width_tiles + u->position();
-        if(typeid (*u) == typeid (Air)){
-            loadUnitSpace(u,pos,"air");
-        }else{
-            loadUnitSpace(u,pos,"terrain");
-
-            if(gen.generate()%10 > 6){
-                loadUnitSpace(u,pos+QVector3D(0,0,1),"terrain");
-                if(gen.generate()%10 > 6){
-                    loadUnitSpace(u,pos+QVector3D(0,0,2),"terrain");
+    QVector<UnitSpace*> area;
+    for(int l=0; l<5; l++){
+        int z = l;
+        for(int i=0; i<Constants::chunk_width_tiles * Constants::chunk_width_tiles; i++){
+            int y = (i - i%Constants::chunk_width_tiles)/Constants::chunk_width_tiles;
+            int x = i%Constants::chunk_width_tiles;
+            if(z > 0){
+                UnitSpace * below = area[(z-1)*Constants::chunk_layer_count_tiles
+                        + y*Constants::chunk_width_tiles
+                        + x];
+                if(typeid (*below) == typeid (Terrain)){
+                    if(gen.generate()%100>80){
+                        area.append(new Terrain(QVector3D(x,y,z)));
+                    }else{
+                        area.append(new Air(QVector3D(x,y,z)));
+                    }
+                }else{
+                    area.append(new Air(QVector3D(x,y,z)));
                 }
             }
+            if(z == 0){
+                if(gen.generate()%100>80){
+
+                    area.append(new Terrain(QVector3D(x,y,0)));
+                }else{
+                    area.append(new Air(QVector3D(x,y,0)));
+                }
+            }
+
 
         }
     }
 
+    chunk->setChunkData(area);
+    //qDebug()<<area.length();
+    return chunk;
+}
 
+
+Chunk *World::loadChunk(QVector3D pos)
+{
+    pos = QVector3D(int(pos.x()),int(pos.y()),int(pos.z()));
+    Chunk * chunk = new Chunk(pos);
+
+    QVector<UnitSpace*> area = chunk->loadChunkFromFile();
+
+    for(int i=0; i<area.length(); i++){
+        loadUnitSpaceGraphics(area[i]);
+    }
 
     return chunk;
 }
 
-QVector<QVector3D> World::tilesOccupied(Entity *entity)
+bool World::chunkAlreadyLoaded(QVector3D pos)
 {
-    QVector<QVector3D> out;
-    int width = entity->width();
-    int height = entity->height();
-    out.append(getTileFromPixel(entity->position()));
-    QVector3D tile = getTileFromPixel(entity->position()+QVector3D(width,0,0));
-    if(!out.contains(tile)){
-        out.append(tile);
-    }
-    tile = getTileFromPixel(entity->position()+QVector3D(0,height,0));
-    if(!out.contains(tile)){
-        out.append(tile);
-    }
-    tile = getTileFromPixel(entity->position()+QVector3D(width,height,0));
-    if(!out.contains(tile)){
-        out.append(tile);
-    }
-    //qDebug()<<out<<y+height;
-    return out;
-}
-
-bool World::chunkAlreadyLoaded(QPoint pos)
-{
-    for(int i=0; i<environment.length(); i++){
-        if(environment[i]->getPosition() == pos)
+    pos = QVector3D(int(pos.x()),int(pos.y()),int(pos.z()));
+    for(int i=0; i<chunk_ptr_list.length(); i++){
+        if(chunk_ptr_list[i]->getPosition() == pos)
             return true;
     }
     return false;
 }
 
-UnitSpace * World::loadUnitSpace(UnitSpace * space, QVector3D c, QString type)
+void World::loadUnitSpaceGraphics(UnitSpace * space)
 {
-    if(type == "terrain"){
-        space = new Terrain(c);
-        QQmlComponent component2(m_appEngine,QUrl("qrc:/terrain.qml"));
-        QQuickItem * obj2 = qobject_cast<QQuickItem*>(component2.create());
-        obj2->setParentItem(root);
-        obj2->setParent(m_appEngine);
-        space->assignObj(obj2);
+    QQuickItem * obj = nullptr;
+    if(typeid (*space) == typeid (Terrain)){
+        QQmlComponent component(m_appEngine,QUrl("qrc:/terrain.qml"));
+        obj = qobject_cast<QQuickItem*>(component.create());
+        obj->setParentItem(root);
+        obj->setParent(m_appEngine);
+        space->assignObj(obj);
         space->updateDisplay();
-        //qDebug()<<c<<space->position();
-        //qDebug()<<space->position()<<space->getObj()->position()<<space->getObj()->height();
-
     }
-    if(type == "air"){
-        space = new Air(c);
+    if(typeid (*space) == typeid (Air)){
+        obj = nullptr;
     }
-
-    return space;
 }
+
+
 
 void World::resolveCollision(Entity *entity, UnitSpace *space)
 {
+    //Potential future use for this function: consider collision behaviour of specific unitspace type.
+    entity->collide(space->getBox());
 
-    if(entity->y() + entity->height() - 1 > space->y() * Constants::tile_width_pixels && entity->y() + 1 < Constants::tile_width_pixels * (space->y() + space->height())){
-        float rightBound = Constants::tile_width_pixels * (space->position().x() + space->width());
-        if(entity->x() < rightBound && entity->x() > rightBound - abs(entity->getVelocity().x()) - 1){
-            entity->setX(Constants::tile_width_pixels * (space->position().x() + space->width()));
-        }
-        float leftBound = Constants::tile_width_pixels * space->position().x();
-        if(entity->x() + entity->width() > leftBound && entity->x() + entity->width() < leftBound + abs(entity->getVelocity().x()) + 1){
-            entity->setX(Constants::tile_width_pixels * (space->position().x()) - entity->width());
-        }
-    }
-    if(entity->x() + entity->width() - 1 > space->x() * Constants::tile_width_pixels && entity->x() + 1 < Constants::tile_width_pixels * (space->x() + space->width())){
-        float botBound = Constants::tile_width_pixels * (space->position().y() + space->height());
-        if(entity->y() < botBound && entity->y() > botBound - abs(entity->getVelocity().y()) - 1){
-            entity->setY(Constants::tile_width_pixels * (space->position().y() + space->height()));
-        }
-        float topBound = Constants::tile_width_pixels * space->position().y();
-        if(entity->y() + entity->height() > topBound && entity->y() + entity->height() < topBound + abs(entity->getVelocity().y()) + 1){
-            entity->setY(Constants::tile_width_pixels * (space->position().y()) - entity->height());
-        }
-    }
+}
+
+Entity *World::createEntity(int type, QVector3D position, int rotation)
+{
+    Entity * entity = entityCreator->createEntity(type);
+    entity->geometry()->setPosition(position);
+    entity->setRotation(rotation);
+
+    return entity;
 
 }
 

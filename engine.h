@@ -2,6 +2,8 @@
 #define ENGINE_H
 
 #include <QObject>
+#include <QPointer>
+#include <QSharedPointer>
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
 #include <QQuickItem>
@@ -9,7 +11,6 @@
 
 #include <testassistant.h>
 #include <world.h>
-#include <worldgenerator.h>
 
 
 class Engine: public QObject
@@ -17,15 +18,17 @@ class Engine: public QObject
     Q_OBJECT
 public:
     Engine(QObject * parent,QQmlApplicationEngine * engine,QQuickWindow * window);
+    ~Engine();
+
 
 
 
 private:
-    QQuickWindow * m_window = nullptr;
-    QQmlApplicationEngine * m_appEngine = nullptr;
-    QQuickItem * root = nullptr;
+    QSharedPointer<QQuickWindow> m_window = nullptr;
+    QSharedPointer<QQmlApplicationEngine> m_appEngine = nullptr;
+    QSharedPointer<QQuickItem> root = nullptr;
 
-    QTimer * timer = nullptr;
+    QSharedPointer<QTimer> timer = nullptr;
 
     TestAssistant * tester = nullptr;
 
@@ -38,13 +41,10 @@ private:
     World * world = nullptr;
 
 
-    void generateWorld();
-    WorldGenerator * worldGen = nullptr;
-
 public slots:
     void keyPressed(int event_key);
     void keyReleased(int event_key);
-
+    void closingWindow();
     void timeout();
 
 };

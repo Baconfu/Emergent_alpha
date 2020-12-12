@@ -5,6 +5,7 @@
 #include <QQuickWindow>
 #include <QRandomGenerator>
 #include <QVector>
+#include <QString>
 
 
 #include <paintterrain.h>
@@ -14,76 +15,91 @@
 //World manages which entities are loaded, and manages player interaction with entities. Also manages visibility of entities.
 
 class Entity;
-class Interface;
 class Player;
 class Chunk;
 class Terrain;
 class UnitSpace;
+class Ladder;
+class EntityCreator;
 
 class World
 {
 public:
     World(QQmlApplicationEngine * engine, QQuickWindow * window, QPoint coordinates);
+    ~World();
 
 
     void iterate();
 
-    void keyInputs(int event_key);
+    void keyPressed(int event_key);
     void keyRelease(int event_key);
 
-    QVector<Chunk*> getEnvironment(){return environment;}
+    QVector<Chunk*> getEnvironment(){return chunk_ptr_list;}
 
     static QPointF get2DProjection(QVector3D position);
 
+    Player* getPlayerPtr() {return player;}
+
+
+    UnitSpace* getTile(QVector3D tile_position);
+    Chunk* getChunk(QVector3D chunk_position);
+
+    void registerEntityToTile(Entity * e);
+
+    QVector<QString> entityIDDictionary;
+    void initialiseEntityIDDictionary(){
+        for(int i=0; i<1000; i++){
+            entityIDDictionary.append("");
+        }
+
+        entityIDDictionary[200] = "ladder";
+        entityIDDictionary[999] = "player";
+    }
+
 private:
+    //Debug tools
     int tally = 0;
+    //end: Debug tools
+
+    //important pointers
     QRandomGenerator gen;
-
-    int screen_width_tiles = 640 / 30;
-    int screen_height_tiles = 480 / 26;
-
-    Interface * newWarning(QString text);
-
-
-    int index(int i,int j);
 
     QQmlApplicationEngine * m_appEngine = nullptr;
     QQuickWindow * m_window = nullptr;
     QQuickItem * root = nullptr;
 
+    EntityCreator * entityCreator = nullptr;
+    Player* player = nullptr;
+
     void updateCamera();
 
-    Chunk * generateChunk(QPoint pos);
 
-    QVector<Chunk*> environment;
-    Chunk * getChunk(QPoint chunk_position);
+    //chunk management
+    QVector<Chunk*> chunk_ptr_list;
 
-    QVector3D getTileFromPixel(QVector3D global_pixel_position);
-    QPoint getChunkFromTile(QVector3D global_tile_position);
-    QPoint getChunkFromTile(QPoint global_tile_position);
-    QVector3D getTilePositionInChunk(QVector3D global_tile_position);
+    Chunk * generateChunk(QVector3D pos);
+    Chunk * loadChunk(QVector3D pos);
+    bool chunkAlreadyLoaded(QVector3D chunk_position);
 
-    Chunk * loadChunk(QPoint pos);
 
-    QVector<QVector3D> tilesOccupied(Entity * entity);
 
-    bool chunkAlreadyLoaded(QPoint chunk_position);
 
-    UnitSpace * loadUnitSpace(UnitSpace * space,QVector3D global_space_coordinate,QString type);
+    void loadUnitSpaceGraphics(UnitSpace * space);
 
-    QVector<Entity*> entities;
-    void appendEntity(Entity * e){entities.append(e);}
-    void removeEntity(Entity * e){entities.removeOne(e);}
+    QVector<Entity*> entityList;
+    void appendEntity(Entity * e){entityList.append(e);}
+    void removeEntity(Entity * e){entityList.removeOne(e);}
 
     void resolveCollision(Entity * entity,UnitSpace * space);
+    void resolveCollision(Entity * entity1, Entity * entity2);
 
-    Player * player = nullptr;
+
+    Entity * createEntity(int type,QVector3D position,int rotation);
+
 
     QPoint player_current_chunk;
 
-    int chunk_size = 100;
 
-    int tile_size = 30;
 
 };
 

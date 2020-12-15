@@ -18,11 +18,11 @@ Engine::Engine(QObject *parent, QQmlApplicationEngine *engine, QQuickWindow *win
 
 
     //DEV
-    generateWorld();
+    //generateWorld();
     //DEV
 
     //DEV: no world loading
-    /*
+
     loadWorld();
     tester = new TestAssistant(world);
 
@@ -34,7 +34,7 @@ Engine::Engine(QObject *parent, QQmlApplicationEngine *engine, QQuickWindow *win
 
 
     timer->start();
-    */
+
 }
 
 
@@ -54,7 +54,7 @@ void Engine::keyPressed(int event_key)
     //qDebug()<<"Pressed:"<<event_key;
     newPressedKey(event_key);
 
-    world->keyInputs(event_key);
+    world->keyPressed(event_key);
 }
 
 void Engine::keyReleased(int event_key)
@@ -65,6 +65,18 @@ void Engine::keyReleased(int event_key)
     world->keyRelease(event_key);
 }
 
+void Engine::mouseMoved(int x, int y)
+{
+    mousePos = QPointF(x,y);
+    qDebug()<<mousePos;
+}
+
+void Engine::mousePressed()
+{
+
+}
+
+
 void Engine::timeout()
 {
     //Drives game loop
@@ -73,8 +85,8 @@ void Engine::timeout()
 
 
     //DEV: no world
-    /*
+
     world->iterate();
-    */
+
 
 }

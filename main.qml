@@ -1,78 +1,83 @@
 import QtQuick 2.12
 import QtQuick.Window 2.12
+import QtQuick.Controls 2.0
 
 import Paint 1.0
 
-Window {
+ApplicationWindow {
     id: myWin
     visible: true
-    width: 600
-    height: 600
-
-
-
+    width: 1000
+    height: 480
     title: qsTr("Emergent")
 
     signal keyPressed(int event_key)
     signal keyReleased(int event_key)
+    signal closingWindow();
+    signal mouseHover(int x,int y)
+    signal mousePressed()
+
+    onClosing: {
+        closingWindow();
+    }
+
+
 
     Item {
-        id: winBase
-        objectName: "winBase"
-        anchors.fill:parent
-        TerrainGeneration{
-            anchors.fill: parent
-            id: terrainTest
-        }
+        id: info_panel
+        objectName: "info_panel"
+        x: 640
+        y: 0
+        z:1
+        width: myWin.width - x
+        height: myWin.height
 
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                terrainTest.update();
-            }
-        }
+        Rectangle {
+            x: 0
+            y: 0
+            width: parent.width
+            height: parent.height
+            z:-1
+            border.color: "grey"
+            border.width: 1
+            color: "white"
 
-        Item {
-            id: root
-            objectName: "root"
-            focus: true
-
-            transform: Scale {
-                origin.x: myWin.width/2
-                origin.y: myWin.height/2
-                xScale:1
-                yScale:1.153
-            }
-
-            x:0
-            y:0
-            width: myWin.width
-            height: myWin.height
-
-            PaintGrid {
-                id: devGrid
-                visible: false
-                x:0
-                y:0
-                width: 6000
-                height: 6000
-            }
-
-
-            Keys.onPressed: {
-                if(!event.isAutoRepeat){
-                    keyPressed(event.key)
-                }
-            }
-            Keys.onReleased: {
-                if(!event.isAutoRepeat){
-                    keyReleased(event.key)
-                }
-            }
         }
     }
 
 
+    Item {
+        id: root
+        objectName: "root"
+        focus: true
+
+        transform: Scale{
+            yScale:1.153
+        }
+
+        x:0
+        y:0
+        width: 640
+        height: myWin.height
+
+        PaintGrid {
+            x:0
+            y:0
+            width: 6000
+            height: 6000
+        }
+
+        Keys.onPressed: {
+            if(!event.isAutoRepeat){
+                keyPressed(event.key)
+            }
+        }
+        Keys.onReleased: {
+            if(!event.isAutoRepeat){
+                keyReleased(event.key)
+            }
+        }
+    }
 
 
 }

@@ -6,6 +6,7 @@
 #include <QQuickWindow>
 #include <QQuickItem>
 #include <QTimer>
+#include <QVector3D>
 
 #include <testassistant.h>
 #include <world.h>
@@ -17,6 +18,7 @@ class Engine: public QObject
     Q_OBJECT
 public:
     Engine(QObject * parent,QQmlApplicationEngine * engine,QQuickWindow * window);
+
 
 
 
@@ -41,9 +43,13 @@ private:
     void generateWorld();
     WorldGenerator * worldGen = nullptr;
 
+    QPointF mousePos;
+
 public slots:
     void keyPressed(int event_key);
     void keyReleased(int event_key);
+    void mouseMoved(int x,int y);
+    void mousePressed();
 
     void timeout();
 

@@ -15,15 +15,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         air.cpp \
+        box.cpp \
         chunk.cpp \
         constants.cpp \
+        debugoverlay.cpp \
         engine.cpp \
         entity.cpp \
+        entitycreator.cpp \
         file.cpp \
         hex.cpp \
         interface.cpp \
+        ladder.cpp \
         main.cpp \
         paintgrid.cpp \
+        paintladder.cpp \
         paintplayeravatar.cpp \
         paintterrain.cpp \
         paintuibase.cpp \
@@ -52,14 +57,19 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     air.h \
+    box.h \
     chunk.h \
     constants.h \
+    debugoverlay.h \
     engine.h \
     entity.h \
+    entitycreator.h \
     file.h \
     hex.h \
     interface.h \
+    ladder.h \
     paintgrid.h \
+    paintladder.h \
     paintplayeravatar.h \
     paintterrain.h \
     paintuibase.h \

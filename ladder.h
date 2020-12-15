@@ -9,6 +9,8 @@ class Ladder: public Entity
 public:
     Ladder();
 
+    QString getTypeName(){return "ladder";}
+
     int getSpan() {return m_span;}
 
     void interact(Entity *){}

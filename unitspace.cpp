@@ -3,14 +3,26 @@
 
 UnitSpace::UnitSpace(QVector3D position)
 {
-    //qDebug()<<"init_pos"<<position;
+
     m_position = position;
 
 }
 
+UnitSpace::~UnitSpace()
+{
+    m_obj->deleteLater();
+}
+
+Box UnitSpace::getBox()
+{
+    Box b;
+    b.setPosition(m_position * Constants::tile_width_pixels);
+    b.setDimensions(m_dimensions * Constants::tile_width_pixels);
+    return b;
+}
+
 void UnitSpace::setPosition(QVector3D position)
 {
-    //qDebug()<<"setpos"<<position;
     m_position = position;
 }
 
@@ -26,6 +38,7 @@ void UnitSpace::updateDisplay()
     m_obj->setWidth(World::get2DProjection(m_dimensions * Constants::tile_width_pixels).x());
     QVector3D alt = QVector3D(m_dimensions.x(),m_dimensions.y(),m_dimensions.z() * -1.0);
     m_obj->setHeight(World::get2DProjection(alt * Constants::tile_width_pixels).ry());
-    m_obj->setZ(float(m_position.y()) + float(m_position.z())/100.0);
+    m_obj->setZ(int(m_position.y()) + int(m_position.z()));
 }
+
 
